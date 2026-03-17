@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 
@@ -73,32 +73,35 @@ export default function ContactPage() {
           <SlideRight className="lg:col-span-3">
             <div className="card p-8 md:p-12 shadow-[var(--shadow-md)]">
               <h2 className="display-sm text-[var(--charcoal)] mb-8">Envoyer un message</h2>
-              <form className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="form-label">Nom / Entreprise</label>
-                    <input type="text" className="form-input" placeholder="Jean Dupont ou XYZ Sarl" />
+              <form className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="form-group">
+                    <input type="text" className="form-input" placeholder=" " id="contact-name" />
+                    <label htmlFor="contact-name" className="floating-label">Nom / Entreprise</label>
                   </div>
-                  <div>
-                    <label className="form-label">Email Professionnel</label>
-                    <input type="email" className="form-input" placeholder="jean@entreprise.com" />
+                  <div className="form-group">
+                    <input type="email" className="form-input" placeholder=" " id="contact-email" />
+                    <label htmlFor="contact-email" className="floating-label">Email Professionnel</label>
                   </div>
                 </div>
 
-                <div>
-                  <label className="form-label">Sujet</label>
-                  <select defaultValue="" className="form-input appearance-none">
-                    <option value="" disabled>Sélectionnez un motif...</option>
+                <div className="form-group">
+                  <select defaultValue="" className="form-input appearance-none" id="contact-subject">
+                    <option value="" disabled></option>
                     <option value="devis">Demande de Devis</option>
                     <option value="support">Support Technique</option>
                     <option value="audit">Demande d'Audit IT/Cyber</option>
                     <option value="other">Autre</option>
                   </select>
+                  <label htmlFor="contact-subject" className="floating-label">Sujet de votre demande</label>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
+                    <ChevronRight className="w-4 h-4 rotate-90" />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="form-label">Message</label>
-                  <textarea rows={5} className="form-input resize-none" placeholder="Décrivez brièvement votre besoin..." />
+                <div className="form-group">
+                  <textarea rows={5} className="form-input resize-none" placeholder=" " id="contact-message" />
+                  <label htmlFor="contact-message" className="floating-label">Message (Décrivez votre besoin...)</label>
                 </div>
 
                 <div>

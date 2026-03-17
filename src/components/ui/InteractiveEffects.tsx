@@ -62,12 +62,16 @@ export function MagneticButton({ children, className = "", onClick, type = "butt
   const springX = useSpring(x, { stiffness: 400, damping: 20 });
   const springY = useSpring(y, { stiffness: 400, damping: 20 });
 
-  function handleMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    x.set((e.clientX - cx) * 0.3);
-    y.set((e.clientY - cy) * 0.3);
+    const distanceX = e.clientX - cx;
+    const distanceY = e.clientY - cy;
+    
+    // Magnetic pull is 40% of the distance to the center
+    x.set(distanceX * 0.4);
+    y.set(distanceY * 0.4);
   }
 
   function handleMouseLeave() {
@@ -76,16 +80,17 @@ export function MagneticButton({ children, className = "", onClick, type = "butt
   }
 
   return (
-    <motion.button
-      type={type}
-      style={{ x: springX, y: springY }}
+    <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileTap={{ scale: 0.96 }}
       className={className}
-      onClick={onClick}
     >
-      {children}
-    </motion.button>
+      <motion.div
+        style={{ x: springX, y: springY }}
+        onClick={onClick}
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 }

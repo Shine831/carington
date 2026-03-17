@@ -57,22 +57,19 @@ export default function AccountPage() {
               <p className="text-sm text-[var(--muted)]">Entrez vos identifiants pour accéder à votre espace.</p>
             </div>
 
-            <form className="space-y-5">
-              <div>
-                <label className="form-label">Adresse Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)] pointer-events-none" />
-                  <input type="email" className="form-input pl-11" placeholder="jean@entreprise.com" />
-                </div>
+            <form className="space-y-4">
+              <div className="form-group has-icon">
+                <Mail className="form-input-icon" />
+                <input type="email" className="form-input" placeholder=" " id="login-email" />
+                <label htmlFor="login-email" className="floating-label">Adresse Email</label>
               </div>
-              <div>
-                <div className="flex justify-between mb-2">
-                  <label className="form-label">Mot de Passe</label>
-                  <a href="#" className="text-xs text-[var(--red)] font-semibold hover:underline">Oublié ?</a>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)] pointer-events-none" />
-                  <input type="password" className="form-input pl-11" placeholder="••••••••" />
+              
+              <div className="form-group has-icon">
+                <Lock className="form-input-icon" />
+                <input type="password" className="form-input pr-16" placeholder=" " id="login-password" />
+                <label htmlFor="login-password" className="floating-label">Mot de Passe</label>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <Link href="#" className="text-xs text-[var(--red)] font-semibold hover:underline">Oublié ?</Link>
                 </div>
               </div>
 

@@ -71,26 +71,29 @@ export default function BookingPage() {
                     <div className="w-7 h-7 rounded-full bg-[var(--red)] text-white text-xs font-bold flex items-center justify-center">1</div>
                     <h3 className="font-bold text-[var(--charcoal)] text-sm uppercase tracking-wider">Profil Client</h3>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="form-label">Type de Structure</label>
-                      <select defaultValue="b2b" className="form-input appearance-none">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="form-group">
+                      <select defaultValue="b2b" className="form-input appearance-none" id="booking-type">
                         <option value="b2b">Entreprise (B2B)</option>
                         <option value="b2c">Particulier (B2C)</option>
                         <option value="ong">Administration / ONG</option>
                       </select>
+                      <label htmlFor="booking-type" className="floating-label">Type de Structure</label>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
+                        <ChevronRight className="w-4 h-4 rotate-90" />
+                      </div>
                     </div>
-                    <div>
-                      <label className="form-label">Entité / Demandeur</label>
-                      <input type="text" className="form-input" placeholder="XYZ Sarl ou Jean Dupont" />
+                    <div className="form-group">
+                      <input type="text" className="form-input" placeholder=" " id="booking-entity" />
+                      <label htmlFor="booking-entity" className="floating-label">Entité / Demandeur</label>
                     </div>
-                    <div>
-                      <label className="form-label">Email Sécurisé</label>
-                      <input type="email" className="form-input" placeholder="contact@entreprise.com" />
+                    <div className="form-group">
+                      <input type="email" className="form-input" placeholder=" " id="booking-email" />
+                      <label htmlFor="booking-email" className="floating-label">Email Professionnel</label>
                     </div>
-                    <div>
-                      <label className="form-label">Téléphone</label>
-                      <input type="tel" className="form-input" placeholder="+237 6XX XX XX XX" />
+                    <div className="form-group">
+                      <input type="tel" className="form-input" placeholder=" " id="booking-phone" />
+                      <label htmlFor="booking-phone" className="floating-label">Téléphone de contact</label>
                     </div>
                   </div>
                 </div>
@@ -101,10 +104,9 @@ export default function BookingPage() {
                     <div className="w-7 h-7 rounded-full bg-[var(--red)] text-white text-xs font-bold flex items-center justify-center">2</div>
                     <h3 className="font-bold text-[var(--charcoal)] text-sm uppercase tracking-wider">Spécifications Techniques</h3>
                   </div>
-                  <div className="space-y-5">
-                    <div>
-                      <label className="form-label">Service Principal</label>
-                      <select defaultValue="cyber" className="form-input appearance-none">
+                  <div className="space-y-4">
+                    <div className="form-group">
+                      <select defaultValue="cyber" className="form-input appearance-none" id="booking-service">
                         <option value="cyber">Audit & Cybersécurité</option>
                         <option value="reseau">Installation Réseau</option>
                         <option value="infog">Infogérance & Serveurs</option>
@@ -114,30 +116,40 @@ export default function BookingPage() {
                         <option value="maintenance">Maintenance Urgente</option>
                         <option value="autre">Autre</option>
                       </select>
+                      <label htmlFor="booking-service" className="floating-label">Service Principal</label>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
+                        <ChevronRight className="w-4 h-4 rotate-90" />
+                      </div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="form-label">Budget Estimé</label>
-                        <select defaultValue="undef" className="form-input appearance-none">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="form-group">
+                        <select defaultValue="undef" className="form-input appearance-none" id="booking-budget">
                           <option value="undef">Non défini</option>
                           <option>&lt; 500K CFA</option>
                           <option>500K – 2 Millions</option>
                           <option>2 – 10 Millions</option>
                           <option>&gt; 10 Millions CFA</option>
                         </select>
+                        <label htmlFor="booking-budget" className="floating-label">Budget Estimé</label>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
+                          <ChevronRight className="w-4 h-4 rotate-90" />
+                        </div>
                       </div>
-                      <div>
-                        <label className="form-label">Délai Souhaité</label>
-                        <select defaultValue="normal" className="form-input appearance-none">
+                      <div className="form-group">
+                        <select defaultValue="normal" className="form-input appearance-none" id="booking-time">
                           <option value="urgent">Urgence (&lt; 24h)</option>
                           <option value="normal">Standard (1–2 semaines)</option>
                           <option value="planifie">Planifié (1 mois+)</option>
                         </select>
+                        <label htmlFor="booking-time" className="floating-label">Délai Souhaité</label>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
+                          <ChevronRight className="w-4 h-4 rotate-90" />
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <label className="form-label">Description du Besoin</label>
-                      <textarea rows={5} className="form-input resize-y" placeholder="Infrastructure actuelle, blocages, attentes précises..." />
+                    <div className="form-group">
+                      <textarea rows={5} className="form-input resize-y" placeholder=" " id="booking-desc" />
+                      <label htmlFor="booking-desc" className="floating-label">Description détaillée de votre besoin</label>
                     </div>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Shield, Menu, X, User, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MagneticButton } from '@/components/ui/InteractiveEffects';
 
 const NAV_LINKS = [
   { href: "/", label: "Accueil" },
@@ -35,28 +36,40 @@ export default function Navbar() {
         }`}
       >
         <div className="container-xl">
-          <div className="flex items-center justify-between h-[68px] md:h-[76px]">
+          <div className="flex items-center justify-between h-[68px] md:h-[80px]">
             
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group">
-              <motion.div whileHover={{ rotate: 10, scale: 1.1 }} transition={{ type: "spring", stiffness: 400 }}>
-                <Shield className="w-7 h-7 text-[var(--red)]" />
+              <motion.div 
+                whileHover={{ rotate: 10, scale: 1.1 }} 
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <div className="w-9 h-9 rounded-xl bg-[var(--red)] flex items-center justify-center shadow-[var(--shadow-red)]">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
               </motion.div>
-              <span className="font-black text-lg tracking-tight text-[var(--charcoal)]">
-                E-JARNALUD<span className="text-[var(--red)]"> SOFT</span>
-              </span>
+              <div className="flex flex-col -gap-1">
+                <span className="font-black text-lg leading-tight tracking-tight text-[var(--charcoal)] uppercase">
+                  E-JARNALUD<span className="text-[var(--red)]"> SOFT</span>
+                </span>
+                <span className="text-[10px] font-bold text-[var(--muted)] tracking-[0.2em] uppercase">Architecture de Confiance</span>
+              </div>
             </Link>
             
             {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-2">
               {NAV_LINKS.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="relative px-4 py-2 text-sm font-medium text-[var(--slate)] hover:text-[var(--charcoal)] transition-colors group"
+                  className="relative px-5 py-2 text-sm font-bold text-[var(--slate)] hover:text-[var(--charcoal)] transition-colors group"
                 >
                   {label}
-                  <span className="absolute inset-x-4 bottom-0 h-0.5 bg-[var(--red)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  <motion.span 
+                    layoutId="nav-hover"
+                    className="absolute inset-0 bg-[var(--off-white)] rounded-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity" 
+                  />
+                  <span className="absolute inset-x-5 bottom-1.5 h-0.5 bg-[var(--red)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                 </Link>
               ))}
             </div>
@@ -72,13 +85,11 @@ export default function Navbar() {
                 </motion.span>
               </Link>
               <Link href="/booking">
-                <motion.span
-                  whileHover={{ scale: 1.03, y: -1 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="btn btn-red text-sm px-5 py-2.5 flex items-center gap-1.5 shadow-[var(--shadow-red)]"
-                >
-                  Demander un Devis <ChevronRight className="w-4 h-4" />
-                </motion.span>
+                <MagneticButton className="flex items-center">
+                  <span className="btn btn-red text-sm px-5 py-2.5 flex items-center gap-1.5 shadow-[var(--shadow-red)]">
+                    Demander un Devis <ChevronRight className="w-4 h-4" />
+                  </span>
+                </MagneticButton>
               </Link>
             </div>
             
