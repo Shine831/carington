@@ -75,7 +75,7 @@ export default function ContactPage() {
 
           {/* Form (i18n & Pure Tech Card) */}
           <SlideRight className="lg:col-span-3">
-            <div className="card p-10 md:p-16 shadow-[var(--shadow-xl)] border-2 rounded-[2.5rem] relative overflow-hidden bg-white/80 backdrop-blur-xl">
+            <div className="card p-6 md:p-16 shadow-[var(--shadow-xl)] border-2 rounded-[2.5rem] relative overflow-hidden bg-white/80 backdrop-blur-xl">
               <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-64 h-64 opacity-[0.03]" />
               
               <h2 className="display-sm text-[var(--charcoal)] mb-10 tracking-tight">{t.contact.form_title}</h2>

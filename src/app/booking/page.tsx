@@ -53,7 +53,7 @@ export default function BookingPage() {
           
           {/* Form (i18n & Pure Tech Refactor) */}
           <SlideLeft className="lg:col-span-2">
-            <div className="card p-10 md:p-16 shadow-[var(--shadow-xl)] border-2 rounded-[2.5rem] bg-white/80 backdrop-blur-xl relative overflow-hidden">
+            <div className="card p-6 md:p-16 shadow-[var(--shadow-xl)] border-2 rounded-[2.5rem] bg-white/80 backdrop-blur-xl relative overflow-hidden">
               <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-64 h-64 opacity-[0.03]" />
               
               <div className="flex items-center justify-between mb-10 pb-8 border-b border-slate-100">

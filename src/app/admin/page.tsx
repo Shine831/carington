@@ -143,7 +143,7 @@ export default function AdminDashboard() {
           <AuraGradient color="var(--red)" className="bottom-[-10%] left-[-10%] w-[400px] h-[400px] opacity-[0.01]" delay={3} />
           
           {/* Stats Bento Grid */}
-          <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {STATS.map(({ label, value, icon: Icon, colorCls }) => (
               <StaggerItem key={label}>
                 <motion.div

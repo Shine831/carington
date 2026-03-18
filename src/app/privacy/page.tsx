@@ -28,7 +28,7 @@ export default function PrivacyPage() {
             </h1>
           </div>
 
-          <div className="card p-10 md:p-16 bg-white/80 backdrop-blur-xl border-2 max-w-4xl rounded-[3rem] shadow-sm">
+          <div className="card p-6 md:p-16 bg-white/80 backdrop-blur-xl border-2 max-w-4xl rounded-[3rem] shadow-sm">
             <div className="space-y-12 text-body">
               <section>
                 <h2 className="text-xl font-black text-[var(--charcoal)] uppercase tracking-tight mb-4">{language === "fr" ? "1. Collecte des Données" : "1. Data Collection"}</h2>

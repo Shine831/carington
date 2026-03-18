@@ -20,7 +20,7 @@ export default function AccountPage() {
         
         {/* Left panel — Pure Tech Red */}
         <SlideLeft className="h-full">
-          <div className="bg-[var(--red)] p-12 md:p-16 flex flex-col justify-between h-full min-h-[500px] relative overflow-hidden">
+          <div className="bg-[var(--red)] p-8 md:p-16 flex flex-col justify-between h-full min-h-[450px] relative overflow-hidden">
             <AuraGradient color="white" className="top-[-20%] left-[-20%] w-64 h-64 opacity-[0.1]" />
             <AuraGradient color="black" className="bottom-[-20%] right-[-20%] w-96 h-96 opacity-[0.05]" />
             
@@ -64,7 +64,7 @@ export default function AccountPage() {
 
         {/* Right panel — Pure Tech Login */}
         <SlideRight>
-          <div className="bg-white p-12 md:p-16 h-full flex flex-col justify-center relative overflow-hidden">
+          <div className="bg-white p-8 md:p-16 h-full flex flex-col justify-center relative overflow-hidden">
             <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-48 h-48 opacity-[0.02]" />
             
             <div className="mb-12 relative z-10">
