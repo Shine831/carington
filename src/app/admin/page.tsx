@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--off-white)] flex pt-[68px] md:pt-[76px] relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--off-white)] flex pt-24 md:pt-32 relative overflow-hidden">
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.02]" />
       
       {/* Sidebar - Pure Tech Design */}
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
         initial={{ x: -280, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="w-64 xl:w-72 bg-[var(--charcoal)] flex flex-col fixed top-[68px] md:top-[76px] bottom-0 left-0 z-40 hidden md:flex border-r border-white/5"
+        className="w-64 xl:w-72 bg-[var(--charcoal)] flex flex-col fixed top-24 md:top-32 bottom-0 left-0 z-40 hidden md:flex border-r border-white/5"
       >
         <div className="p-8 border-b border-white/5">
           <div className="flex items-center gap-4">
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
           initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="bg-white/80 backdrop-blur-xl border-b border-[var(--border)] px-8 py-5 flex items-center justify-between sticky top-[68px] md:top-[76px] z-30"
+          className="bg-white/80 backdrop-blur-xl border-b border-[var(--border)] px-8 py-5 flex items-center justify-between sticky top-24 md:top-32 z-30"
         >
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)] group-focus-within:text-[var(--red)] transition-colors" />

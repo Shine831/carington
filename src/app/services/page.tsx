@@ -30,7 +30,7 @@ export default function ServicesPage() {
   );
 
   return (
-    <div className="min-h-screen pt-[68px] md:pt-[76px] bg-[var(--off-white)]">
+    <div className="min-h-screen pt-24 md:pt-32 bg-[var(--off-white)]">
       
       {/* Header (Pure Tech Refactor) */}
       <section className="bg-white border-b border-[var(--border)] py-20 md:py-32 relative overflow-hidden">
@@ -64,7 +64,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Bento Grid (Pure Tech Refactor) */}
-      <section className="section-py">
+      <section className="section-py mb-32">
         <div className="container-xl">
           <SlideLeft>
             <div className="flex items-center justify-between mb-16 px-2">

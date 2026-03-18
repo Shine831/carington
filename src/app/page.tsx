@@ -60,7 +60,7 @@ export default function Home() {
     <div className="min-h-screen bg-[var(--off-white)] overflow-hidden">
 
       {/* ── ELITE HERO (Pure Tech Refactor) ───────────────────── */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center pt-[72px] overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen flex items-center pt-24 md:pt-32 overflow-hidden">
         <ParticleBackground />
         
         {/* Aura Gradients (Image Replacement) */}
@@ -131,7 +131,7 @@ export default function Home() {
                     <motion.span
                       whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.98 }}
-                      className="btn btn-red px-10 py-5 text-lg group relative flex flex-col items-center"
+                      className="btn btn-red px-10 py-5 text-lg group relative flex items-center"
                     >
                       <div className="flex items-center">
                         {t.hero.btn_audit}
@@ -139,7 +139,6 @@ export default function Home() {
                           <ArrowRight className="w-5 h-5 ml-2" />
                         </motion.span>
                       </div>
-                      <span className="text-[10px] opacity-80 font-medium absolute -bottom-1">{t.hero.btn_audit_sub}</span>
                     </motion.span>
                   </MagneticButton>
                 </Link>
@@ -260,7 +259,7 @@ export default function Home() {
             {SERVICES.map(({ id, tag, icon: Icon, title, desc, span, highlight }) => (
               <StaggerItem key={id} className={span}>
                 <Link href="/booking" className="block h-full">
-                  <BentoCard highlight={highlight} className="h-full group border-2">
+                  <BentoCard highlight={false} className="h-full group border-2">
                     {/* Floating Aura for Bento */}
                     <AuraGradient 
                       color={highlight ? "var(--red)" : "var(--slate)"} 
@@ -398,7 +397,7 @@ export default function Home() {
       </section>
 
       {/* ── CTA BAND ────────────────────────────────────────────── */}
-      <section className="bg-[var(--charcoal)] py-28 relative overflow-hidden">
+      <section className="bg-[var(--charcoal)] py-28 mt-32 relative overflow-hidden">
         <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.1]" />
         
         <div className="container-xl relative z-10">

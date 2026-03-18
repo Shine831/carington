@@ -13,7 +13,7 @@ export default function AccountPage() {
   const ICONS = [Briefcase, History, ShieldCheck, User];
 
   return (
-    <div className="min-h-[100svh] pt-[68px] md:pt-[76px] bg-[var(--off-white)] flex items-center justify-center py-20 px-4 relative overflow-hidden">
+    <div className="min-h-[100svh] pt-24 md:pt-32 bg-[var(--off-white)] flex items-center justify-center py-32 px-4 relative overflow-hidden">
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.03]" />
       
       <div className="max-w-5xl w-full grid md:grid-cols-2 gap-0 rounded-[2.5rem] overflow-hidden shadow-[var(--shadow-2xl)] border border-white/20 relative z-10">

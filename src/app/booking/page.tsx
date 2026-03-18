@@ -11,7 +11,7 @@ export default function BookingPage() {
   const { t, language } = useI18n();
 
   return (
-    <div className="min-h-screen pt-[68px] md:pt-[76px] bg-[var(--off-white)]">
+    <div className="min-h-screen pt-24 md:pt-32 bg-[var(--off-white)]">
       
       {/* Header (Pure Tech Refactor) */}
       <section className="bg-[var(--charcoal)] py-20 md:py-32 relative overflow-hidden">
@@ -48,7 +48,7 @@ export default function BookingPage() {
         </div>
       </section>
 
-      <div className="container-xl py-20 md:py-28">
+      <div className="container-xl py-20 md:py-28 mb-32">
         <div className="grid lg:grid-cols-3 gap-12 lg:gap-20">
           
           {/* Form (i18n & Pure Tech Refactor) */}

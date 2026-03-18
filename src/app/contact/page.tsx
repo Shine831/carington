@@ -18,7 +18,7 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-[68px] md:pt-[76px] bg-[var(--off-white)]">
+    <div className="min-h-screen pt-24 md:pt-32 bg-[var(--off-white)]">
       
       {/* Header (Pure Tech Refactor) */}
       <section className="bg-white border-b border-[var(--border)] pt-20 pb-24 md:pt-32 md:pb-32 relative overflow-hidden">
@@ -45,13 +45,13 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <div className="container-xl py-20 md:py-32">
+      <div className="container-xl py-20 md:py-32 mb-32">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-24 items-start">
           
           {/* Contact Info (i18n) */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 pt-12 md:pt-16">
             <SlideLeft>
-              <h2 className="display-sm text-[var(--charcoal)] mb-10 tracking-tight">{t.contact.info_title}</h2>
+              <h2 className="display-sm text-[var(--charcoal)] mb-12 tracking-tight uppercase font-black">{t.contact.info_title}</h2>
               <StaggerContainer className="space-y-4">
                 {CONTACT_ITEMS.map(({ icon: Icon, label, val, red }) => (
                   <StaggerItem key={label}>

@@ -13,7 +13,7 @@ export default function AboutPage() {
   const { t, language } = useI18n();
 
   return (
-    <div className="min-h-screen pt-[68px] md:pt-[76px] bg-[var(--off-white)]">
+    <div className="min-h-screen pt-24 md:pt-32 bg-[var(--off-white)]">
 
       {/* Hero (Pure Tech Refactor) */}
       <section className="relative min-h-[60vh] flex items-center pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden bg-[var(--charcoal)]">
@@ -89,7 +89,7 @@ export default function AboutPage() {
       </section>
 
       {/* Promise section (i18n) */}
-      <section className="section-py relative overflow-hidden bg-[var(--off-white)]">
+      <section className="section-py relative overflow-hidden bg-[var(--off-white)] mb-32">
         <AuraGradient color="var(--red)" className="top-[50%] right-[-10%] w-80 h-80 opacity-[0.03]" />
         
         <div className="container-xl relative z-10">

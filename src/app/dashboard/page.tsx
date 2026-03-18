@@ -1,6 +1,7 @@
 "use client";
 
 import { Activity, ShieldAlert, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
@@ -10,7 +11,7 @@ export default function DashboardPage() {
   const { t, language } = useI18n();
 
   return (
-    <div className="min-h-screen pt-24 pb-32 bg-[var(--off-white)] relative overflow-hidden">
+    <div className="min-h-screen pt-32 pb-40 bg-[var(--off-white)] relative overflow-hidden">
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[800px] h-[800px] opacity-[0.03]" />
       <AuraGradient color="var(--charcoal)" className="bottom-[-20%] left-[-10%] w-[600px] h-[600px] opacity-[0.02]" />
 
@@ -67,14 +68,14 @@ export default function DashboardPage() {
           <StaggerItem>
             <motion.div 
               whileHover={{ y: -5 }}
-              className="card bg-[var(--charcoal)] p-10 shadow-[var(--shadow-xl)] relative overflow-hidden group"
+              className="card bg-white p-10 border-2 border-transparent hover:border-slate-100 transition-all shadow-sm relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 p-8 opacity-[0.1] group-hover:opacity-[0.2] group-hover:rotate-12 transition-all duration-700">
-                <ShieldAlert className="w-20 h-20 text-white" />
+              <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:opacity-[0.1] group-hover:rotate-12 transition-all duration-700">
+                <ShieldAlert className="w-20 h-20 text-[var(--charcoal)]" />
               </div>
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.threats}</p>
-              <p className="text-4xl font-black text-white tracking-tighter mb-4 italic font-serif serif-italic">1,402</p>
-              <div className="flex items-center gap-2 text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+              <p className="text-[10px] font-black结合 text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.threats}</p>
+              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">1,402</p>
+              <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
                 <Activity className="w-4 h-4" /> {t.dashboard.stats.zero_breach}
               </div>
             </motion.div>
@@ -198,9 +199,11 @@ export default function DashboardPage() {
                  </StaggerItem>
                </StaggerContainer>
                
-               <button className="w-full mt-8 py-5 border-2 border-slate-100 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.5rem] hover:bg-[var(--red)] hover:text-white hover:border-[var(--red)] transition-all flex items-center justify-center gap-3 group">
-                 {t.dashboard.sections.logs} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-               </button>
+               <Link href="/admin" className="block w-full mt-8">
+                <button className="w-full py-5 border-2 border-slate-100 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.5rem] hover:bg-[var(--red)] hover:text-white hover:border-[var(--red)] transition-all flex items-center justify-center gap-3 group">
+                  {t.dashboard.sections.logs} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+               </Link>
 
             </div>
           </div>
