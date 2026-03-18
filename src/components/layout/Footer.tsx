@@ -3,18 +3,23 @@
 import { Shield, Linkedin, Twitter, Facebook, Mail, Phone, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { useI18n } from '@/context/LanguageContext';
+import { usePathname } from 'next/navigation';
 import { AuraGradient } from '@/components/ui/AuraGradient';
 
 export default function Footer() {
   const { t, language } = useI18n();
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
+
+  if (isAdmin) return null;
 
   return (
     <footer className="bg-[var(--charcoal)] text-white mt-auto relative overflow-hidden border-t border-white/5">
       {/* Subtle Aura for Footer */}
       <AuraGradient color="var(--red)" className="bottom-[-10%] left-[-5%] w-96 h-96 opacity-[0.05]" />
       
-      <div className="container-xl py-20 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-24">
+      <div className="container-xl pt-32 pb-20 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-12">
           
           {/* Brand */}
           <div className="lg:col-span-1">
@@ -39,7 +44,7 @@ export default function Footer() {
           </div>
           
           {/* Solutions (i18n) */}
-          <div>
+          <div className="mt-12 lg:mt-0">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.footer.cols.solutions}</h4>
             <ul className="space-y-4 text-sm font-bold">
               <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.it.title}</Link></li>
@@ -50,7 +55,7 @@ export default function Footer() {
           </div>
           
           {/* Agency (i18n) */}
-          <div>
+          <div className="mt-12 lg:mt-0">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.footer.cols.agency}</h4>
             <ul className="space-y-4 text-sm font-bold">
               <li><Link href="/about" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.nav.about}</Link></li>
@@ -61,7 +66,7 @@ export default function Footer() {
           </div>
 
           {/* Contact (i18n) */}
-          <div>
+          <div className="mt-12 lg:mt-0">
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.contact.info_title}</h4>
             <ul className="space-y-6 text-sm font-bold">
               <li className="flex items-start gap-4 group">

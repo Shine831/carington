@@ -77,27 +77,26 @@ export default function ServicesPage() {
           </SlideLeft>
           
           <AnimatePresence mode="popLayout">
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-6 gap-6">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {filtered.map((service, i) => {
-                const isLarge = i < 2;
                 const Icon = service.icon;
                 
                 return (
                   <StaggerItem 
                     key={service.id} 
-                    className={`${isLarge ? "md:col-span-3 lg:col-span-3" : "md:col-span-3 lg:col-span-2"}`}
+                    className="md:col-span-1"
                   >
                     <motion.div layout className="h-full">
                       <Link href="/booking" className="block h-full">
                         <motion.div
                           whileHover={{ y: -8, borderColor: "var(--red)" }}
-                          className="card h-full p-10 flex flex-col group relative overflow-hidden backdrop-blur-xl bg-white/80 border-2 transition-all duration-500 rounded-[2.5rem]"
+                          className="card h-full p-8 flex flex-col group relative overflow-hidden backdrop-blur-xl bg-white/80 border-2 transition-all duration-500 rounded-[2.5rem]"
                         >
                           <AuraGradient color="var(--red)" className="bottom-[-30%] right-[-20%] w-48 h-48 opacity-[0.03] group-hover:opacity-[0.1] transition-opacity" />
                           
-                          <div className="flex items-start justify-between mb-12 relative z-10">
-                            <div className="w-16 h-16 bg-slate-50 shadow-sm rounded-2xl flex items-center justify-center group-hover:bg-[var(--red)] group-hover:shadow-[0_10px_30px_rgba(200,16,46,0.2)] transition-all duration-500 shrink-0">
-                              <Icon className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors duration-500" />
+                          <div className="flex items-start justify-between mb-10 relative z-10">
+                            <div className="w-14 h-14 bg-slate-50 shadow-sm rounded-2xl flex items-center justify-center group-hover:bg-[var(--red)] group-hover:shadow-[0_10px_30px_rgba(200,16,46,0.2)] transition-all duration-500 shrink-0">
+                              <Icon className="w-7 h-7 text-[var(--red)] group-hover:text-white transition-colors duration-500" />
                             </div>
                             <span className="text-[9px] font-black tracking-widest text-[var(--muted)] border border-slate-200 px-4 py-1.5 rounded-full uppercase bg-white/50 group-hover:border-[var(--red)]/20 transition-colors">
                               {service.tag}
@@ -105,15 +104,15 @@ export default function ServicesPage() {
                           </div>
                           
                           <div className="relative z-10">
-                            <h3 className={`${isLarge ? "text-2xl" : "text-xl"} font-black text-[var(--charcoal)] mb-4 tracking-tighter leading-tight`}>
+                            <h3 className="text-xl font-black text-[var(--charcoal)] mb-4 tracking-tighter leading-tight">
                               {service.title}
                             </h3>
-                            <p className="text-sm text-[var(--slate)] leading-relaxed mb-10 font-medium">
+                            <p className="text-[13px] text-[var(--slate)] leading-relaxed mb-8 font-medium">
                               {service.desc}
                             </p>
                           </div>
                           
-                          <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between relative z-10 transition-colors group-hover:border-[var(--red)]/10">
+                          <div className="mt-auto pt-6 border-t border-slate-100 flex items-center justify-between relative z-10 transition-colors group-hover:border-[var(--red)]/10">
                             <span className="text-[10px] font-black text-[var(--red)] tracking-widest flex items-center gap-2 uppercase">
                               {t.services_page.cta_card} <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
                             </span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ShieldAlert, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
@@ -58,7 +58,7 @@ export default function DashboardPage() {
                 <Server className="w-20 h-20 text-[var(--charcoal)]" />
               </div>
               <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.nodes}</p>
-              <p className="text-4xl font-black text-[var(--charcoal)] tracking-titer mb-4 italic font-serif serif-italic">24<span className="text-slate-300 text-2xl not-italic">/24</span></p>
+              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">24<span className="text-slate-300 text-2xl not-italic">/24</span></p>
               <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
                 <CheckCircle2 className="w-4 h-4" /> {t.dashboard.stats.uptime}
               </div>
@@ -73,10 +73,10 @@ export default function DashboardPage() {
               <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:opacity-[0.1] group-hover:rotate-12 transition-all duration-700">
                 <ShieldAlert className="w-20 h-20 text-[var(--charcoal)]" />
               </div>
-              <p className="text-[10px] font-black结合 text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.threats}</p>
-              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">1,402</p>
+              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.zero_breach}</p>
+              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">0</p>
               <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-                <Activity className="w-4 h-4" /> {t.dashboard.stats.zero_breach}
+                <ShieldCheck className="w-4 h-4" /> 1,402 {t.dashboard.stats.threats}
               </div>
             </motion.div>
           </StaggerItem>
@@ -109,9 +109,11 @@ export default function DashboardPage() {
                   <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase">{t.dashboard.sections.requests}</h2>
                   <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.3em] mt-1">Pending Validation Cycle</p>
                 </div>
-                <button className="text-[10px] font-black text-[var(--red)] uppercase tracking-widest hover:underline decoration-2 underline-offset-4 transition-all">
-                  {t.dashboard.sections.archive}
-                </button>
+                <Link href="/admin">
+                  <button className="text-[10px] font-black text-[var(--red)] uppercase tracking-widest hover:underline decoration-2 underline-offset-4 transition-all">
+                    {t.dashboard.sections.archive}
+                  </button>
+                </Link>
               </div>
             </FadeUp>
             

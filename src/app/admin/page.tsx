@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Users, Briefcase, FileText, Settings, BarChart, Bell, Search, ChevronRight, AlertTriangle, Clock, CheckCircle, Shield, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, SlideLeft } from "@/components/ui/Motion";
@@ -46,7 +47,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--off-white)] flex pt-24 md:pt-32 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--off-white)] flex pt-0 relative overflow-x-hidden">
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.02]" />
       
       {/* Sidebar - Pure Tech Design */}
@@ -54,7 +55,7 @@ export default function AdminDashboard() {
         initial={{ x: -280, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="w-64 xl:w-72 bg-[var(--charcoal)] flex flex-col fixed top-24 md:top-32 bottom-0 left-0 z-40 hidden md:flex border-r border-white/5"
+        className="w-64 xl:w-72 bg-[var(--charcoal)] flex flex-col fixed top-0 bottom-0 left-0 z-40 hidden md:flex border-r border-white/5"
       >
         <div className="p-8 border-b border-white/5">
           <div className="flex items-center gap-4">
@@ -106,31 +107,34 @@ export default function AdminDashboard() {
           initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="bg-white/80 backdrop-blur-xl border-b border-[var(--border)] px-8 py-5 flex items-center justify-between sticky top-24 md:top-32 z-30"
+          className="bg-white/80 backdrop-blur-md px-8 py-5 flex items-center justify-between sticky top-0 z-30 border-b border-slate-100"
         >
-          <div className="relative group">
+          <div className="relative group max-w-md w-full mr-8">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)] group-focus-within:text-[var(--red)] transition-colors" />
             <input
               type="text"
               placeholder={language === "fr" ? "Rechercher client, ID..." : "Search client, ID..."}
-              className="bg-[var(--off-white)] border-2 border-transparent rounded-2xl py-3 pl-12 pr-6 text-xs font-bold focus:outline-none focus:border-[var(--red)]/20 focus:bg-white w-48 md:w-80 transition-all shadow-sm"
+              className="bg-[var(--off-white)] border-2 border-transparent rounded-2xl py-3 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-[var(--red)]/20 focus:bg-white w-full transition-all shadow-sm"
             />
           </div>
           <div className="flex items-center gap-6">
             <motion.button
               whileHover={{ rotate: 15, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="relative text-[var(--slate)] hover:text-[var(--red)] transition-all p-2"
+              className="relative text-[var(--slate)] hover:text-[var(--red)] transition-all p-2 bg-[var(--off-white)] rounded-xl"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-white" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-white" />
             </motion.button>
-            <div className="flex items-center gap-3 pl-6 border-l border-slate-100">
+            <div className="flex items-center gap-4 pl-6 border-l border-slate-100">
               <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-black text-[var(--charcoal)] uppercase tracking-widest">Admin User</p>
-                <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-tighter">Superuser</p>
+                <p className="text-[10px] font-black text-[var(--charcoal)] uppercase tracking-wider">Admin User</p>
+                <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                  <p className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter">Active System</p>
+                </div>
               </div>
-              <div className="w-10 h-10 rounded-2xl bg-[var(--charcoal)] text-white flex items-center justify-center font-black text-sm shadow-xl">A</div>
+              <div className="w-10 h-10 rounded-xl bg-[var(--charcoal)] text-white flex items-center justify-center font-black text-sm shadow-xl ring-4 ring-slate-50">A</div>
             </div>
           </div>
         </motion.header>

@@ -13,6 +13,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const { language, setLanguage, t } = useI18n();
+  const isAdmin = pathname?.startsWith("/admin");
 
   const NAV_LINKS = [
     { href: "/", label: t.nav.home },
@@ -30,6 +31,8 @@ export default function Navbar() {
   const toggleLanguage = () => {
     setLanguage(language === "fr" ? "en" : "fr");
   };
+
+  if (isAdmin) return null;
 
   return (
     <>
@@ -56,41 +59,30 @@ export default function Navbar() {
                   <Shield className="w-5 h-5 text-white" />
                 </div>
               </motion.div>
-              <div className="flex flex-col -gap-1">
+              <div className="flex flex-col">
                 <span className="font-black text-lg leading-tight tracking-tight text-[var(--charcoal)] uppercase">
                   E-JARNALUD<span className="text-[var(--red)]"> SOFT</span>
                 </span>
-                <span className="text-[10px] font-bold text-[var(--muted)] tracking-[0.2em] uppercase">
+                <span className="text-[9px] font-medium text-[var(--muted)] tracking-[0.2em] uppercase">
                   {language === "fr" ? "Architecture de Confiance" : "Architecture of Trust"}
                 </span>
               </div>
             </Link>
             
             {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-4">
               {NAV_LINKS.map(({ href, label }) => {
                 const isActive = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`relative px-5 py-2 text-sm font-bold transition-colors group ${
+                    className={`relative px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-colors group ${
                       isActive ? "text-[var(--red)]" : "text-[var(--slate)] hover:text-[var(--charcoal)]"
                     }`}
                   >
                     {label}
-                    {isActive ? (
-                      <motion.span 
-                        layoutId="nav-active"
-                        className="absolute inset-0 bg-[var(--red)]/5 rounded-xl -z-10" 
-                      />
-                    ) : (
-                      <motion.span 
-                        layoutId="nav-hover"
-                        className="absolute inset-0 bg-[var(--off-white)] rounded-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity" 
-                      />
-                    )}
-                    <span className={`absolute inset-x-5 bottom-1.5 h-0.5 bg-[var(--red)] rounded-full transition-transform duration-300 origin-left ${
+                    <span className={`absolute inset-x-4 bottom-0 h-0.5 bg-[var(--red)] rounded-full transition-transform duration-300 origin-left ${
                       isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     }`} />
                   </Link>
@@ -99,11 +91,11 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-4">
               {/* Language Switcher */}
               <button 
                 onClick={toggleLanguage}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--border)] hover:bg-[var(--off-white)] transition-all text-xs font-black uppercase tracking-widest text-[var(--charcoal)]"
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-[var(--red)]/20 hover:bg-[var(--off-white)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)]"
               >
                 <Globe className="w-4 h-4 text-[var(--red)]" />
                 {language === "fr" ? "EN" : "FR"}
@@ -112,14 +104,14 @@ export default function Navbar() {
               <Link href="/account">
                 <motion.span
                   whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
-                  className="btn btn-ghost text-sm flex items-center gap-1.5"
+                  className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
                 >
                   <User className="w-4 h-4" /> {t.nav.account}
                 </motion.span>
               </Link>
               <Link href="/booking">
                 <MagneticButton className="flex items-center">
-                  <span className="btn btn-red text-sm px-5 py-2.5 flex items-center gap-1.5 shadow-[var(--shadow-red)]">
+                  <span className="btn btn-red text-[10px] px-6 py-2.5 flex items-center gap-2 shadow-[var(--shadow-red)]">
                     {t.nav.cta} <ChevronRight className="w-4 h-4" />
                   </span>
                 </MagneticButton>

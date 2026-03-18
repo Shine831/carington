@@ -427,7 +427,7 @@ export default function Home() {
                 </Link>
                 <Link href="/contact">
                   <MagneticButton>
-                    <motion.span className="btn btn-outline border-white/20 text-white px-12 py-5 text-lg font-black bg-white/5 hover:bg-white/10">
+                    <motion.span className="btn btn-outline-white px-12 py-5 text-lg font-black">
                       {t.nav.contact}
                     </motion.span>
                   </MagneticButton>
