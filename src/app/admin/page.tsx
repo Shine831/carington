@@ -31,6 +31,10 @@ const STATUS_MAP = {
 export default function AdminDashboard() {
   const { t, language } = useI18n();
   const [activeTab, setActiveTab] = useState("requests");
+  const [requests, setRequests] = useState<any[]>([]); // To be populated via API
+
+  // Simulated dynamic fetch tracking "Elite 2026" trends
+  // In a real app, use SWR or React Query here.
 
   const NAV = [
     { id: "dashboard", label: t.admin.nav.overview, icon: BarChart },

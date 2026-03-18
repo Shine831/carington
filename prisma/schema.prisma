@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  password              String?
+  name                  String?
+  role                  Role                   @default(CLIENT)
+  
+  // Advanced Auth (2026 Standard)
+  twoFactorEnabled      Boolean                @default(false)
+  twoFactorSecret       String?
+  isTwoFactorConfirmed  Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+  
+  // Relations
+  bookings              Booking[]
+  reviews               Review[]
+  accounts              Account[]
+  sessions              Session[]
+  auditLogs             AuditLog[]
+  
+  // Metadata
+  lastLogin             DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String   // LOGIN, LOGOUT, ROLE_CHANGE, MFA_ENABLE
+  status      String   // SUCCESS, FAILURE
+  severity    String   // LOW, MEDIUM, HIGH, CRITICAL
+  ipAddress   String?
+  userAgent   String?
+  details     String?  // JSON string for additional context
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  priceCFA    Float
+  bookings    Booking[]
+  reviews     Review[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  serviceId String
+  service   Service       @relation(fields: [serviceId], references: [id])
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+  createdAt DateTime @default(now())
+}
