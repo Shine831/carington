@@ -4,144 +4,150 @@ import { ShieldCheck, Award, Target, Users, CheckCircle, ArrowRight } from "luci
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
-
-const PILLARS = [
-  { icon: ShieldCheck, title: "Sécurité Totale", desc: "Protocoles de protection de niveau militaire, appliqués aux réalités des PME de Douala." },
-  { icon: Award, title: "Certifications", desc: "Partenariats officiels avec les leaders mondiaux du hardware et du logiciel IT." },
-  { icon: Target, title: "Précision d'Exécution", desc: "Respect scrupuleux des délais, des cahiers des charges et des SLA pour chaque projet." },
-  { icon: Users, title: "Équipe Dédiée 24/7", desc: "Ingénieurs d'astreinte disponibles pour les urgences critiques, 7j/7." },
-];
+import { ParticleBackground } from "@/components/ui/ParticleBackground";
+import { MagneticButton } from "@/components/ui/InteractiveEffects";
+import { AuraGradient } from "@/components/ui/AuraGradient";
+import { useI18n } from "@/context/LanguageContext";
 
 export default function AboutPage() {
+  const { t, language } = useI18n();
+
   return (
     <div className="min-h-screen pt-[68px] md:pt-[76px] bg-[var(--off-white)]">
 
-      {/* Hero */}
-      <section className="bg-white border-b border-[var(--border)] pt-20 pb-20 md:pt-32 md:pb-32 relative overflow-hidden">
-        <div className="absolute left-0 top-0 h-full w-1.5 bg-[var(--red)]" />
+      {/* Hero (Pure Tech Refactor) */}
+      <section className="relative min-h-[60vh] flex items-center pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden bg-[var(--charcoal)]">
+        <ParticleBackground />
         
-        {/* Decorative Orbs */}
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-[var(--red)] opacity-[0.06] blur-[120px] rounded-full" />
+        {/* Aura Gradients (Image Replacement) */}
+        <AuraGradient color="var(--red)" className="top-[-10%] right-[-5%] w-[600px] h-[600px] opacity-[0.1]" delay={0} />
+        <AuraGradient color="var(--red)" className="bottom-[10%] left-[10%] w-[400px] h-[400px] opacity-[0.05]" delay={3} />
         
         <div className="container-xl relative z-10">
           <SlideLeft>
             <div className="flex items-center gap-3 mb-8">
-              <span className="tag-red py-1 px-4 backdrop-blur-md bg-white/40 border-white/60">
-                Héritage & Vision
+              <span className="tag-red py-1 px-4 backdrop-blur-md bg-white/10 border-white/20 text-white uppercase tracking-widest text-[10px]">
+                {t.about.tag}
               </span>
-              <span className="text-[10px] font-black text-[var(--muted)] tracking-widest uppercase">Depuis 2014</span>
+              <span className="text-[10px] font-black text-white/40 tracking-widest uppercase">{t.about.since}</span>
             </div>
           </SlideLeft>
           <FadeUp delay={0.1}>
-            <h1 className="display-xl text-[var(--charcoal)] max-w-4xl mb-8 tracking-tighter leading-[0.95]">
-              Bâtir la <span className="gradient-text italic font-serif">Résilience</span> Numérique du Cameroun.
+            <h1 className="display-xl text-white max-w-4xl mb-8 tracking-tighter leading-[0.95]">
+              {t.about.title_part1} <span className="gradient-text italic font-serif serif-italic">{t.about.title_part2}</span>
             </h1>
           </FadeUp>
           <FadeUp delay={0.2}>
-            <p className="text-body-lg max-w-2xl text-[var(--slate)] leading-relaxed">
-              Fondée à Douala, E-JARNALUD SOFT fusionne l'excellence technique et l'innovation continue pour protéger les actifs les plus critiques de nos clients.
+            <p className="text-body-lg max-w-2xl text-gray-400 leading-relaxed border-l-2 border-[var(--red)] pl-8 font-medium">
+              {t.about.desc}
             </p>
           </FadeUp>
         </div>
       </section>
 
-      {/* Red quote */}
-      <section className="bg-[var(--red)] py-16 md:py-20 relative overflow-hidden">
+      {/* Red quote (i18n) */}
+      <section className="bg-[var(--red)] py-20 relative overflow-hidden">
         <div className="absolute right-0 top-0 w-64 h-full bg-white opacity-[0.03] skew-x-12 pointer-events-none" />
         <div className="container-xl relative z-10">
           <FadeUp>
-            <blockquote className="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-snug tracking-tight max-w-3xl">
-              "Nous n'installons pas des logiciels.<br className="hidden md:block"/>
-              Nous architecturons des écosystèmes robustes et des boucliers numériques."
+            <blockquote className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight tracking-tight max-w-3xl italic font-serif serif-italic">
+              "{t.about.quote}"
             </blockquote>
-            <cite className="block text-red-200 text-sm font-medium mt-6 not-italic">— Fondateur, E-JARNALUD SOFT</cite>
+            <cite className="block text-red-200 text-[10px] font-black uppercase tracking-[0.3em] mt-8 not-italic">— {t.about.quote_author}, E-JARNALUD SOFT</cite>
           </FadeUp>
         </div>
       </section>
 
-      {/* Pillars */}
-      <section className="section-py">
+      {/* Pillars (i18n) */}
+      <section className="section-py bg-white">
         <div className="container-xl">
-          <FadeUp className="text-center mb-14">
-            <span className="tag-red mb-4 inline-flex">Nos Engagements</span>
-            <h2 className="display-lg text-[var(--charcoal)]">Pourquoi nous faire confiance ?</h2>
+          <FadeUp className="text-center mb-16">
+            <span className="tag-red mb-4 inline-flex tracking-widest uppercase text-[10px]">{t.about.commit_tag}</span>
+            <h2 className="display-lg text-[var(--charcoal)] tracking-tight">{t.about.commit_title}</h2>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {PILLARS.map(({ icon: Icon, title, desc }) => (
-              <StaggerItem key={title}>
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="card p-7 text-center group h-full"
-                >
-                  <div className="w-14 h-14 bg-[var(--red-light)] rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:bg-[var(--red)] transition-colors duration-300">
-                    <Icon className="w-6 h-6 text-[var(--red)] group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  <h3 className="font-bold text-[var(--charcoal)] mb-2">{title}</h3>
-                  <p className="text-body-sm">{desc}</p>
-                </motion.div>
-              </StaggerItem>
-            ))}
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {t.about.pillars.map(({ title, desc }, i) => {
+              const Icon = [ShieldCheck, Award, Target, Users][i % 4];
+              return (
+                <StaggerItem key={title}>
+                  <motion.div
+                    whileHover={{ y: -8, borderColor: "var(--red)" }}
+                    className="card p-10 text-center group h-full border-2 transition-all duration-500 rounded-[2.5rem] bg-[var(--off-white)]/50"
+                  >
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:bg-[var(--red)] transition-all duration-500 shadow-sm group-hover:shadow-[0_10px_30px_rgba(200,16,46,0.2)] border border-slate-100">
+                      <Icon className="w-7 h-7 text-[var(--red)] group-hover:text-white transition-colors duration-500" />
+                    </div>
+                    <h3 className="font-black text-[var(--charcoal)] mb-4 uppercase text-xs tracking-widest">{title}</h3>
+                    <p className="text-sm text-[var(--slate)] leading-relaxed font-medium">{desc}</p>
+                  </motion.div>
+                </StaggerItem>
+              );
+            })}
           </StaggerContainer>
         </div>
       </section>
 
-      {/* Promise section */}
-      <section className="section-py bg-white border-t border-b border-[var(--border)]">
-        <div className="container-xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      {/* Promise section (i18n) */}
+      <section className="section-py relative overflow-hidden bg-[var(--off-white)]">
+        <AuraGradient color="var(--red)" className="top-[50%] right-[-10%] w-80 h-80 opacity-[0.03]" />
+        
+        <div className="container-xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
             <SlideLeft>
-              <span className="tag-red mb-5 inline-flex">L'Engagement Écarlate</span>
-              <h2 className="display-md text-[var(--charcoal)] mb-8">Ce que nous promettons.</h2>
-              <div className="space-y-5">
-                {[
-                  "Premier audit IT offert sans engagement pour chaque nouveau client.",
-                  "Souveraineté totale des données clients sur le territoire camerounais.",
-                  "Temps de réponse critique (downtime) inférieur à 2 heures via TMA.",
-                  "Rapport mensuel de sécurité transparent pour tous vos systèmes gérés.",
-                ].map((item) => (
+              <span className="tag-red mb-6 inline-flex tracking-widest uppercase text-[10px]">{t.about.promise_tag}</span>
+              <h2 className="display-md text-[var(--charcoal)] mb-8 tracking-tight">{t.about.promise_title}</h2>
+              <div className="space-y-4">
+                {t.about.promises.map((item) => (
                   <motion.div
                     key={item}
-                    whileHover={{ x: 4 }}
-                    className="flex items-start gap-4 p-4 rounded-xl hover:bg-[var(--off-white)] transition-colors"
+                    whileHover={{ x: 8 }}
+                    className="flex items-start gap-5 p-6 rounded-2xl bg-white border-2 border-transparent hover:border-[var(--red)]/10 transition-all shadow-sm"
                   >
-                    <div className="w-6 h-6 rounded-full bg-[var(--red)] flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle className="w-3.5 h-3.5 text-white" />
+                    <div className="w-8 h-8 rounded-xl bg-[var(--red)]/5 flex items-center justify-center shrink-0 mt-0.5 border border-[var(--red)]/10">
+                      <CheckCircle className="w-4 h-4 text-[var(--red)]" />
                     </div>
-                    <p className="text-[var(--slate)] font-medium text-[0.9375rem]">{item}</p>
+                    <p className="text-[var(--slate)] font-bold text-sm leading-relaxed">{item}</p>
                   </motion.div>
                 ))}
               </div>
-              <div className="mt-10 flex flex-wrap gap-4">
+              <div className="mt-12 flex flex-wrap gap-6">
                 <Link href="/services">
-                  <motion.span whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="btn btn-red inline-flex">
-                    Voir nos services <ArrowRight className="w-4 h-4" />
-                  </motion.span>
+                  <MagneticButton>
+                    <motion.span whileHover={{ scale: 1.05, y: -2 }} className="btn btn-red px-10 py-5 font-black uppercase text-[10px] tracking-widest shadow-[var(--shadow-red)]">
+                      {language === "fr" ? "Voir Services" : "View Services"} <ArrowRight className="w-4 h-4 ml-2" />
+                    </motion.span>
+                  </MagneticButton>
                 </Link>
-                <Link href="/contact" className="btn btn-outline">Parler à un expert</Link>
+                <Link href="/contact">
+                  <MagneticButton>
+                    <motion.span className="btn btn-outline border-slate-200 hover:border-[var(--red)]/40 px-10 py-5 font-black uppercase text-[10px] tracking-widest bg-white">
+                      {language === "fr" ? "Parler à un expert" : "Talk to an expert"}
+                    </motion.span>
+                  </MagneticButton>
+                </Link>
               </div>
             </SlideLeft>
 
             <SlideRight>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {[
-                  { val: "500+", label: "Clients actifs au Cameroun", width: 90 },
-                  { val: "10 ans", label: "D'expertise continue dans l'IT", width: 100 },
-                  { val: "99.9%", label: "Satisfaction client mesurée", width: 99 },
+                  { val: "500+", label: t.about.stats.clients, width: 90 },
+                  { val: "10 years", label: t.about.stats.years, width: 100 },
+                  { val: "99.9%", label: t.about.stats.sat, width: 99 },
                 ].map(({ val, label, width }, i) => (
-                  <div key={label} className="card p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-[var(--slate)]">{label}</span>
-                      <span className="text-xl font-black text-[var(--charcoal)]">{val}</span>
+                  <div key={label} className="card p-10 bg-white border-2 rounded-[2rem] shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{label}</span>
+                      <span className="text-2xl font-black text-[var(--charcoal)] tracking-tighter italic font-serif serif-italic">{val}</span>
                     </div>
-                    <div className="h-2 bg-[var(--off-white)] rounded-full overflow-hidden">
+                    <div className="h-2 bg-slate-50 rounded-full overflow-hidden border">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${width}%` }}
-                        transition={{ delay: i * 0.15, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ delay: i * 0.15, duration: 1.5, ease: "circOut" }}
                         viewport={{ once: true }}
-                        className="h-full bg-[var(--red)] rounded-full"
+                        className="h-full bg-gradient-to-r from-[var(--red)] to-[#FF5C78] rounded-full"
                       />
                     </div>
                   </div>

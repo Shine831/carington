@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { useState, useRef, ReactNode } from "react";
+import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
 
 interface TiltCardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   intensity?: number;
 }
@@ -50,7 +50,7 @@ export function TiltCard({ children, className = "", intensity = 10 }: TiltCardP
 }
 
 interface MagneticButtonProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit";
@@ -69,7 +69,6 @@ export function MagneticButton({ children, className = "", onClick, type = "butt
     const distanceX = e.clientX - cx;
     const distanceY = e.clientY - cy;
     
-    // Magnetic pull is 40% of the distance to the center
     x.set(distanceX * 0.4);
     y.set(distanceY * 0.4);
   }
@@ -92,5 +91,73 @@ export function MagneticButton({ children, className = "", onClick, type = "butt
         {children}
       </motion.div>
     </div>
+  );
+}
+
+interface SpatialLayerProps {
+  children: ReactNode;
+  speed?: number;
+  direction?: 1 | -1;
+  className?: string;
+  zIndex?: number;
+}
+
+export function SpatialLayer({ children, speed = 0.5, direction = 1, className = "", zIndex = 1 }: SpatialLayerProps) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", `${speed * 100 * direction}%`]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ y, zIndex }}
+      className={`absolute pointer-events-none ${className}`}
+    >
+      <motion.div style={{ opacity }}>
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+interface BentoCardProps {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  highlight?: boolean;
+}
+
+export function BentoCard({ children, className = "", delay = 0, highlight = false }: BentoCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ 
+        duration: 0.8, 
+        delay, 
+        ease: [0.22, 1, 0.36, 1] 
+      }}
+      viewport={{ once: true }}
+      whileHover={{ y: -5 }}
+      className={`relative group overflow-hidden rounded-[2.5rem] p-8 border backdrop-blur-md transition-all duration-500 ${
+        highlight 
+          ? "bg-white/90 border-white/40 shadow-2xl" 
+          : "bg-white/60 border-white/20 hover:bg-white/80"
+      } ${className}`}
+    >
+      <div className="relative z-10 h-full flex flex-col">
+        {children}
+      </div>
+      
+      {/* Dynamic Hover Glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-[var(--red)]/10 to-transparent blur-[100px]" />
+      </div>
+    </motion.div>
   );
 }

@@ -4,91 +4,112 @@ import { User, Lock, Mail, ArrowRight, ShieldCheck, Briefcase, History } from "l
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { SlideLeft, SlideRight, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
-
-const FEATURES = [
-  { icon: Briefcase, label: "Suivi de vos demandes en temps réel" },
-  { icon: History, label: "Accès à l'historique complet des prestations" },
-  { icon: ShieldCheck, label: "Connexion aux prestataires certifiés" },
-  { icon: User, label: "Espace dédié pour vos avis et évaluations" },
-];
+import { AuraGradient } from "@/components/ui/AuraGradient";
+import { useI18n } from "@/context/LanguageContext";
 
 export default function AccountPage() {
+  const { t, language } = useI18n();
+
+  const ICONS = [Briefcase, History, ShieldCheck, User];
+
   return (
-    <div className="min-h-[100svh] pt-[68px] md:pt-[76px] bg-[var(--off-white)] flex items-center justify-center py-12 px-4">
-      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden shadow-[var(--shadow-xl)]">
+    <div className="min-h-[100svh] pt-[68px] md:pt-[76px] bg-[var(--off-white)] flex items-center justify-center py-20 px-4 relative overflow-hidden">
+      <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.03]" />
+      
+      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-0 rounded-[2.5rem] overflow-hidden shadow-[var(--shadow-2xl)] border border-white/20 relative z-10">
         
-        {/* Left panel — Red */}
+        {/* Left panel — Pure Tech Red */}
         <SlideLeft className="h-full">
-          <div className="bg-[var(--red)] p-10 md:p-12 flex flex-col justify-between h-full min-h-[400px] relative overflow-hidden">
-            {/* Decorative circles */}
-            <div className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full bg-white opacity-[0.06] pointer-events-none" />
-            <div className="absolute top-0 left-0 w-24 h-24 rounded-full bg-white opacity-[0.04] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="bg-[var(--red)] p-12 md:p-16 flex flex-col justify-between h-full min-h-[500px] relative overflow-hidden">
+            <AuraGradient color="white" className="top-[-20%] left-[-20%] w-64 h-64 opacity-[0.1]" />
+            <AuraGradient color="black" className="bottom-[-20%] right-[-20%] w-96 h-96 opacity-[0.05]" />
             
             <div className="relative z-10">
-              <span className="text-xs font-bold text-red-200 uppercase tracking-widest mb-6 block">Espace Client</span>
-              <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-6">
-                Votre interface<br/>de gestion IT.
+              <span className="text-[10px] font-black text-red-100 uppercase tracking-[0.3em] mb-10 block opacity-80">
+                {t.account.tag}
+              </span>
+              <h2 className="display-sm text-white leading-[0.9] mb-8 tracking-tighter">
+                {t.account.title_part1}<br/>
+                <span className="italic font-serif serif-italic opacity-90">{t.account.title_part2}</span>
               </h2>
-              <p className="text-red-100 text-sm leading-relaxed mb-10">
-                Accédez à votre tableau de bord pour suivre vos projets, contacter nos équipes et gérer vos contrats.
+              <p className="text-red-50 text-base leading-relaxed mb-12 font-medium max-w-sm opacity-80">
+                {t.account.desc}
               </p>
-              <StaggerContainer className="space-y-4">
-                {FEATURES.map(({ icon: Icon, label }) => (
-                  <StaggerItem key={label}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
-                        <Icon className="w-4 h-4 text-white" />
+              
+              <StaggerContainer className="space-y-5">
+                {t.account.features.map((label, i) => {
+                  const Icon = ICONS[i % ICONS.length];
+                  return (
+                    <StaggerItem key={label}>
+                      <div className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/10 group-hover:bg-white group-hover:border-white transition-all duration-500">
+                          <Icon className="w-4 h-4 text-white group-hover:text-[var(--red)] transition-colors" />
+                        </div>
+                        <span className="text-white text-sm font-bold tracking-tight">{label}</span>
                       </div>
-                      <span className="text-white text-sm font-medium">{label}</span>
-                    </div>
-                  </StaggerItem>
-                ))}
+                    </StaggerItem>
+                  );
+                })}
               </StaggerContainer>
             </div>
-            <p className="text-red-200/70 text-xs mt-8 relative z-10">Accès sécurisé 24/7 · Protection des données garantie</p>
+            
+            <div className="pt-12 mt-auto relative z-10">
+              <div className="h-px w-12 bg-white/20 mb-6" />
+              <p className="text-red-100/60 text-[10px] font-black uppercase tracking-[0.2em]">
+                {t.account.secure_badge}
+              </p>
+            </div>
           </div>
         </SlideLeft>
 
-        {/* Right panel — Login form */}
+        {/* Right panel — Pure Tech Login */}
         <SlideRight>
-          <div className="bg-white p-10 md:p-12">
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-[var(--charcoal)] mb-2">Connexion</h3>
-              <p className="text-sm text-[var(--muted)]">Entrez vos identifiants pour accéder à votre espace.</p>
+          <div className="bg-white p-12 md:p-16 h-full flex flex-col justify-center relative overflow-hidden">
+            <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-48 h-48 opacity-[0.02]" />
+            
+            <div className="mb-12 relative z-10">
+              <h3 className="text-3xl font-black text-[var(--charcoal)] mb-3 tracking-tighter uppercase">{t.account.login.title}</h3>
+              <p className="text-sm text-[var(--slate)] font-medium">{t.account.login.desc}</p>
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-6 relative z-10">
               <div className="form-group has-icon">
-                <Mail className="form-input-icon" />
-                <input type="email" className="form-input" placeholder=" " id="login-email" />
-                <label htmlFor="login-email" className="floating-label">Adresse Email</label>
+                <Mail className="form-input-icon text-[var(--muted)]" />
+                <input type="email" className="form-input border-2 rounded-xl py-4 pl-14" placeholder=" " id="login-email" />
+                <label htmlFor="login-email" className="floating-label font-bold left-14">{t.account.login.email}</label>
               </div>
               
               <div className="form-group has-icon">
-                <Lock className="form-input-icon" />
-                <input type="password" className="form-input pr-16" placeholder=" " id="login-password" />
-                <label htmlFor="login-password" className="floating-label">Mot de Passe</label>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Link href="#" className="text-xs text-[var(--red)] font-semibold hover:underline">Oublié ?</Link>
+                <Lock className="form-input-icon text-[var(--muted)]" />
+                <input type="password" className="form-input border-2 rounded-xl py-4 pl-14 pr-20" placeholder=" " id="login-password" />
+                <label htmlFor="login-password" className="floating-label font-bold left-14">{t.account.login.password}</label>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2">
+                  <Link href="#" className="text-[10px] font-black text-[var(--red)] uppercase tracking-widest hover:underline decoration-2 underline-offset-4 transition-all">
+                    {t.account.login.forgot}
+                  </Link>
                 </div>
               </div>
 
-              <Link href="/dashboard">
-                <motion.span
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="btn btn-red w-full text-base py-4 shadow-[var(--shadow-red)] mt-2 flex items-center justify-center gap-2"
-                >
-                  Accéder à mon espace <ArrowRight className="w-5 h-5" />
-                </motion.span>
-              </Link>
+              <div className="pt-4">
+                <Link href="/dashboard" className="block">
+                  <motion.span
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn btn-red w-full text-sm font-black uppercase tracking-widest py-5 shadow-[var(--shadow-red)] flex items-center justify-center gap-3"
+                  >
+                    {t.account.login.submit} <ArrowRight className="w-5 h-5" />
+                  </motion.span>
+                </Link>
+              </div>
             </form>
 
-            <div className="border-t border-[var(--border)] mt-8 pt-8 text-center">
-              <p className="text-sm text-[var(--slate)] mb-4">Première visite ? Créez votre compte client.</p>
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Link href="/booking" className="btn btn-outline w-full justify-center">
-                  Créer un compte
+            <div className="mt-16 pt-10 border-t border-slate-100 text-center relative z-10">
+              <p className="text-[11px] font-black text-[var(--muted)] uppercase tracking-widest mb-6 opacity-60">
+                {t.account.login.footer}
+              </p>
+              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+                <Link href="/booking" className="btn border-2 border-slate-200 text-[10px] font-black uppercase tracking-widest w-full py-4 justify-center hover:border-[var(--red)]/40 hover:bg-slate-50 transition-all rounded-xl">
+                  {t.account.login.create_btn}
                 </Link>
               </motion.div>
             </div>
