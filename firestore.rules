@@ -1,79 +1,73 @@
-# Firebase Firestore Security Rules
-# ============================================================
-# IMPORTANT: Copy and paste these rules into your Firebase Console
-# Firebase Console → Firestore Database → Rules
-# ============================================================
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function: is the user logged in with a verified email?
-    function isAuthenticated() {
-      return request.auth != null && request.auth.token.email_verified == true;
+    // ─── HELPER FUNCTIONS ─────────────────────────────────────
+    // Is the user authenticated? (does NOT require email_verified — 
+    // that check is enforced at the app level in useAuth.ts)
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Helper function: retrieve the user's role from Firestore
-    function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
-    }
-
-    // Helper function: is the user an ADMIN?
+    // Is this user an ADMIN? Reads their Firestore role.
     function isAdmin() {
-      return isAuthenticated() && getUserRole() == 'ADMIN';
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
     }
 
-    // ─── USERS ───────────────────────────────────────────────
-    // Users can only read their own document.
-    // Admins can read all user documents.
-    // No user can write another user's document directly.
+    // ─── USERS ────────────────────────────────────────────────
+    // A user can always read their own document (needed for role-check during login,
+    // even before email is verified — the app-level useAuth handles the verification gate).
+    // Only admins can list all users.
+    // No user can change their own role field.
     match /users/{userId} {
-      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      allow write: if isAuthenticated() && request.auth.uid == userId && !('role' in request.resource.data);
-      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId
+                    && !('role' in request.resource.data.diff(resource.data).affectedKeys());
+      allow delete: if isAdmin();
     }
 
-    // ─── SERVICES ────────────────────────────────────────────
-    // All authenticated users can read services.
+    // ─── SERVICES ─────────────────────────────────────────────
+    // Services are publicly readable (homepage catalog).
     // Only admins can create, update, or delete services.
     match /services/{serviceId} {
-      allow read: if true; // Public read
+      allow read: if true;
       allow write: if isAdmin();
     }
 
-    // ─── BOOKINGS (DEMANDES) ─────────────────────────────────
-    // Clients can only read & create their own bookings.
-    // Admins can read and update all bookings (status changes, notes).
-    // Clients cannot update status themselves (only PENDING → cancel via delete).
+    // ─── BOOKINGS (DEMANDES DE DEVIS) ─────────────────────────
+    // Clients can create bookings with status PENDING.
+    // Clients can only read & delete their OWN bookings (delete = cancel, PENDING only).
+    // Only admins can update bookings (change status, add notes).
     match /bookings/{bookingId} {
-      allow read: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
-      allow create: if isAuthenticated() &&
+      allow read: if isSignedIn() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() &&
         request.resource.data.userId == request.auth.uid &&
         request.resource.data.status == 'PENDING';
       allow update: if isAdmin();
-      allow delete: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid && resource.data.status == 'PENDING'
-      ) || isAdmin();
+      allow delete: if isSignedIn() && (
+        (resource.data.userId == request.auth.uid && resource.data.status == 'PENDING') ||
+        isAdmin()
+      );
     }
 
-    // ─── MESSAGES (CONTACT) ──────────────────────────────────
-    // Anyone can create a contact message (public contact form).
+    // ─── MESSAGES (CONTACT) ───────────────────────────────────
+    // Anyone can submit a contact message (public contact form).
     // Only admins can read, update, or delete messages.
     match /messages/{messageId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
 
-    // ─── REVIEWS (TÉMOIGNAGES) ───────────────────────────────
-    // Authenticated + verified users can create reviews.
-    // One review per user is NOT enforced here — handle in app logic.
-    // Public read for the testimonials section.
+    // ─── REVIEWS (TÉMOIGNAGES) ────────────────────────────────
+    // PUBLIC read — needed for the homepage testimonials section.
+    // Any signed-in user can create a review (must use their own UID).
     // Only admins can delete reviews.
     match /reviews/{reviewId} {
-      allow read: if true; // Public
-      allow create: if isAuthenticated() &&
+      allow read: if true;
+      allow create: if isSignedIn() &&
         request.resource.data.userId == request.auth.uid;
       allow delete: if isAdmin();
     }

@@ -173,12 +173,20 @@ export const createReview = async (userId: string, authorName: string, serviceId
 export const getReviews = async (serviceId?: string) => {
   try {
     const ref = collection(db, "reviews");
-    const q = serviceId
-      ? query(ref, where("serviceId", "==", serviceId), orderBy("createdAt", "desc"))
-      : query(ref, orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
-  } catch {
+    // Fetch all without orderBy to avoid composite index issues — sort client-side
+    const snap = await getDocs(ref);
+    let results = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+    if (serviceId) {
+      results = results.filter((r: any) => r.serviceId === serviceId);
+    }
+    results.sort((a: any, b: any) => {
+      const aTime = a.createdAt?.seconds ?? 0;
+      const bTime = b.createdAt?.seconds ?? 0;
+      return bTime - aTime;
+    });
+    return results;
+  } catch (e) {
+    console.error("getReviews error:", e);
     return [];
   }
 };

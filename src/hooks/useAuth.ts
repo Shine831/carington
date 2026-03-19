@@ -54,6 +54,12 @@ export function useAuth() {
           });
         } catch (error) {
           console.error("Error fetching user role:", error);
+          // Safety net: if Firestore fails, still enforce email verification for non-admins
+          // Since we can't read the role, treat as CLIENT → block if not verified
+          if (!firebaseUser.emailVerified) {
+            setAuthState({ user: null, role: null, loading: false, emailVerified: false });
+            return;
+          }
           setAuthState({
             user: firebaseUser,
             role: "CLIENT",
