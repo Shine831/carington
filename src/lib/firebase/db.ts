@@ -118,6 +118,19 @@ export const getUserById = async (uid: string) => {
   }
 };
 
+export const setUserPin = async (uid: string, pinHash: string) => {
+  await updateDoc(doc(db, "users", uid), { pin: pinHash });
+};
+
+export const deleteUserDoc = async (uid: string) => {
+  try {
+    await deleteDoc(doc(db, "users", uid));
+  } catch (error: any) {
+    console.error("deleteUserDoc:", error.message);
+    throw error;
+  }
+};
+
 // ============================================================
 // CONTACT MESSAGES (Admin only)
 // ============================================================

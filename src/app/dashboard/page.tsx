@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +9,7 @@ import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getBookings, deleteBooking, createReview } from "@/lib/firebase/db";
+import { getBookings, deleteBooking, createReview, getUserById, setUserPin } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
@@ -44,6 +44,12 @@ export default function DashboardPage() {
 
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Client";
 
+  const [checkingPin, setCheckingPin] = useState(true);
+  const [hasPinConfigured, setHasPinConfigured] = useState(false);
+  const [isPinVerified, setIsPinVerified] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState(false);
+
   // Route protection
   useEffect(() => {
     if (!authLoading && !user) {
@@ -53,7 +59,6 @@ export default function DashboardPage() {
 
   const fetchUserBookings = () => {
     if (user) {
-      setLoading(true);
       getBookings(user.uid)
         .then((data: any) => setBookings(data))
         .catch((err: any) => console.error(err))
@@ -62,8 +67,57 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchUserBookings();
+    if (user) {
+      if (typeof window !== "undefined" && sessionStorage.getItem("client_pin_verified") === "true") {
+        setIsPinVerified(true);
+        setCheckingPin(false);
+        fetchUserBookings();
+        return;
+      }
+
+      getUserById(user.uid).then(userData => {
+        if (userData && userData.pin) {
+          setHasPinConfigured(true);
+        } else {
+          setHasPinConfigured(false);
+        }
+        setCheckingPin(false);
+      });
+      fetchUserBookings();
+    }
   }, [user]);
+
+  async function hashPin(pin: string) {
+    const enc = new TextEncoder().encode(pin);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  const handlePinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || pinInput.length < 4) return;
+    
+    setPinError(false);
+    const hashed = await hashPin(pinInput);
+    
+    if (!hasPinConfigured) {
+      // Configuration
+      await setUserPin(user.uid, hashed);
+      setHasPinConfigured(true);
+      setIsPinVerified(true);
+      sessionStorage.setItem("client_pin_verified", "true");
+    } else {
+      // Verification
+      const userData = await getUserById(user.uid);
+      if (userData?.pin === hashed) {
+        setIsPinVerified(true);
+        sessionStorage.setItem("client_pin_verified", "true");
+      } else {
+        setPinError(true);
+        setPinInput("");
+      }
+    }
+  };
 
   const handleDeleteRequest = async (id: string) => {
     if (confirm(language === "fr" ? "Annuler cette demande ?" : "Cancel this request?")) {
@@ -96,10 +150,67 @@ export default function DashboardPage() {
   };
 
   // Loading Screen
-  if (authLoading || !user) {
+  if (authLoading || !user || checkingPin) {
     return (
       <div className="min-h-[100svh] bg-[var(--off-white)] flex items-center justify-center">
         <div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isPinVerified) {
+    return (
+      <div className="min-h-[100svh] bg-[#0A0A0A] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10">
+          <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-[2.5rem] shadow-2xl flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 text-white flex items-center justify-center mb-6 border border-white/10 shadow-inner">
+              <Lock className="w-8 h-8" />
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight mb-2">
+              {hasPinConfigured ? "Accès Sécurisé" : "Configuration Sécurité"}
+            </h1>
+            <p className="text-white/40 text-[11px] mb-8 leading-relaxed">
+              {hasPinConfigured 
+                ? "Veuillez entrer votre Code PIN à 4 chiffres pour accéder à vos devis." 
+                : "Afin de protéger vos données, veuillez configurer un Code PIN à 4 chiffres."}
+            </p>
+            
+            <form onSubmit={handlePinSubmit} className="w-full space-y-6">
+              <div>
+                <input 
+                  type="password"
+                  value={pinInput}
+                  onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
+                  placeholder="••••"
+                  maxLength={4}
+                  autoFocus
+                  className={`w-full bg-[#050505] border ${pinError ? "border-red-500 text-red-500" : "border-white/10 text-white focus:border-white/30"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-white/10`}
+                />
+                <AnimatePresence>
+                  {pinError && (
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest">
+                      Code Incorrect
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={pinInput.length < 4}
+                className="w-full py-4 bg-white text-[#0A0A0A] rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
+              >
+                {hasPinConfigured ? "Déverrouiller" : "Enregistrer mon PIN"}
+              </button>
+            </form>
+
+            <button onClick={async () => { await logoutUser(); router.push("/"); }} className="mt-8 text-[10px] text-white/30 hover:text-white font-black uppercase tracking-widest transition-colors">
+              Déconnexion
+            </button>
+          </div>
+        </motion.div>
       </div>
     );
   }

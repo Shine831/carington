@@ -2,14 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight, Phone } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { getServices, getBookings, getUsers, getMessages, updateBookingStatus, updateMessageStatus, updateService, deleteBooking, deleteService, createService, BookingData } from "@/lib/firebase/db";
+import { getServices, getBookings, getUsers, getMessages, getReviews, updateBookingStatus, updateMessageStatus, updateService, deleteBooking, deleteService, createService, deleteReview, deleteUserDoc, BookingData } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
+import { verifyAdminPin } from "@/app/actions/adminAuth";
 
 const STATUS_MAP = {
   fr: {
@@ -38,7 +39,7 @@ export default function AdminDashboard() {
   const { user, role, loading: authLoading } = useAuth();
   
   const [activeTab, setActiveTab] = useState("requests");
-  const [data, setData] = useState({ requests: [] as any[], clients: [] as any[], services: [] as any[], messages: [] as any[] });
+  const [data, setData] = useState({ requests: [] as any[], clients: [] as any[], services: [] as any[], messages: [] as any[], reviews: [] as any[] });
   const [loading, setLoading] = useState(true);
 
   const [showNotifications, setShowNotifications] = useState(false)  // Modals state
@@ -48,6 +49,17 @@ export default function AdminDashboard() {
   const [adminNote, setAdminNote] = useState("");
   const [newServiceModal, setNewServiceModal] = useState(false);
   const [newServiceForm, setNewServiceForm] = useState({ title: "", description: "", priceCFA: 0, category: "IT" });
+
+  const [isPinVerified, setIsPinVerified] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pinError, setPinError] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("admin_pin_verified") === "true") {
+      setIsPinVerified(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!authLoading) {
@@ -60,8 +72,8 @@ export default function AdminDashboard() {
     if (role !== "ADMIN") return;
     setLoading(true);
     try {
-      const [reqs, clis, srvs, msgs] = await Promise.all([ getBookings(), getUsers(), getServices(), getMessages() ]);
-      setData({ requests: reqs, clients: clis, services: srvs, messages: msgs });
+      const [reqs, clis, srvs, msgs, revs] = await Promise.all([ getBookings(), getUsers(), getServices(), getMessages(), getReviews() ]);
+      setData({ requests: reqs, clients: clis, services: srvs, messages: msgs, reviews: revs });
     } catch (err) {
       console.error(err);
     } finally {
@@ -129,11 +141,100 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteReview = async (id: string) => {
+    if (confirm(language === "fr" ? "Supprimer ce témoignage définitivement ?" : "Delete this review permanently?")) {
+      await deleteReview(id);
+      fetchData();
+    }
+  };
+
+  const handleDeleteClient = async (uid: string) => {
+    if (confirm(language === "fr" ? "Supprimer ce compte client définitivement ?" : "Delete this client account permanently?")) {
+      try {
+        await deleteUserDoc(uid);
+        fetchData();
+      } catch (err) {
+        alert("Erreur lors de la suppression.");
+      }
+    }
+  };
+
   // Keep Loading screen minimalist
   if (authLoading || role !== "ADMIN") {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-[var(--red)]/20 bg-white/5 mb-6"><Shield className="w-6 h-6 text-[var(--red)] animate-pulse" /></div>
+      </div>
+    );
+  }
+
+  if (!isPinVerified) {
+    const handleVerifyPin = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setVerifying(true);
+      setPinError(false);
+      try {
+        const isValid = await verifyAdminPin(pin);
+        if (isValid) {
+          setIsPinVerified(true);
+          sessionStorage.setItem("admin_pin_verified", "true");
+        } else {
+          setPinError(true);
+          setPin("");
+        }
+      } catch {
+        setPinError(true);
+      } finally {
+        setVerifying(false);
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10">
+          <div className="bg-[#111111]/80 backdrop-blur-xl border border-[var(--red)]/20 p-8 md:p-10 rounded-[2.5rem] shadow-[0_0_80px_rgba(200,16,46,0.1)] flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 text-[var(--red)] flex items-center justify-center mb-6 border border-[var(--red)]/20 shadow-inner">
+              <Lock className="w-8 h-8" />
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight mb-2">Accès Restreint</h1>
+            <p className="text-white/40 text-[11px] mb-8 leading-relaxed">Veuillez entrer le Code PIN Maître pour débloquer l'interface d'administration en toute sécurité.</p>
+            
+            <form onSubmit={handleVerifyPin} className="w-full space-y-6">
+              <div>
+                <input 
+                  type="password"
+                  value={pin}
+                  onChange={(e) => { setPin(e.target.value); setPinError(false); }}
+                  placeholder="••••••"
+                  maxLength={6}
+                  autoFocus
+                  className={`w-full bg-[#050505] border ${pinError ? "border-red-500 text-red-500" : "border-white/10 text-white focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-white/10`}
+                />
+                <AnimatePresence>
+                  {pinError && (
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest">
+                      Code Incorrect
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={pin.length < 4 || verifying}
+                className="w-full py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
+              >
+                {verifying ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Déverrouiller"}
+              </button>
+            </form>
+
+            <button onClick={handleLogout} className="mt-8 text-[10px] text-white/30 hover:text-red-500 font-black uppercase tracking-widest transition-colors">
+              Fermer la session
+            </button>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -150,6 +251,7 @@ export default function AdminDashboard() {
     { id: "messages",  label: language === "fr" ? "Messages" : "Messages", icon: Mail, badge: unreadMsgsCount > 0 ? unreadMsgsCount : undefined },
     { id: "clients",   label: t.admin.nav.clients, icon: Users },
     { id: "services",  label: t.admin.nav.catalog, icon: Briefcase },
+    { id: "reviews",   label: language === "fr" ? "Témoignages" : "Reviews", icon: Star, badge: data.reviews.length > 0 ? data.reviews.length : undefined },
   ];
 
   const STATS = [
@@ -402,7 +504,14 @@ export default function AdminDashboard() {
                 </div>
                 <div className="pl-2 pt-3 border-t border-white/5 flex items-center justify-between">
                    <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">UID: {cli.uid.substring(0, 10)}...</p>
-                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><Users className="w-4 h-4 text-white/20" /></div>
+                   <div className="flex gap-2">
+                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><Users className="w-4 h-4 text-white/20" /></div>
+                     {cli.role !== 'ADMIN' && (
+                       <button onClick={() => handleDeleteClient(cli.uid)} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center hover:bg-red-500 text-red-500 hover:text-white transition-colors" title="Supprimer Client">
+                         <Trash2 className="w-4 h-4" />
+                       </button>
+                     )}
+                   </div>
                 </div>
               </div>
             ))}
@@ -516,7 +625,15 @@ export default function AdminDashboard() {
                           <td className="py-4 px-6 font-bold text-slate-300">{cli.email}</td>
                           <td className="py-4 px-6"><span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>{cli.role || "CLIENT"}</span></td>
                           <td className="py-4 px-6 font-mono text-[9px] text-white/30">{cli.uid}</td>
-                          <td className="py-4 px-6 text-[10px] font-black text-white/30">Auth handled in Firebase</td>
+                          <td className="py-4 px-6 text-[10px] font-black text-white/30">
+                            {cli.role === 'ADMIN' ? (
+                              <span className="text-white/20">Auth Firebase</span>
+                            ) : (
+                              <button onClick={() => handleDeleteClient(cli.uid)} className="flex items-center gap-2 p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
+                                <Trash2 className="w-3 h-3" /> Supprimer
+                              </button>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
