@@ -85,7 +85,11 @@ export default function AccountPage() {
     setSuccess("");
     try {
       await resetPassword(email);
-      setSuccess(language === "fr" ? "Email de réinitialisation envoyé ! Vérifiez votre boîte de réception." : "Reset email sent! Check your inbox.");
+      setSuccess(
+        language === "fr"
+          ? "Email envoyé ! Vérifiez votre boîte de réception. ⚠️ Si vous ne le voyez pas, consultez votre dossier SPAM/Courriers indésirables (expéditeur : noreply@firebase.com)."
+          : "Email sent! Check your inbox. ⚠️ If you don't see it, check your SPAM/Junk folder (sender: noreply@firebase.com)."
+      );
     } catch (err: any) {
       setError(language === "fr" ? "Email introuvable ou erreur Firebase." : "Email not found or Firebase error.");
     } finally {
@@ -95,11 +99,24 @@ export default function AccountPage() {
 
   const ICONS = [Briefcase, History, ShieldCheck, User];
 
-  // If loading auth state, avoid flashing the login screen
+  // Block access: if auth is loading show spinner
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--off-white)] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // Hard block: authenticated users cannot see the auth form at all
+  // The useEffect redirect will kick in, but this prevents any form flash
+  if (user) {
+    return (
+      <div className="min-h-screen bg-[var(--off-white)] flex flex-col items-center justify-center gap-6">
+        <div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
+        <p className="text-xs font-black text-[var(--muted)] uppercase tracking-widest">
+          {language === "fr" ? "Redirection en cours..." : "Redirecting..."}
+        </p>
       </div>
     );
   }
