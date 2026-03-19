@@ -160,7 +160,7 @@ export default function BookingPage() {
                   </motion.button>
                   <p className="text-[10px] font-black text-[var(--muted)] mt-6 uppercase tracking-widest leading-loose">
                     {t.booking.terms}{" "}
-                    <Link href="#" className="text-[var(--red)] hover:underline decoration-2 underline-offset-4 decoration-[var(--red)]/30 transition-all">
+                    <Link href="/terms" className="text-[var(--red)] hover:underline decoration-2 underline-offset-4 decoration-[var(--red)]/30 transition-all">
                       {language === "fr" ? "Conditions Générales" : "Terms of Service"}
                     </Link>.
                   </p>
