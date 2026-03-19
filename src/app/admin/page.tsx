@@ -41,10 +41,9 @@ export default function AdminDashboard() {
   const [data, setData] = useState({ requests: [] as any[], clients: [] as any[], services: [] as any[], messages: [] as any[] });
   const [loading, setLoading] = useState(true);
 
-  const [showNotifications, setShowNotifications] = useState(false);
-
-  // Modals state
+  const [showNotifications, setShowNotifications] = useState(false)  // Modals state
   const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [statusPrompt, setStatusPrompt] = useState<{ id: string, status: string } | null>(null);
   const [adminNote, setAdminNote] = useState("");
   const [newServiceModal, setNewServiceModal] = useState(false);
@@ -303,12 +302,13 @@ export default function AdminDashboard() {
                             <td className="py-5 px-6 font-bold text-[var(--red)]">{msg.email}</td>
                             <td className="py-5 px-6 font-medium text-white/70 max-w-[200px] truncate" title={msg.message}>{msg.subject}: {msg.message}</td>
                             <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span></td>
-                            <td className="py-5 px-6">
+                            <td className="py-5 px-6 flex items-center gap-2">
                               <select value={msg.status} onChange={(e) => handleUpdateMessage(msg.id, e.target.value)} className="bg-[#222222] border border-white/10 text-white rounded-lg text-[10px] p-2.5 font-bold uppercase cursor-pointer hover:border-white/30 focus:border-[var(--red)] focus:outline-none transition-all">
                                 <option value="UNREAD" className="bg-[#1A1A1A] text-white">UNREAD</option>
                                 <option value="READ" className="bg-[#1A1A1A] text-white">READ</option>
                                 <option value="REPLIED" className="bg-[#1A1A1A] text-white">REPLIED</option>
                               </select>
+                              <button onClick={() => setSelectedMessage(msg)} className="p-2.5 bg-white/10 rounded-lg hover:bg-white/20 text-white transition-colors" title="Voir détails"><Eye className="w-4 h-4" /></button>
                             </td>
                           </tr>
                          )
@@ -380,6 +380,38 @@ export default function AdminDashboard() {
           </motion.div>
         )}
 
+        {/* Message Details Modal */}
+        {selectedMessage && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="bg-[#111] p-8 rounded-3xl border border-[var(--red)]/20 w-full max-w-2xl relative shadow-[0_0_50px_rgba(200,16,46,0.1)]">
+              <button onClick={() => setSelectedMessage(null)} className="absolute top-6 right-6 text-white/50 hover:text-white"><X className="w-6 h-6" /></button>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-[var(--red)]/10 text-[var(--red)] flex items-center justify-center"><Mail className="w-6 h-6" /></div>
+                <div>
+                  <h2 className="text-xl font-black text-white tracking-tight">{selectedMessage.subject}</h2>
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{selectedMessage.createdAt ? new Date(selectedMessage.createdAt.seconds*1000).toLocaleString() : 'Date inconnue'}</p>
+                </div>
+              </div>
+              
+              <div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/5">
+                  <div>
+                    <span className="text-[10px] text-white/40 uppercase tracking-widest font-black block mb-1">Expéditeur</span>
+                    <strong className="text-white block text-sm">{selectedMessage.name} <span className="font-normal text-[var(--red)] ml-2">{selectedMessage.email}</span></strong>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[10px] text-white/40 uppercase tracking-widest font-black block mb-3">Corps du message</span>
+                  <p className="text-white/80 leading-relaxed whitespace-pre-wrap text-sm">{selectedMessage.message}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button onClick={() => setSelectedMessage(null)} className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black uppercase text-[10px] tracking-widest transition-colors">Fermer</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
         {/* Change Status & Admin Note Modal */}
         {statusPrompt && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
