@@ -34,6 +34,7 @@ export default function ServicesPage() {
     });
   }, []);
 
+  const isSearching = query.trim().length > 0;
   const filtered = services.filter(s =>
     (s.title || "").toLowerCase().includes(query.toLowerCase()) ||
     (s.category || "").toLowerCase().includes(query.toLowerCase()) ||
@@ -61,14 +62,17 @@ export default function ServicesPage() {
 
           <FadeUp delay={0.1}>
             <div className="relative max-w-xl group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted)] group-focus-within:text-[var(--red)] transition-colors" />
-              <input
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder={t.services_page.search_placeholder}
-                className="form-input pl-14 py-5 text-base border-2 shadow-sm focus:border-[var(--red)]/40 hover:border-slate-300 transition-all rounded-2xl"
-              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[var(--red)]/20 to-[var(--red)]/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+              <div className="relative bg-white/40 backdrop-blur-xl border-2 border-white/80 rounded-2xl shadow-sm group-focus-within:border-[var(--red)]/40 group-focus-within:shadow-[0_0_30px_rgba(200,16,46,0.1)] transition-all duration-500 overflow-hidden">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--muted)] group-focus-within:text-[var(--red)] group-focus-within:scale-110 transition-all duration-500" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder={t.services_page.search_placeholder}
+                  className="w-full bg-transparent pl-14 pr-6 py-5 text-base text-[var(--charcoal)] font-bold focus:outline-none placeholder:text-[var(--muted)] placeholder:font-medium"
+                />
+              </div>
             </div>
           </FadeUp>
         </div>
@@ -143,19 +147,30 @@ export default function ServicesPage() {
             </StaggerContainer>
           </AnimatePresence>
 
-          {filtered.length === 0 && (
+          {!loading && isSearching && filtered.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-32"
             >
-              <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-8 border-2 border-dashed">
-                <Search className="w-8 h-8 text-slate-300" />
+              <div className="w-24 h-24 bg-white/50 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-8 border-2 border-dashed border-slate-200">
+                <Search className="w-10 h-10 text-slate-300" />
               </div>
-              <p className="text-lg text-[var(--slate)] font-bold mb-8">{t.services_page.empty_results} "{query}".</p>
-              <button onClick={() => setQuery("")} className="btn btn-red px-10 py-4 font-black uppercase text-[10px] tracking-widest">
+              <h3 className="text-2xl font-black text-[var(--charcoal)] mb-3 uppercase tracking-tight">Expertise introuvable</h3>
+              <p className="text-base text-[var(--slate)] font-medium mb-10 max-w-xs mx-auto">Aucun service ne correspond à la recherche <strong className="text-[var(--red)]">"{query}"</strong>. Nos ingénieurs peuvent néanmoins réaliser du sur-mesure.</p>
+              <button onClick={() => setQuery("")} className="btn btn-red px-10 py-5 font-black uppercase text-[10px] tracking-widest shadow-[var(--shadow-red)]">
                 {t.services_page.show_all}
               </button>
+            </motion.div>
+          )}
+
+          {!loading && !isSearching && services.length === 0 && (
+             <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-32"
+            >
+               <p className="text-slate-400 font-bold uppercase tracking-widest">Le catalogue est en cours de mise à jour.</p>
             </motion.div>
           )}
         </div>
