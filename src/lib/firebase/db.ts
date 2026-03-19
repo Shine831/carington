@@ -159,9 +159,13 @@ export const deleteMessage = async (id: string) => {
 // REVIEWS
 // ============================================================
 
-export const createReview = async (userId: string, serviceId: string, rating: number, comment: string) => {
+export const createReview = async (userId: string, authorName: string, serviceId: string, rating: number, comment: string) => {
   return await addDoc(collection(db, "reviews"), {
-    userId, serviceId, rating, comment,
+    userId,       // Firebase Auth UID (for ownership / duplicate prevention)
+    authorName,   // Display name for public view
+    serviceId,
+    rating,
+    comment,
     createdAt: serverTimestamp(),
   });
 };
@@ -169,10 +173,16 @@ export const createReview = async (userId: string, serviceId: string, rating: nu
 export const getReviews = async (serviceId?: string) => {
   try {
     const ref = collection(db, "reviews");
-    const q = serviceId ? query(ref, where("serviceId", "==", serviceId)) : query(ref, orderBy("createdAt", "desc"));
+    const q = serviceId
+      ? query(ref, where("serviceId", "==", serviceId), orderBy("createdAt", "desc"))
+      : query(ref, orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
     return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
   } catch {
     return [];
   }
+};
+
+export const deleteReview = async (id: string) => {
+  await deleteDoc(doc(db, "reviews", id));
 };

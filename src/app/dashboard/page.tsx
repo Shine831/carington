@@ -77,7 +77,13 @@ export default function DashboardPage() {
     if (!user || reviewRating === 0) return;
     setIsSubmittingReview(true);
     try {
-      await createReview(user.displayName || "Client", "Expérience Générale", reviewRating, reviewComment);
+      await createReview(
+        user.uid,                              // userId  = Firebase UID (ownership)
+        user.displayName || "Client",          // authorName = display name for public view
+        "Expérience Générale",                 // serviceId
+        reviewRating,
+        reviewComment
+      );
       setShowReviewModal(false);
       setReviewRating(0);
       setReviewComment("");

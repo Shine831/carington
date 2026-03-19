@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SlideLeft, SlideRight, StaggerContainer, StaggerItem, FadeUp } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
-import { loginUser, registerUser, loginWithGoogle, resetPassword } from "@/lib/firebase/auth";
+import { loginUser, registerUser, loginWithGoogle, resetPassword, resendVerificationEmail } from "@/lib/firebase/auth";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function AccountPage() {
@@ -24,6 +24,9 @@ export default function AccountPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [pendingPassword, setPendingPassword] = useState("");
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -40,12 +43,16 @@ export default function AccountPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       await loginUser({ email, password });
-      // The useEffect will handle the redirect once useAuth updates
     } catch (err: any) {
-      setError(language === "fr" ? "Identifiants invalides ou erreur Firebase" : "Invalid credentials or Firebase error");
+      if (err.message === "EMAIL_NOT_VERIFIED") {
+        setPendingEmail(email);
+        setPendingPassword(password);
+        setPendingVerification(true);
+      } else {
+        setError(language === "fr" ? "Identifiants invalides ou erreur Firebase" : "Invalid credentials or Firebase error");
+      }
     } finally {
       setLoading(false);
     }
@@ -55,11 +62,12 @@ export default function AccountPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       await registerUser({ email, password, name });
-      // The user is automatically signed in by createUserWithEmailAndPassword
-      // The useEffect will handle the redirect
+      // Show verification pending screen
+      setPendingEmail(email);
+      setPendingPassword(password);
+      setPendingVerification(true);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -105,6 +113,62 @@ export default function AccountPage() {
     return (
       <div className="min-h-screen bg-[var(--off-white)] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // Email Verification Pending Screen
+  if (pendingVerification) {
+    return (
+      <div className="min-h-[100svh] bg-[var(--off-white)] flex items-center justify-center py-24 px-4 relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="top-0 right-0 w-[500px] h-[500px] opacity-[0.06]" />
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="relative max-w-md w-full bg-white rounded-[2.5rem] p-10 shadow-[var(--shadow-xl)] border border-white/60 z-10"
+        >
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-6">
+              <Mail className="w-10 h-10 text-emerald-500" />
+            </div>
+            <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tighter mb-3">Vérifiez votre email</h2>
+            <p className="text-sm text-[var(--slate)] font-medium leading-relaxed">
+              Un email de confirmation a été envoyé à <strong className="text-[var(--charcoal)]">{pendingEmail}</strong>.<br/>
+              Ouvrez votre boîte mail et cliquez sur le lien pour activer votre compte.
+            </p>
+          </div>
+
+          {error && <div className="bg-red-50 border border-red-200 text-[var(--red)] p-3 rounded-xl flex items-center gap-3 text-xs font-bold mb-6"><AlertCircle className="w-4 h-4" /> {error}</div>}
+          {success && <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl flex items-center gap-3 text-xs font-bold mb-6"><ShieldCheck className="w-4 h-4" /> {success}</div>}
+
+          <div className="space-y-3">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              onClick={async () => {
+                setLoading(true); setError(""); setSuccess("");
+                try {
+                  await resendVerificationEmail(pendingEmail, pendingPassword);
+                  setSuccess("Email renvoyé ! Vérifiez votre boîte de réception.");
+                } catch { setError("Erreur lors du renvoi."); }
+                finally { setLoading(false); }
+              }}
+              disabled={loading}
+              className="w-full py-4 rounded-xl bg-[var(--red)] text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50"
+            >
+              {loading ? "..." : "Renvoyer l'email"}
+            </motion.button>
+            <button
+              onClick={() => { setPendingVerification(false); setIsLogin(true); setError(""); setSuccess(""); }}
+              className="w-full py-4 rounded-xl bg-transparent border-2 border-slate-200 text-[var(--muted)] text-[11px] font-black uppercase tracking-widest hover:border-[var(--red)]/30 transition-all"
+            >
+              ← Retour à la connexion
+            </button>
+          </div>
+
+          <p className="text-center text-[10px] text-[var(--muted)] mt-6 font-medium">
+            ⚠️ Ne trouvez pas l'email ? Vérifiez votre dossier SPAM.
+          </p>
+        </motion.div>
       </div>
     );
   }

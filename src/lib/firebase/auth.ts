@@ -5,7 +5,8 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendEmailVerification
 } from "firebase/auth";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "./config";
@@ -23,7 +24,10 @@ export interface LoginData {
 }
 
 /**
- * Register a new user with Email/Password and create a Firestore document with default 'CLIENT' role.
+ * Register a new user with Email/Password.
+ * - Sends a verification email before allowing access.
+ * - Firestore document is NOT created here; it will be created by useAuth
+ *   only after the user verifies their email.
  */
 export const registerUser = async (data: RegisterData) => {
   try {
@@ -33,16 +37,13 @@ export const registerUser = async (data: RegisterData) => {
     // Update display name in Firebase Auth
     await updateProfile(user, { displayName: data.name });
 
-    // Create custom user document in Firestore to hold the RBAC role
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: data.email,
-      displayName: data.name,
-      role: "CLIENT", // Default Role
-      createdAt: serverTimestamp(),
-    });
+    // Send verification email — user must confirm before accessing the app
+    await sendEmailVerification(user);
 
-    return user;
+    // Sign out immediately so they can't access the app until verified
+    await signOut(auth);
+
+    return { requiresVerification: true, email: data.email };
   } catch (error: any) {
     console.error("Error registering user:", error.message);
     throw new Error(error.message);
@@ -50,12 +51,39 @@ export const registerUser = async (data: RegisterData) => {
 };
 
 /**
+ * Create Firestore user document after email verification is confirmed.
+ * Called once per user after they verify their email (from useAuth).
+ */
+export const createUserDocument = async (uid: string, email: string, displayName: string, role: "CLIENT" | "ADMIN" = "CLIENT") => {
+  const userDocRef = doc(db, "users", uid);
+  const existing = await getDoc(userDocRef);
+  if (!existing.exists()) {
+    await setDoc(userDocRef, {
+      uid,
+      email,
+      displayName,
+      role,
+      createdAt: serverTimestamp(),
+    });
+  }
+};
+
+/**
  * Log in an existing user with Email/Password.
+ * Rejects login if email is not yet verified.
  */
 export const loginUser = async (data: LoginData) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-    return userCredential.user;
+    const user = userCredential.user;
+
+    if (!user.emailVerified) {
+      // Sign them out and throw an error
+      await signOut(auth);
+      throw new Error("EMAIL_NOT_VERIFIED");
+    }
+
+    return user;
   } catch (error: any) {
     console.error("Error logging in:", error.message);
     throw new Error(error.message);
@@ -64,6 +92,7 @@ export const loginUser = async (data: LoginData) => {
 
 /**
  * Log in or Register a user via Google Auth Provider.
+ * Google accounts are pre-verified — no email step needed.
  */
 export const loginWithGoogle = async () => {
   try {
@@ -71,24 +100,25 @@ export const loginWithGoogle = async () => {
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
 
-    // Check if user already exists in Firestore
-    const userDocRef = doc(db, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    // If it's a new Google user, create their profile document
-    if (!userDocSnap.exists()) {
-      await setDoc(userDocRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || "Google User",
-        role: "CLIENT", // Default Role
-        createdAt: serverTimestamp(),
-      });
-    }
+    // Google users are always verified — create their profile if new
+    await createUserDocument(user.uid, user.email!, user.displayName || "Google User");
 
     return user;
   } catch (error: any) {
     console.error("Error with Google login:", error.message);
+    throw new Error(error.message);
+  }
+};
+
+/**
+ * Resend the verification email to the currently signed-in user.
+ */
+export const resendVerificationEmail = async (email: string, password: string) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCredential.user);
+    await signOut(auth);
+  } catch (error: any) {
     throw new Error(error.message);
   }
 };
