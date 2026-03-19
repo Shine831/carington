@@ -62,11 +62,12 @@ service cloud.firestore {
     }
 
     // ─── REVIEWS (TÉMOIGNAGES) ────────────────────────────────
-    // PUBLIC read — needed for the homepage testimonials section.
+    // Restricted read: only authenticated users can query reviews.
+    // Public visitors see curated showcase data (handled in app).
     // Any signed-in user can create a review (must use their own UID).
     // Only admins can delete reviews.
     match /reviews/{reviewId} {
-      allow read: if true;
+      allow read: if isSignedIn();
       allow create: if isSignedIn() &&
         request.resource.data.userId == request.auth.uid;
       allow delete: if isAdmin();
