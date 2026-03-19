@@ -39,16 +39,7 @@ L'infrastructure repose sur les technologies les plus résilientes du marché :
 Assurez-vous d'avoir un projet Firebase actif avec **Authentication** et **Cloud Firestore** activés.
 
 ### 2. Variables d'Environnement
-Créez un fichier `.env.local` et renseignez les clés suivantes :
-
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSy..."
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="ejarnauld-soft.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="ejarnauld-soft"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="ejarnauld-soft.appspot.com"
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="..."
-NEXT_PUBLIC_FIREBASE_APP_ID="..."
-```
+Créez un fichier `.env.local` en vous basant sur le fichier `.env.example` fourni et renseignez les clés Firebase nécessaires.
 
 ### 3. Lancement Local
 ```bash

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { ShieldCheck, Server, Network, ShieldAlert, ArrowRight, ChevronRight, Star, Zap, PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
@@ -314,7 +314,7 @@ export default function Home() {
             <SlideLeft>
               <span className="tag-red mb-4 inline-flex">Pourquoi E-Jarnauld ?</span>
               <h2 className="display-lg text-[var(--charcoal)] mb-8">
-                Des solutions <span className="text-[var(--red)] italic font-serif">d'excellence</span>.
+                Des solutions <span className="text-[var(--red)] italic font-serif">d&apos;excellence</span>.
               </h2>
               <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">
                 Parce que la technologie ne doit pas être un frein, mais un moteur de croissance. Nous nous engageons à propulser vos activités avec des standards incomparables.
@@ -347,7 +347,7 @@ export default function Home() {
                     <ShieldCheck className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">Support 2026</h3>
-                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">Une équipe technique experte disponible à tout moment pour optimiser vos systèmes d'information.</p>
+                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">Une équipe technique experte disponible à tout moment pour optimiser vos systèmes d&apos;information.</p>
                   <div className="flex -space-x-3">
                     {[1,2,3].map(i => (
                       <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400 shadow-sm">
@@ -381,7 +381,7 @@ export default function Home() {
               </p>
               
               <div className="p-8 bg-white rounded-[2rem] border-2 border-[var(--border)] shadow-sm">
-                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-3">Besoin d'une réponse spécifique ?</p>
+                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-3">Besoin d&apos;une réponse spécifique ?</p>
                 <Link href="/contact" className="text-sm font-black text-[var(--red)] flex items-center gap-2 group">
                   {language === "fr" ? "Contacter un ingénieur" : "Contact an engineer"} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
@@ -392,9 +392,9 @@ export default function Home() {
               <div className="space-y-4">
                 {[
                   { 
-                    q: language === "fr" ? "Quels sont vos délais d'intervention à Douala ?" : "What are your intervention times in Douala?", 
+                    q: language === "fr" ? "Quels sont vos délais d&apos;intervention à Douala ?" : "What are your intervention times in Douala?",
                     a: language === "fr" 
-                      ? "Pour nos clients sous contrat d'infogérance, nous garantissons une intervention sur site en moins de 2 heures pour les urgences critiques." 
+                      ? "Pour nos clients sous contrat d&apos;infogérance, nous garantissons une intervention sur site en moins de 2 heures pour les urgences critiques."
                       : "For our managed services clients, we guarantee on-site intervention in less than 2 hours for critical emergencies." 
                   },
                   { 
