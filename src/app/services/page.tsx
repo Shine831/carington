@@ -13,13 +13,13 @@ export default function ServicesPage() {
   const [query, setQuery] = useState("");
 
   const SERVICES = [
-    { id: "gestion-it", tag: "B2B / B2C", icon: Server, title: t.services_page.items.it.title, desc: t.services_page.items.it.desc },
-    { id: "cybersecurite", tag: "B2B", icon: ShieldAlert, title: t.services_page.items.cyber.title, desc: t.services_page.items.cyber.desc },
-    { id: "reseau", tag: "B2B / B2C", icon: Network, title: t.services_page.items.network.title, desc: t.services_page.items.network.desc },
-    { id: "video", tag: "B2B / B2C", icon: Video, title: t.services_page.items.video.title, desc: t.services_page.items.video.desc },
+    { id: "infog", tag: "B2B / B2C", icon: Server, title: t.services_page.items.it.title, desc: t.services_page.items.it.desc },
+    { id: "cable", tag: "B2B", icon: Network, title: t.services_page.items.network_cable.title, desc: t.services_page.items.network_cable.desc },
     { id: "voip", tag: "B2B", icon: PhoneCall, title: t.services_page.items.voip.title, desc: t.services_page.items.voip.desc },
-    { id: "dev", tag: "B2B / B2C", icon: Code, title: t.services_page.items.dev.title, desc: t.services_page.items.dev.desc },
-    { id: "formation", tag: "B2B / B2C", icon: GraduationCap, title: t.services_page.items.formation.title, desc: t.services_page.items.formation.desc },
+    { id: "reseau", tag: "B2B / B2C", icon: Network, title: t.services_page.items.network.title, desc: t.services_page.items.network.desc },
+    { id: "cyber", tag: "B2B", icon: ShieldAlert, title: t.services_page.items.cyber.title, desc: t.services_page.items.cyber.desc },
+    { id: "video", tag: "B2B / B2C", icon: Video, title: t.services_page.items.video.title, desc: t.services_page.items.video.desc },
+    { id: "web", tag: "B2B / B2C", icon: Code, title: t.services_page.items.web.title, desc: t.services_page.items.web.desc },
     { id: "maintenance", tag: "B2B / B2C", icon: PenTool, title: t.services_page.items.maintenance.title, desc: t.services_page.items.maintenance.desc },
   ];
 

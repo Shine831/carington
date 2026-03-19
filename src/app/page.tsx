@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { ShieldCheck, Server, Network, ShieldAlert, ArrowRight, ChevronRight, Star, Zap } from "lucide-react";
+import { ShieldCheck, Server, Network, ShieldAlert, ArrowRight, ChevronRight, Star, Zap, PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
 import { TiltCard, MagneticButton, BentoCard, SpatialLayer } from "@/components/ui/InteractiveEffects";
@@ -25,33 +25,33 @@ export default function Home() {
       id: "cyber", 
       tag: t.services.cyber.tag, 
       icon: ShieldAlert, 
-      title: t.services.cyber.title, 
-      desc: t.services.cyber.desc,
+      title: t.services_page.items.cyber.title, 
+      desc: t.services_page.items.cyber.desc,
       span: "md:col-span-2 lg:col-span-2",
       highlight: true
-    },
-    { 
-      id: "reseau", 
-      tag: t.services.infra.tag, 
-      icon: Network, 
-      title: t.services.infra.title, 
-      desc: t.services.infra.desc,
-      span: "md:col-span-1 lg:col-span-1"
     },
     { 
       id: "infog", 
       tag: t.services.it.tag, 
       icon: Server, 
-      title: t.services.it.title, 
-      desc: t.services.it.desc,
+      title: t.services_page.items.it.title, 
+      desc: t.services_page.items.it.desc,
+      span: "md:col-span-1 lg:col-span-1"
+    },
+    { 
+      id: "voip", 
+      tag: t.services.infra.tag, 
+      icon: PhoneCall, 
+      title: t.services_page.items.voip.title, 
+      desc: t.services_page.items.voip.desc,
       span: "md:col-span-1 lg:col-span-1"
     },
     {
-      id: "cloud",
+      id: "cable",
       tag: t.services.cloud.tag,
-      icon: ShieldCheck,
-      title: t.services.cloud.title,
-      desc: t.services.cloud.desc,
+      icon: Network,
+      title: t.services_page.items.network_cable.title,
+      desc: t.services_page.items.network_cable.desc,
       span: "md:col-span-2 lg:col-span-1"
     }
   ];
@@ -92,11 +92,11 @@ export default function Home() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--red)] opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--red)]"></span>
                   </span>
-                  {t.hero.tag}
+                  E-JARNALUD SOFT
                 </span>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-emerald-700 uppercase tracking-wider">{t.hero.badge}</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--charcoal)] rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <span className="text-[10px] font-black text-white uppercase tracking-wider">Douala, Cameroun</span>
                 </div>
               </div>
             </FadeUp>
@@ -106,35 +106,56 @@ export default function Home() {
                 style={{ scale: textScale }}
                 className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95]"
               >
-                {t.hero.title_part1} <br/>
+                Votre partenaire<br/>
                 <motion.span 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 1, delay: 0.5 }}
-                  className="gradient-text italic font-serif serif-italic"
+                  className="text-[var(--red)]"
                 >
-                  {t.hero.title_part2}
-                </motion.span>
+                  Informatique
+                </motion.span><br/>
+                de confiance.
               </motion.h1>
             </FadeUp>
 
             <FadeUp delay={0.3}>
-              <p className="text-body-lg mb-12 text-[var(--slate)] leading-relaxed max-w-lg border-l-2 border-[var(--border)] pl-6">
-                {t.hero.desc}
+              <p className="text-body-lg mb-12 text-[var(--slate)] leading-relaxed max-w-lg border-l-2 border-[var(--red)]/20 pl-6">
+                Solutions informatiques sur-mesure, infogérance experte et sécurité absolue (ISO 27001) pour professionnels et entreprises à Douala et partout ailleurs.
               </p>
             </FadeUp>
 
             <FadeUp delay={0.4}>
+              <div className="w-full max-w-md bg-white border-2 border-slate-100 rounded-2xl p-2 mb-10 flex items-center shadow-sm relative group overflow-hidden focus-within:border-[var(--red)]/50 focus-within:shadow-[var(--shadow-red)] transition-all">
+                <div className="pl-4 pr-2 text-[var(--muted)] group-focus-within:text-[var(--red)] transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input 
+                  type="text" 
+                  placeholder="Ex: Câblage Informatique, Infogérance..." 
+                  className="w-full py-3 px-2 bg-transparent outline-none text-sm font-bold text-[var(--charcoal)] placeholder:text-slate-400 placeholder:font-medium"
+                />
+                <Link href="/services">
+                  <button className="bg-[var(--charcoal)] text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--red)] transition-colors shadow-md">
+                    Découvrir
+                  </button>
+                </Link>
+              </div>
+            </FadeUp>
+
+            <FadeUp delay={0.5}>
               <div className="flex flex-wrap gap-5 items-center">
                 <Link href="/booking">
                   <MagneticButton>
                     <motion.span
                       whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.98 }}
-                      className="btn btn-red px-10 py-5 text-lg group relative flex items-center"
+                      className="btn btn-red px-10 py-5 text-lg group relative flex items-center shadow-[var(--shadow-red)]"
                     >
                       <div className="flex items-center">
-                        {t.hero.btn_audit}
+                        Audit & Devis Gratuit
                         <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
                           <ArrowRight className="w-5 h-5 ml-2" />
                         </motion.span>
@@ -142,20 +163,9 @@ export default function Home() {
                     </motion.span>
                   </MagneticButton>
                 </Link>
-                
-                <Link href="/services">
-                  <MagneticButton>
-                    <motion.span
-                      whileHover={{ x: 5 }}
-                      className="btn btn-ghost px-6 py-5 text-lg font-black flex items-center gap-2 group"
-                    >
-                      {t.hero.btn_explore}
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </motion.span>
-                  </MagneticButton>
-                </Link>
               </div>
             </FadeUp>
+
 
             <FadeIn delay={0.6} className="mt-16 pt-8 border-t border-[var(--border)] max-w-sm">
               <div className="flex items-center gap-4">
@@ -301,26 +311,27 @@ export default function Home() {
         <div className="container-xl">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <SlideLeft>
-              <span className="tag-red mb-4 inline-flex">{t.why.tag}</span>
+              <span className="tag-red mb-4 inline-flex">Pourquoi E-Jarnauld ?</span>
               <h2 className="display-lg text-[var(--charcoal)] mb-8">
-                {t.why.title_part1} <span className="gradient-text italic font-serif">{t.why.title_part2}</span>
+                Des solutions <span className="text-[var(--red)] italic font-serif">d'excellence</span>.
               </h2>
-              <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">{t.why.desc}</p>
+              <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">
+                Parce que la technologie ne doit pas être un frein, mais un moteur de croissance. Nous nous engageons à propulser vos activités avec des standards incomparables.
+              </p>
               
-              <div className="grid sm:grid-cols-2 gap-8">
+              <div className="grid sm:grid-cols-1 gap-8">
                 {[
-                  { icon: ShieldCheck, title: "Certifications", text: t.why.items.certs },
-                  { icon: Zap, title: "Réactivité", text: t.why.items.speed },
-                  { icon: Server, title: "Souveraineté", text: t.why.items.sov },
-                  { icon: Network, title: "Intégration", text: t.why.items.int },
+                  { icon: ShieldCheck, title: "Expertise Approuvée", text: "Des ingénieurs certifiés et des déploiements fiables, conformes aux meilleures pratiques IT internationales." },
+                  { icon: Zap, title: "Réactivité Absolue", text: "Support client dédié et intervention technique rapide sous 2h pour vous assurer une continuité de service." },
+                  { icon: Server, title: "Tarifs Transparents", text: "Aucune mauvaise surprise financière. Nos offres sont claires, étudiées sur-mesure et justifiées dès l'audit." },
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-4 group">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--off-white)] border border-transparent group-hover:border-[var(--red)]/20 flex items-center justify-center shrink-0 transition-colors">
-                      <item.icon className="w-5 h-5 text-[var(--red)]" />
+                  <div key={i} className="flex gap-6 group items-start border-b border-slate-100 pb-6 last:border-0">
+                    <div className="w-14 h-14 rounded-2xl bg-[var(--off-white)] border border-transparent group-hover:border-[var(--red)]/20 group-hover:bg-red-50 flex items-center justify-center shrink-0 transition-colors shadow-sm">
+                      <item.icon className="w-6 h-6 text-[var(--red)]" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-[var(--charcoal)] mb-1 uppercase tracking-wider">{item.title}</h4>
-                      <p className="text-[11px] text-[var(--slate)] font-medium">{item.text}</p>
+                      <h4 className="text-sm font-black text-[var(--charcoal)] mb-2 uppercase tracking-wide group-hover:text-[var(--red)] transition-colors">{item.title}</h4>
+                      <p className="text-xs text-[var(--slate)] font-medium leading-relaxed max-w-sm">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -334,22 +345,23 @@ export default function Home() {
                   <div className="w-20 h-20 bg-[var(--charcoal)] rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
                     <ShieldCheck className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">{t.why.card_title}</h3>
-                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">{t.why.card_desc}</p>
+                  <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">Support 2026</h3>
+                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">Une équipe technique experte disponible à tout moment pour optimiser vos systèmes d'information.</p>
                   <div className="flex -space-x-3">
                     {[1,2,3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400">
-                        IT
+                      <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400 shadow-sm">
+                        EJS
                       </div>
                     ))}
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-6 text-[var(--muted)]">Core Team Douala</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-6 text-[var(--red)]">Douala Core Team</p>
                 </BentoCard>
               </div>
             </SlideRight>
           </div>
         </div>
       </section>
+
 
       {/* ── FAQ ────────────────────────────────────────────────── */}
       <section className="section-py bg-[var(--off-white)]">

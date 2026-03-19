@@ -1,217 +1,182 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { getBookings } from "@/lib/firebase/db";
+import { logoutUser } from "@/lib/firebase/auth";
 
 export default function DashboardPage() {
   const { t, language } = useI18n();
+  const router = useRouter();
+  const { user, role, loading: authLoading } = useAuth();
+  
+  const [bookings, setBookings] = useState<any[]>([]);
+
+  // Route protection
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/account");
+    }
+  }, [user, authLoading, router]);
+
+  const handleLogout = async () => {
+    await logoutUser();
+    router.push("/");
+  };
+
+  // Fetch Firestore data once user is authenticated
+  useEffect(() => {
+    if (user) {
+      getBookings(user.uid)
+        .then((data) => setBookings(data))
+        .catch((err) => console.error("Firestore Error:", err));
+    }
+  }, [user]);
+
+  // Loading Screen to prevent flickering
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen bg-[var(--off-white)] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-32 pb-40 bg-[var(--off-white)] relative overflow-hidden">
-      <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[800px] h-[800px] opacity-[0.03]" />
-      <AuraGradient color="var(--charcoal)" className="bottom-[-20%] left-[-10%] w-[600px] h-[600px] opacity-[0.02]" />
+      {/* Background Ambience */}
+      <AuraGradient color="var(--red)" className="top-0 right-0 w-[600px] h-[600px] opacity-[0.03]" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
 
-      <div className="container-xl relative z-10">
+      <div className="container-xl relative z-10 max-w-6xl">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 border-b border-white/50 pb-8">
           <FadeUp>
-            <div className="flex items-center gap-4 mb-4">
-              <span className="tag-red py-1 px-4 backdrop-blur-md bg-white/40 border-white/60 shadow-sm uppercase text-[10px] tracking-widest">
-                Operations Node
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-2 w-8 bg-[var(--red)] rounded-full" />
+              <span className="text-[10px] font-black text-[var(--red)] uppercase tracking-[0.2em]">
+                {t.dashboard.title}
               </span>
-              <div className="h-px w-12 bg-slate-200" />
             </div>
-            <h1 className="display-md text-[var(--charcoal)] tracking-tighter mb-2">
-              {t.dashboard.title}
+            <h1 className="text-4xl lg:text-5xl font-black text-[var(--charcoal)] tracking-tighter mb-2">
+              Espace <span className="text-[var(--red)]">Client.</span>
             </h1>
-            <p className="text-body-sm text-[var(--slate)] font-medium">
-              {t.dashboard.welcome} <span className="text-[var(--red)] font-black uppercase tracking-widest text-[11px]">Acme Corp Ops</span>
+            <p className="text-sm font-medium text-[var(--slate)]">
+              Gérez vos services et suivez nos interventions en temps réel.
             </p>
           </FadeUp>
           
           <FadeIn delay={0.3}>
-            <div className="flex items-center gap-4 bg-white/80 backdrop-blur-xl border-2 border-emerald-100 px-6 py-3 rounded-[1.5rem] shadow-sm">
-              <div className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-md border border-white px-6 py-4 rounded-2xl shadow-[var(--shadow-glass)]">
+                <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-emerald-700 font-black uppercase tracking-[0.2em]">
+                    {t.dashboard.secure}
+                  </span>
+                  <span className="text-[9px] text-[var(--slate)] font-bold">AES-256 E2E</span>
+                </div>
               </div>
-              <span className="text-[11px] text-emerald-700 font-black uppercase tracking-[0.2em]">
-                {t.dashboard.secure}
-              </span>
+              <motion.button
+                onClick={handleLogout}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-5 py-4 rounded-2xl border border-slate-200 bg-white/60 backdrop-blur-md hover:border-red-200 hover:bg-red-50 hover:text-[var(--red)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--slate)]"
+              >
+                <LogOut className="w-4 h-4" />
+                {language === "fr" ? "Déconnexion" : "Logout"}
+              </motion.button>
             </div>
           </FadeIn>
         </div>
 
-        {/* Top Stats Grid */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <StaggerItem>
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="card bg-white p-10 border-2 border-transparent hover:border-slate-100 transition-all shadow-sm relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:opacity-[0.1] group-hover:scale-110 transition-all duration-500">
-                <Server className="w-20 h-20 text-[var(--charcoal)]" />
-              </div>
-              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.nodes}</p>
-              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">24<span className="text-slate-300 text-2xl not-italic">/24</span></p>
-              <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-                <CheckCircle2 className="w-4 h-4" /> {t.dashboard.stats.uptime}
-              </div>
-            </motion.div>
-          </StaggerItem>
+        {/* Client Bento Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <StaggerItem>
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="card bg-white p-10 border-2 border-transparent hover:border-slate-100 transition-all shadow-sm relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:opacity-[0.1] group-hover:rotate-12 transition-all duration-700">
-                <ShieldAlert className="w-20 h-20 text-[var(--charcoal)]" />
-              </div>
-              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.zero_breach}</p>
-              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">0</p>
-              <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-                <ShieldCheck className="w-4 h-4" /> 1,402 {t.dashboard.stats.threats}
-              </div>
-            </motion.div>
-          </StaggerItem>
-
-          <StaggerItem>
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="card bg-white p-10 border-2 border-transparent hover:border-slate-100 transition-all shadow-sm relative overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:opacity-[0.1] transition-all duration-500">
-                <Cpu className="w-20 h-20 text-[var(--charcoal)]" />
-              </div>
-              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-4">{t.dashboard.stats.maintenance}</p>
-              <p className="text-4xl font-black text-[var(--charcoal)] tracking-tighter mb-4 italic font-serif serif-italic">14 <span className="text-slate-300 text-2xl not-italic">{language === 'fr' ? 'Jours' : 'Days'}</span></p>
-              <div className="flex items-center gap-2 text-[10px] font-black text-amber-500 uppercase tracking-widest">
-                <Clock className="w-4 h-4" /> {t.dashboard.stats.scheduled}
-              </div>
-            </motion.div>
-          </StaggerItem>
-        </StaggerContainer>
-
-        {/* Main Content Areas */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
-          {/* Active Requests */}
-          <div className="lg:col-span-2 space-y-8">
-            <FadeUp>
-              <div className="flex items-center justify-between border-b pb-6">
-                <div>
-                  <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase">{t.dashboard.sections.requests}</h2>
-                  <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.3em] mt-1">Pending Validation Cycle</p>
+          {/* Active Services (Bento Left) */}
+          <StaggerContainer className="lg:col-span-8 space-y-6">
+            <StaggerItem>
+              <div className="bg-white/60 backdrop-blur-2xl border border-white rounded-[2rem] p-8 shadow-[var(--shadow-glass)]">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-xl font-black text-[var(--charcoal)] tracking-tight">Mes Services Actifs</h2>
+                  <Link href="/services">
+                    <button className="flex items-center gap-2 text-[10px] font-black text-[var(--red)] uppercase tracking-widest hover:underline decoration-2 underline-offset-4 transition-all">
+                      Nouveau Service <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </Link>
                 </div>
-                <Link href="/admin">
-                  <button className="text-[10px] font-black text-[var(--red)] uppercase tracking-widest hover:underline decoration-2 underline-offset-4 transition-all">
-                    {t.dashboard.sections.archive}
-                  </button>
-                </Link>
-              </div>
-            </FadeUp>
-            
-            <StaggerContainer className="space-y-4">
-              {[
-                { 
-                  title: language ==='fr' ? "Test de Restauration Serveur B" : "Server Rack B Restoration Test",
-                  status: language ==='fr' ? "EN COURS" : "IN PROGRESS",
-                  id: "EJ-4091",
-                  time: "2h ago",
-                  desc: language ==='fr' ? "Validation trimestrielle de récupération." : "Quarterly recovery validation."
-                },
-                { 
-                  title: language ==='fr' ? "Provisionnement 3 Postes IT" : "Provision 3 Workstation Nodes",
-                  status: language ==='fr' ? "ATTENTE MATÉRIEL" : "PENDING HARDWARE",
-                  id: "EJ-4088",
-                  time: "1d ago",
-                  desc: language ==='fr' ? "Installation ingénierie Lenovo ThinkPads." : "Engineering hire laptop provisioning."
-                }
-              ].map((ticket, i) => (
-                <StaggerItem key={ticket.id}>
-                  <motion.div
-                    whileHover={{ x: 10, borderColor: "var(--red)" }}
-                    className="bg-white border-2 border-slate-50 p-8 rounded-[2rem] flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm group transition-all"
-                  >
-                    <div>
-                      <div className="flex flex-wrap items-center gap-4 mb-3">
-                        <span className="font-black text-[var(--charcoal)] tracking-tight text-lg">{ticket.title}</span>
-                        <span className={`px-4 py-1 rounded-full text-[9px] font-black border uppercase tracking-widest ${
-                          ticket.status.includes("PROGRESS") || ticket.status.includes("COURS") 
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
-                            : "bg-amber-50 text-amber-600 border-amber-100"
+
+                <div className="space-y-4">
+                  {bookings.filter(b => b.status === "PENDING" || b.status === "CONFIRMED").length > 0 ? (
+                    bookings.filter(b => b.status === "PENDING" || b.status === "CONFIRMED").map((ticket) => (
+                      <motion.div
+                        key={ticket.id}
+                        whileHover={{ scale: 1.01 }}
+                        className="bg-white border text-left p-6 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:border-[var(--red)]/30 hover:shadow-sm transition-all group"
+                      >
+                        <div className="flex items-center gap-5">
+                          <div className="w-12 h-12 bg-[var(--off-white)] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-red-50 transition-colors">
+                            <Activity className="w-5 h-5 text-[var(--red)]" />
+                          </div>
+                          <div>
+                            <h3 className="font-black text-[var(--charcoal)] text-sm tracking-tight mb-1">{ticket.service.title}</h3>
+                            <p className="text-xs text-[var(--slate)] font-medium">Contrat #{ticket.id.split('-')[0]}</p>
+                          </div>
+                        </div>
+                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shrink-0 ${
+                          ticket.status === "CONFIRMED" 
+                            ? "bg-emerald-50 text-emerald-600 border border-emerald-100" 
+                            : "bg-amber-50 text-amber-600 border border-amber-100"
                         }`}>
-                          {ticket.status}
+                          {ticket.status === "CONFIRMED" ? "ACTIF" : "EN ATTENTE"}
                         </span>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10 bg-[var(--off-white)] rounded-2xl border border-dashed border-slate-200">
+                      <Server className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                      <p className="text-sm font-medium text-[var(--muted)]">Aucun service en cours.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
+
+          {/* Intervention History (Bento Right) */}
+          <StaggerContainer className="lg:col-span-4 space-y-6">
+            <StaggerItem>
+              <div className="bg-white/60 backdrop-blur-2xl border border-white rounded-[2rem] p-8 shadow-[var(--shadow-glass)] h-full">
+                <h2 className="text-xl font-black text-[var(--charcoal)] tracking-tight mb-8">Historique des Interventions</h2>
+                
+                <div className="space-y-6 relative before:absolute before:inset-0 before:left-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-slate-100">
+                  {bookings.filter(b => b.status === "COMPLETED").length > 0 ? (
+                    bookings.filter(b => b.status === "COMPLETED").map((ticket, i) => (
+                      <div key={ticket.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-white bg-slate-100 group-[.is-active]:bg-[var(--red)] shadow shrink-0 z-10"></div>
+                        <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-xl border border-slate-100 bg-white group-[.is-active]:border-[var(--red)]/20 shadow-sm transition-all text-xs">
+                          <div className="font-black text-[var(--charcoal)] mb-1">{ticket.service.title}</div>
+                          <div className="text-[10px] font-medium text-[var(--slate)]">Intervention finalisée le {new Date(ticket.date || Date.now()).toLocaleDateString()}</div>
+                        </div>
                       </div>
-                      <p className="text-sm text-[var(--slate)] font-medium">{ticket.desc}</p>
-                    </div>
-                    <div className="text-left md:text-right shrink-0 bg-[var(--off-white)] p-4 rounded-2xl border-2 border-transparent group-hover:border-[var(--red)]/10 transition-all">
-                      <p className="text-[10px] font-black text-[var(--charcoal)] tracking-widest uppercase mb-1">Ticket #{ticket.id}</p>
-                      <p className="text-[9px] font-black text-[var(--muted)] uppercase tracking-tighter italic">{ticket.time}</p>
-                    </div>
-                  </motion.div>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          </div>
-
-          {/* System Alerts */}
-          <div className="space-y-8">
-            <FadeUp>
-              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase pb-6 border-b">{t.dashboard.sections.alerts}</h2>
-            </FadeUp>
-            
-            <div className="bg-white border-2 border-slate-50 rounded-[2.5rem] p-10 space-y-8 shadow-sm h-full flex flex-col relative overflow-hidden">
-               <AuraGradient color="var(--red)" className="top-[-20%] right-[-20%] w-64 h-64 opacity-[0.02]" />
-               
-               <StaggerContainer className="space-y-6 flex-1">
-                 <StaggerItem>
-                   <div className="flex items-start gap-6 group">
-                     <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0 border border-amber-100 group-hover:bg-amber-100 transition-colors">
-                       <AlertTriangle className="w-5 h-5 text-amber-500" />
-                     </div>
-                     <div>
-                       <h4 className="text-xs font-black text-[var(--charcoal)] uppercase tracking-wider mb-2">Bandwidth Spike</h4>
-                       <p className="text-[11px] text-[var(--slate)] leading-relaxed font-medium">Node-04 outbound throttled pending manual review.</p>
-                       <p className="text-[9px] font-black text-[var(--muted)] uppercase mt-3 tracking-widest">14:32 Today</p>
-                     </div>
-                   </div>
-                 </StaggerItem>
-
-                 <div className="h-px w-full bg-slate-50" />
-
-                 <StaggerItem>
-                   <div className="flex items-start gap-6 group">
-                     <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100 group-hover:bg-emerald-100 transition-colors">
-                       <ShieldAlert className="w-5 h-5 text-emerald-500" />
-                     </div>
-                     <div>
-                       <h4 className="text-xs font-black text-[var(--charcoal)] uppercase tracking-wider mb-2">Patch Applied</h4>
-                       <p className="text-[11px] text-[var(--slate)] leading-relaxed font-medium">CVE-2026-X automated hotfix successful. Zero downtime.</p>
-                       <p className="text-[9px] font-black text-[var(--muted)] uppercase mt-3 tracking-widest">02:00 Yesterday</p>
-                     </div>
-                   </div>
-                 </StaggerItem>
-               </StaggerContainer>
-               
-               <Link href="/admin" className="block w-full mt-8">
-                <button className="w-full py-5 border-2 border-slate-100 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.5rem] hover:bg-[var(--red)] hover:text-white hover:border-[var(--red)] transition-all flex items-center justify-center gap-3 group">
-                  {t.dashboard.sections.logs} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-               </Link>
-
-            </div>
-          </div>
+                    ))
+                  ) : (
+                    <p className="text-xs font-medium text-[var(--muted)] ml-10">Aucune intervention passée.</p>
+                  )}
+                </div>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
 
         </div>
-
       </div>
     </div>
   );

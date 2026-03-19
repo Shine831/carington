@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if the current user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if the user has the 'ADMIN' role in their user document
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "ADMIN";
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      // A user can read/write their own profile. Admin can do everything.
+      // Note: During signup, the client creates their own doc, which is allowed here via condition.
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow read, update, delete: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // SERVICES COLLECTION
+    match /services/{serviceId} {
+      // Any user (even unauthenticated) can read services to see the catalog
+      allow read: if true;
+      // Only the Admin can create, update, or delete services
+      allow write: if isAdmin();
+    }
+
+    // BOOKINGS COLLECTION
+    match /bookings/{bookingId} {
+      // A user can read/update their own bookings. Admin can read/update all.
+      // We check existing data (resource.data) for read/update, and incoming data (request.resource.data) for create.
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // REVIEWS COLLECTION
+    match /reviews/{reviewId} {
+      allow read: if true; // Everyone can see reviews
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin(); // Only admins can moderate reviews
+    }
+  }
+}

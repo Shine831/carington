@@ -96,14 +96,14 @@ export const translations = {
       show_all: "Tout afficher",
       cta_card: "DEMANDER DEVIS",
       items: {
-        it: { title: "Gestion IT & Infogérance", desc: "Maintenance préventive, helpdesk, mises à jour critiques et licences logicielles." },
-        cyber: { title: "Audit & Cybersécurité", desc: "Tests d'intrusion (Pen-Testing), sécurisation cloud/hybride et analyse des vulnérables." },
-        network: { title: "Réseau & Câblage Structuré", desc: "Câblage Cat6A, firewalls, Wi-Fi entreprise et VPN sécurisé." },
-        video: { title: "Vidéosurveillance IP", desc: "Caméras HD, sauvegarde cloud immuable et surveillance mobile en temps réel." },
-        voip: { title: "Téléphonie VoIP", desc: "Standards IP, files d'attente, enregistrements et intégration CRM." },
-        dev: { title: "Développement Web & Logiciel", desc: "Plateformes sur-mesure (Next.js, React), outils métiers et ERP adaptés aux PME." },
-        formation: { title: "Formation IT Sur-Mesure", desc: "Cybersécurité pour collaborateurs, formation technique des recrues IT." },
-        maintenance: { title: "Maintenance Curative Urgente", desc: "Intervention rapide sur serveurs RAID, routeurs, et postes défectueux." }
+        it: { title: "Infogérance", desc: "Maintenance préventive, helpdesk, mises à jour critiques et licences logicielles." },
+        network_cable: { title: "Câblage Informatique", desc: "Câblage Cat6A, fibre optique, baies de brassage et certification de liens." },
+        voip: { title: "Téléphonie d'entreprise", desc: "Standards IP, files d'attente, enregistrements et intégration CRM." },
+        network: { title: "Réseaux Informatiques", desc: "Déploiement routeurs, switchs, Wi-Fi entreprise et VPN sécurisé." },
+        cyber: { title: "Sécurité Informatique", desc: "Tests d'intrusion (Pen-Testing), sécurisation cloud/hybride et pare-feux industriels." },
+        video: { title: "Vidéosurveillance & Contrôle d'accès", desc: "Caméras HD intelligentes, accès biométriques et sauvegarde cloud." },
+        web: { title: "Services Web", desc: "Création de plateformes sur-mesure (Next.js, React), hébergement et noms de domaine." },
+        maintenance: { title: "Maintenance & Formation", desc: "Interventions curatives urgentes et formation IT spécialisée pour ou contre la cyber-menace." }
       }
     },
     contact: {
@@ -343,14 +343,14 @@ export const translations = {
       show_all: "Show all",
       cta_card: "REQUEST QUOTE",
       items: {
-        it: { title: "IT Management & Outsourcing", desc: "Preventive maintenance, helpdesk, critical updates and software licenses." },
-        cyber: { title: "Audit & Cybersecurity", desc: "Pen-Testing, cloud/hybrid security and vulnerability analysis." },
-        network: { title: "Network & Structured Cabling", desc: "Cat6A cabling, firewalls, enterprise Wi-Fi and secure VPN." },
-        video: { title: "IP Video Surveillance", desc: "HD cameras, immutable cloud backup and real-time mobile surveillance." },
-        voip: { title: "VoIP Telephony", desc: "IP PBX, queues, recordings and CRM integration." },
-        dev: { title: "Web & Software Development", desc: "Custom platforms (Next.js, React), business tools and ERP for SMEs." },
-        formation: { title: "Custom IT Training", desc: "Cybersecurity for employees, technical training for IT recruits." },
-        maintenance: { title: "Urgent Curative Maintenance", desc: "Rapid intervention on RAID servers, routers, and defective workstations." }
+        it: { title: "IT Management", desc: "Preventive maintenance, helpdesk, critical updates and software licenses." },
+        network_cable: { title: "Structured Cabling", desc: "Cat6A cabling, fiber optics, server racks, and link certification." },
+        voip: { title: "Enterprise Telephony", desc: "IP PBX, queues, recordings and CRM integration." },
+        network: { title: "IT Networks", desc: "Router deployment, switches, enterprise Wi-Fi, and secure VPNs." },
+        cyber: { title: "IT Security", desc: "Pen-Testing, cloud/hybrid security, and industrial firewalls." },
+        video: { title: "Video Surveillance & Access Control", desc: "Smart HD cameras, biometric access, and cloud backup." },
+        web: { title: "Web Services", desc: "Custom platforms (Next.js, React), hosting, and domain names." },
+        maintenance: { title: "Maintenance & Training", desc: "Urgent curative interventions and specialized IT / cybersecurity training." }
       }
     },
     contact: {

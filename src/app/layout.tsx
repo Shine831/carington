@@ -6,6 +6,8 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import PageTransition from "@/components/layout/PageTransition";
 import { LanguageProvider } from "@/context/LanguageContext";
 
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+
 export const metadata: Metadata = {
   title: "E-JARNALUD SOFT | IT Management & Cybersecurity",
   description: "Secure your operations and maximize your ROI with E-JARNALUD SOFT, Douala's premium IT infrastructure and cybersecurity firm.",
@@ -23,6 +25,7 @@ export default function RootLayout({
           <div className="noise-overlay" />
           <CustomCursor />
           <Navbar />
+          <FloatingWhatsApp />
           <PageTransition>
             <main className="min-h-screen">
               {children}
@@ -34,3 +37,4 @@ export default function RootLayout({
     </html>
   );
 }
+

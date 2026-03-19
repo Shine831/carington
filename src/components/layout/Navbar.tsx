@@ -2,18 +2,28 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { Shield, Menu, X, User, ChevronRight, Globe } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Shield, Menu, X, User, ChevronRight, Globe, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagneticButton } from '@/components/ui/InteractiveEffects';
 import { useI18n } from '@/context/LanguageContext';
+import { Logo } from '@/components/Logo';
+import { useAuth } from '@/hooks/useAuth';
+import { logoutUser } from '@/lib/firebase/auth';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { language, setLanguage, t } = useI18n();
+  const { user, role } = useAuth();
   const isAdmin = pathname?.startsWith("/admin");
+
+  const handleLogout = async () => {
+    await logoutUser();
+    router.push("/");
+  };
 
   const NAV_LINKS = [
     { href: "/", label: t.nav.home },
@@ -50,24 +60,8 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-[68px] md:h-[80px]">
             
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <motion.div 
-                whileHover={{ rotate: 10, scale: 1.1 }} 
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <div className="w-9 h-9 rounded-xl bg-[var(--red)] flex items-center justify-center shadow-[var(--shadow-red)]">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
-              </motion.div>
-              <div className="flex flex-col">
-                <span className="font-black text-lg leading-tight tracking-tight text-[var(--charcoal)] uppercase">
-                  E-JARNALUD<span className="text-[var(--red)]"> SOFT</span>
-                </span>
-                <span className="text-[9px] font-medium text-[var(--muted)] tracking-[0.2em] uppercase">
-                  {language === "fr" ? "Architecture de Confiance" : "Architecture of Trust"}
-                </span>
-              </div>
-            </Link>
+            <Logo />
+
             
             {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-4">
@@ -101,21 +95,44 @@ export default function Navbar() {
                 {language === "fr" ? "EN" : "FR"}
               </button>
 
-              <Link href="/account">
-                <motion.span
-                  whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
-                  className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
-                >
-                  <User className="w-4 h-4" /> {t.nav.account}
-                </motion.span>
-              </Link>
-              <Link href="/booking">
-                <MagneticButton className="flex items-center">
-                  <span className="btn btn-red text-[10px] px-6 py-2.5 flex items-center gap-2 shadow-[var(--shadow-red)]">
-                    {t.nav.cta} <ChevronRight className="w-4 h-4" />
-                  </span>
-                </MagneticButton>
-              </Link>
+              {user ? (
+                <>
+                  <Link href={role === "ADMIN" ? "/admin" : "/dashboard"}>
+                    <motion.span
+                      whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
+                      className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
+                    >
+                      <User className="w-4 h-4" /> {user.displayName?.split(" ")[0] || t.nav.account}
+                    </motion.span>
+                  </Link>
+                  <motion.button
+                    onClick={handleLogout}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-red-200 hover:bg-red-50 hover:text-[var(--red)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--slate)]"
+                  >
+                    <LogOut className="w-4 h-4" /> {language === "fr" ? "Déconnexion" : "Logout"}
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <Link href="/account">
+                    <motion.span
+                      whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
+                      className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
+                    >
+                      <User className="w-4 h-4" /> {t.nav.account}
+                    </motion.span>
+                  </Link>
+                  <Link href="/booking">
+                    <MagneticButton className="flex items-center">
+                      <span className="btn btn-red text-[10px] px-6 py-2.5 flex items-center gap-2 shadow-[var(--shadow-red)]">
+                        {t.nav.cta} <ChevronRight className="w-4 h-4" />
+                      </span>
+                    </MagneticButton>
+                  </Link>
+                </>
+              )}
             </div>
             
             {/* Mobile burger */}
@@ -181,8 +198,21 @@ export default function Navbar() {
                   );
                 })}
                 <div className="flex flex-col gap-2 pt-4 border-t border-[var(--border)] mt-2">
-                  <Link href="/account" onClick={() => setMenuOpen(false)} className="btn btn-outline w-full justify-center">{t.nav.account}</Link>
-                  <Link href="/booking" onClick={() => setMenuOpen(false)} className="btn btn-red w-full justify-center">{t.nav.cta}</Link>
+                  {user ? (
+                    <>
+                      <Link href={role === "ADMIN" ? "/admin" : "/dashboard"} onClick={() => setMenuOpen(false)} className="btn btn-outline w-full justify-center">
+                        {user.displayName?.split(" ")[0] || t.nav.account}
+                      </Link>
+                      <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="btn btn-ghost w-full justify-center text-[var(--red)] border border-red-100">
+                        {language === "fr" ? "Déconnexion" : "Logout"}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/account" onClick={() => setMenuOpen(false)} className="btn btn-outline w-full justify-center">{t.nav.account}</Link>
+                      <Link href="/booking" onClick={() => setMenuOpen(false)} className="btn btn-red w-full justify-center">{t.nav.cta}</Link>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>
