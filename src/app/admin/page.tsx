@@ -231,11 +231,12 @@ export default function AdminDashboard() {
         {/* Top Header */}
         <header className="bg-[#0A0A0A]/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-white/5">
           <div className="flex items-center gap-4 md:gap-6 relative">
-            <button onClick={() => fetchData()} className="mr-4 px-5 py-2.5 rounded-xl border border-[var(--red)]/50 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-               Actualiser les données
+            <button onClick={() => fetchData()} title="Actualiser les données" className="px-3 md:px-5 py-2.5 rounded-xl border border-[var(--red)]/50 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+               <Clock className="w-4 h-4 md:hidden" />
+               <span className="hidden md:inline">Actualiser les données</span>
             </button>
 
-            <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-white/40 hover:text-white p-2 bg-white/5 border border-white/10 rounded-xl hidden sm:flex">
+            <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-white/40 hover:text-white p-2.5 bg-white/5 border border-white/10 rounded-xl">
               <Bell className="w-5 h-5" />
               {totalNotifications > 0 && <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-[#0A0A0A]" />}
             </button>
@@ -260,25 +261,25 @@ export default function AdminDashboard() {
               )}
             </AnimatePresence>
 
-            <div className="flex items-center gap-4 pl-6 border-l border-white/10">
-              <div className="text-right"><p className="text-[10px] font-black text-white uppercase tracking-wider">Super Admin</p></div>
-              <div className="w-10 h-10 rounded-xl bg-[var(--red)] text-white flex items-center justify-center font-black text-sm ring-2 ring-white/10 shadow-[var(--shadow-red)]">SA</div>
+            <div className="flex items-center gap-3 md:gap-4 pl-4 md:pl-6 border-l border-white/10">
+              <div className="text-right hidden sm:block"><p className="text-[10px] font-black text-white uppercase tracking-wider">Super Admin</p></div>
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-[var(--red)] text-white flex items-center justify-center font-black text-xs md:text-sm ring-2 ring-white/10 shadow-[var(--shadow-red)]">SA</div>
             </div>
           </div>
         </header>
 
-        <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden z-10">
+        <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden z-10 w-full overflow-x-hidden">
           
           {/* Stats Bento */}
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
             {STATS.map(({ label, value, icon: Icon, color }) => (
               <StaggerItem key={label}>
                 <div className="card p-5 md:p-8 bg-gradient-to-br from-[#111111] to-[#0A0A0A] border border-white/10 relative h-full flex flex-col justify-between rounded-2xl shadow-xl hover:border-white/20 transition-all">
                   <div className="relative z-10 mb-4">
-                    <p className="text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.1em]">{label}</p>
-                    <p className={`text-3xl md:text-5xl font-black ${color.replace("text-", "text-")} tracking-tighter italic mt-2 drop-shadow-lg`}>{value}</p>
+                    <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.1em]">{label}</p>
+                    <p className={`text-4xl md:text-5xl font-black ${color.replace("text-", "text-")} tracking-tighter italic mt-1 drop-shadow-lg`}>{value}</p>
                   </div>
-                  <div className={`absolute bottom-5 right-5 w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/5 ${color} shadow-inner`}>
+                  <div className={`absolute bottom-4 right-4 md:bottom-5 md:right-5 w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center border border-white/5 ${color} shadow-inner`}>
                     <Icon className="w-5 h-5 md:w-6 md:h-6" />
                   </div>
                 </div>
@@ -412,17 +413,17 @@ export default function AdminDashboard() {
         
         {/* Booking Details Modal */}
         {selectedBooking && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="bg-[#111] p-8 rounded-3xl border border-white/10 w-full max-w-2xl relative shadow-2xl">
-              <button onClick={() => setSelectedBooking(null)} className="absolute top-6 right-6 text-white/50 hover:text-white"><X className="w-6 h-6" /></button>
-              <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-6">Détails de la demande</h2>
-              <div className="grid grid-cols-2 gap-6 text-sm">
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-white text-lg">{selectedBooking.entity} <span className="text-[10px] bg-white/10 px-2 py-1 rounded ml-2">{selectedBooking.clientType}</span></p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-white">{selectedBooking.email}<br/>{selectedBooking.phone}</p></div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+            <div className="bg-[#111] p-6 md:p-8 rounded-[2rem] border border-white/10 w-full max-w-2xl relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+              <button onClick={() => setSelectedBooking(null)} className="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white p-2"><X className="w-6 h-6" /></button>
+              <h2 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-6 mt-2">Détails de la demande</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-white text-base md:text-lg">{selectedBooking.entity} <span className="text-[9px] bg-white/10 px-2 py-1 rounded ml-2">{selectedBooking.clientType}</span></p></div>
+                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-white text-xs md:text-sm">{selectedBooking.email}<br/>{selectedBooking.phone}</p></div>
                 <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Service Choisi</span><p className="font-bold text-[var(--red)]">{selectedBooking.serviceId}</p></div>
                 <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Budget Alloué</span><p className="font-bold text-emerald-400 italic">{selectedBooking.budget}</p></div>
-                <div className="col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Délai d'intervention</span><p className="font-bold text-white/80">{selectedBooking.timeframe}</p></div>
-                <div className="col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Description Technique</span><p className="p-4 bg-white/5 rounded-xl text-white/80 whitespace-pre-line">{selectedBooking.description}</p></div>
+                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Délai d'intervention</span><p className="font-bold text-white/80">{selectedBooking.timeframe}</p></div>
+                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Description Technique</span><p className="p-4 bg-white/5 rounded-2xl text-white/80 whitespace-pre-line text-xs md:text-sm leading-relaxed">{selectedBooking.description}</p></div>
               </div>
             </div>
           </motion.div>
