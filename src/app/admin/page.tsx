@@ -2,15 +2,16 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { getServices, getBookings, getUsers, getMessages, getReviews, updateBookingStatus, updateMessageStatus, updateService, deleteBooking, deleteService, createService, deleteReview, deleteUserDoc, BookingData } from "@/lib/firebase/db";
+import { getServices, getBookings, getUsers, getMessages, getReviews, updateBookingStatus, updateMessageStatus, updateService, deleteBooking, deleteService, createService, deleteReview, deleteUserDoc, BookingData, getUserById, setUserPin } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
-import { verifyAdminPin } from "@/app/actions/adminAuth";
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 
 const STATUS_MAP = {
   fr: {
@@ -50,23 +51,51 @@ export default function AdminDashboard() {
   const [newServiceModal, setNewServiceModal] = useState(false);
   const [newServiceForm, setNewServiceForm] = useState({ title: "", description: "", priceCFA: 0, category: "IT" });
 
+  const [checkingPin, setCheckingPin] = useState(true);
+  const [hasPinConfigured, setHasPinConfigured] = useState(false);
   const [isPinVerified, setIsPinVerified] = useState(false);
-  const [pin, setPin] = useState("");
+  const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
-  const [verifying, setVerifying] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem("admin_pin_verified") === "true") {
-      setIsPinVerified(true);
-    }
-  }, []);
+  // Security Modals
+  const [showPinChangeModal, setShowPinChangeModal] = useState(false);
+  const [pinChangeForm, setPinChangeForm] = useState({ oldPin: "", newPin: "", error: "", success: "" });
+  const [isChangingPin, setIsChangingPin] = useState(false);
+
+  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+  const [passwordChangeForm, setPasswordChangeForm] = useState({ oldPassword: "", newPassword: "", error: "", success: "" });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     if (!authLoading) {
-      if (!user) router.push("/account");
-      else if (role !== "ADMIN") router.push("/dashboard");
+      if (!user) {
+        router.push("/account");
+        return;
+      }
+      if (role !== "ADMIN") {
+        router.push("/dashboard");
+        return;
+      }
+
+      if (typeof window !== "undefined" && sessionStorage.getItem("admin_pin_verified") === "true") {
+        setIsPinVerified(true);
+        setCheckingPin(false);
+        return;
+      }
+
+      getUserById(user.uid).then(userData => {
+        if (userData && userData.pin) setHasPinConfigured(true);
+        else setHasPinConfigured(false);
+        setCheckingPin(false);
+      });
     }
   }, [user, role, authLoading, router]);
+
+  async function hashPin(pin: string) {
+    const enc = new TextEncoder().encode(pin);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
   const fetchData = useCallback(async () => {
     if (role !== "ADMIN") return;
@@ -141,6 +170,76 @@ export default function AdminDashboard() {
     }
   };
 
+  const handlePinChangeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setPinChangeForm(p => ({ ...p, error: "", success: "" }));
+    setIsChangingPin(true);
+
+    try {
+      const userData = await getUserById(user.uid);
+      if (!userData) throw new Error("Erreur serveur.");
+
+      const lastChange = userData.lastPinChange || 0;
+      const timeSinceChange = Date.now() - lastChange;
+      if (timeSinceChange < 86400000 && lastChange !== 0) {
+        throw new Error("Vous ne pouvez modifier votre PIN qu'une fois toutes les 24 heures.");
+      }
+
+      const oldHashed = await hashPin(pinChangeForm.oldPin);
+      if (oldHashed !== userData.pin) {
+        throw new Error("L'ancien PIN est incorrect.");
+      }
+
+      if (pinChangeForm.newPin.length !== 6) {
+        throw new Error("Le nouveau PIN doit comporter 6 chiffres.");
+      }
+
+      const newHashed = await hashPin(pinChangeForm.newPin);
+      await setUserPin(user.uid, newHashed);
+      setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "Code PIN Maître modifié !" });
+      
+      setTimeout(() => {
+        setShowPinChangeModal(false);
+        setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" });
+      }, 3000);
+
+    } catch (err: any) {
+      setPinChangeForm(p => ({ ...p, error: err.message || "Erreur lors de la modification." }));
+    } finally {
+      setIsChangingPin(false);
+    }
+  };
+
+  const handlePasswordChangeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || (!user.email)) return;
+    setPasswordChangeForm(p => ({ ...p, error: "", success: "" }));
+    setIsChangingPassword(true);
+
+    try {
+      const credential = EmailAuthProvider.credential(user.email, passwordChangeForm.oldPassword);
+      await reauthenticateWithCredential(user, credential);
+
+      await updatePassword(user, passwordChangeForm.newPassword);
+      setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "Mot de passe modifié avec succès !" });
+      
+      setTimeout(() => {
+        setShowPasswordChangeModal(false);
+        setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "" });
+      }, 3000);
+
+    } catch (err: any) {
+      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password") {
+         setPasswordChangeForm(p => ({ ...p, error: "Ancien mot de passe incorrect." }));
+      } else {
+         setPasswordChangeForm(p => ({ ...p, error: "L'opération a échoué. Essayez de vous reconnecter." }));
+      }
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   const handleDeleteReview = async (id: string) => {
     if (confirm(language === "fr" ? "Supprimer ce témoignage définitivement ?" : "Delete this review permanently?")) {
       await deleteReview(id);
@@ -160,7 +259,7 @@ export default function AdminDashboard() {
   };
 
   // Keep Loading screen minimalist
-  if (authLoading || role !== "ADMIN") {
+  if (authLoading || role !== "ADMIN" || checkingPin) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-[var(--red)]/20 bg-white/5 mb-6"><Shield className="w-6 h-6 text-[var(--red)] animate-pulse" /></div>
@@ -169,23 +268,31 @@ export default function AdminDashboard() {
   }
 
   if (!isPinVerified) {
-    const handleVerifyPin = async (e: React.FormEvent) => {
+    const handlePinSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      setVerifying(true);
+      if (!user || pinInput.length < 4) return;
+      
       setPinError(false);
-      try {
-        const isValid = await verifyAdminPin(pin);
-        if (isValid) {
+      const hashed = await hashPin(pinInput);
+      
+      if (!hasPinConfigured) {
+        // Configuration
+        await setUserPin(user.uid, hashed);
+        setHasPinConfigured(true);
+        setIsPinVerified(true);
+        sessionStorage.setItem("admin_pin_verified", "true");
+        fetchData();
+      } else {
+        // Verification
+        const userData = await getUserById(user.uid);
+        if (userData?.pin === hashed) {
           setIsPinVerified(true);
           sessionStorage.setItem("admin_pin_verified", "true");
+          fetchData();
         } else {
           setPinError(true);
-          setPin("");
+          setPinInput("");
         }
-      } catch {
-        setPinError(true);
-      } finally {
-        setVerifying(false);
       }
     };
 
@@ -198,16 +305,22 @@ export default function AdminDashboard() {
             <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 text-[var(--red)] flex items-center justify-center mb-6 border border-[var(--red)]/20 shadow-inner">
               <Lock className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight mb-2">Accès Restreint</h1>
-            <p className="text-white/40 text-[11px] mb-8 leading-relaxed">Veuillez entrer le Code PIN Maître pour débloquer l'interface d'administration en toute sécurité.</p>
+            <h1 className="text-2xl font-black text-white tracking-tight mb-2">
+              {hasPinConfigured ? "Accès Restreint" : "Initier Code Admin"}
+            </h1>
+            <p className="text-white/40 text-[11px] mb-8 leading-relaxed">
+              {hasPinConfigured 
+                ? "Veuillez entrer le Code PIN Maître pour débloquer l'interface d'administration."
+                : "Afin de protéger l'accès principal, veuillez configurer votre Code PIN."}
+            </p>
             
-            <form onSubmit={handleVerifyPin} className="w-full space-y-6">
+            <form onSubmit={handlePinSubmit} className="w-full space-y-6">
               <div>
                 <input 
                   type="password"
-                  value={pin}
-                  onChange={(e) => { setPin(e.target.value); setPinError(false); }}
-                  placeholder="••••••"
+                  value={pinInput}
+                  onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
+                  placeholder="••••"
                   maxLength={6}
                   autoFocus
                   className={`w-full bg-[#050505] border ${pinError ? "border-red-500 text-red-500" : "border-white/10 text-white focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-white/10`}
@@ -223,10 +336,10 @@ export default function AdminDashboard() {
 
               <button 
                 type="submit" 
-                disabled={pin.length < 4 || verifying}
-                className="w-full py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
+                disabled={pinInput.length < 4}
+                className="w-full py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
               >
-                {verifying ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Déverrouiller"}
+                {hasPinConfigured ? "Déverrouiller" : "Enregistrer mon PIN"}
               </button>
             </form>
 
@@ -336,6 +449,14 @@ export default function AdminDashboard() {
             <button onClick={() => fetchData()} title="Actualiser les données" className="px-4 md:px-5 py-2.5 rounded-xl bg-[var(--red)]/10 border border-[var(--red)]/30 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-red-950/20 active:scale-95">
                <Clock className="w-4 h-4" />
                <span className="hidden sm:inline">Actualiser</span>
+            </button>
+
+            <button onClick={() => setShowPinChangeModal(true)} title="Modifier PIN Maître" className="relative text-emerald-400 hover:text-white p-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl transition-all">
+              <Key className="w-5 h-5" />
+            </button>
+
+            <button onClick={() => setShowPasswordChangeModal(true)} title="Modifier Mot de Passe" className="relative text-amber-500 hover:text-white p-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-xl transition-all">
+              <ShieldAlert className="w-5 h-5" />
             </button>
 
             <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-white/40 hover:text-white p-2.5 bg-white/5 border border-white/10 rounded-xl">
@@ -538,6 +659,29 @@ export default function AdminDashboard() {
               </div>
             ))}
 
+            {activeTab === "reviews" && data.reviews.map((rev) => (
+              <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 space-y-4 shadow-xl">
+                <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-yellow-500" />
+                <div className="flex justify-between items-start pl-2">
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-yellow-400 text-yellow-400" : "fill-white/5 text-white/10"}`} />
+                    ))}
+                  </div>
+                  <span className="text-[9px] font-black text-white/40 uppercase">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
+                </div>
+                <div className="pl-2">
+                  <p className="text-white/80 text-sm italic line-clamp-3">"{rev.comment}"</p>
+                  <p className="text-[10px] font-black uppercase text-yellow-500 mt-2">{rev.authorName || "Client"} • {rev.serviceId || "Général"}</p>
+                </div>
+                <div className="flex gap-3 pl-2 pt-2 border-t border-white/5">
+                  <button onClick={() => handleDeleteReview(rev.id)} className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20 active:scale-95 transition-all">
+                    <Trash2 className="w-4 h-4" /> Supprimer
+                  </button>
+                </div>
+              </div>
+            ))}
+
             {data[activeTab as keyof typeof data].length === 0 && (
               <div className="py-24 text-center rounded-[2.5rem] border border-dashed border-white/10 bg-[#0D0D0D]/50 backdrop-blur-xl">
                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6"><Search className="w-8 h-8 text-white/20" /></div>
@@ -653,6 +797,32 @@ export default function AdminDashboard() {
                           <td className="py-4 px-6 flex items-center gap-2">
                             <button onClick={() => setEditServiceModal(srv)} className="p-2 bg-blue-500/20 text-blue-500 rounded hover:bg-blue-500/40"><Edit3 className="w-4 h-4" /></button>
                             <button onClick={() => handleDeleteService(srv.id)} className="p-2 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40"><Trash2 className="w-4 h-4" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </>
+                )}
+                {activeTab === "reviews" && (
+                  <>
+                    <thead><tr className="bg-white/5 border-b border-white/10">{["Date", "Client & Service", "Note", "Commentaire", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
+                    <tbody className="divide-y divide-white/5">
+                      {data.reviews.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-white/40 font-bold">Aucun témoignage.</td></tr>) : data.reviews.map((rev) => (
+                        <tr key={rev.id} className="hover:bg-white/5">
+                          <td className="py-4 px-6 font-mono text-[9px] text-white/40">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                          <td className="py-4 px-6"><p className="font-black text-white">{rev.authorName || "Client"}</p><p className="text-[9px] text-white/40 uppercase tracking-widest">{rev.serviceId || "Général"}</p></td>
+                          <td className="py-4 px-6">
+                            <div className="flex gap-1">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-yellow-400 text-yellow-400" : "fill-white/5 text-white/10"}`} />
+                              ))}
+                            </div>
+                          </td>
+                          <td className="py-4 px-6 font-medium text-white/60 text-xs italic max-w-xs truncate">"{rev.comment}"</td>
+                          <td className="py-4 px-6">
+                            <button onClick={() => handleDeleteReview(rev.id)} className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors" title="Supprimer">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -775,6 +945,149 @@ export default function AdminDashboard() {
             </div>
           </motion.div>
         )}
+
+        {/* PIN Change Modal */}
+        {showPinChangeModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+            >
+              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
+              <button disabled={isChangingPin} onClick={() => setShowPinChangeModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                  <Key className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Code PIN Admin</h3>
+                <p className="text-xs font-medium text-white/40 leading-relaxed">
+                  Modifiez votre code d'accès maître. (6 chiffres)
+                </p>
+              </div>
+
+              <form onSubmit={handlePinChangeSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien PIN</label>
+                  <input 
+                    type="password"
+                    value={pinChangeForm.oldPin}
+                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, oldPin: e.target.value, error: "" }))}
+                    placeholder="••••••"
+                    maxLength={6}
+                    required
+                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau PIN</label>
+                  <input 
+                    type="password"
+                    value={pinChangeForm.newPin}
+                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
+                    placeholder="••••••"
+                    maxLength={6}
+                    required
+                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
+                  />
+                </div>
+                
+                <AnimatePresence>
+                  {pinChangeForm.error && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center mt-2">
+                      {pinChangeForm.error}
+                    </motion.p>
+                  )}
+                  {pinChangeForm.success && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
+                      {pinChangeForm.success}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                <div className="pt-2">
+                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 6 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center">
+                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Confirmer"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Password Change Modal */}
+        {showPasswordChangeModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPassword && setShowPasswordChangeModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+            >
+              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
+              <button disabled={isChangingPassword} onClick={() => setShowPasswordChangeModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                  <ShieldAlert className="w-6 h-6 text-amber-500" />
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Mot de passe</h3>
+                <p className="text-xs font-medium text-white/40 leading-relaxed">
+                  Modifiez les identifiants de connexion du compte Administrateur Principal.
+                </p>
+              </div>
+
+              <form onSubmit={handlePasswordChangeSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Mot de Passe</label>
+                  <input 
+                    type="password"
+                    value={passwordChangeForm.oldPassword}
+                    onChange={(e) => setPasswordChangeForm(prev => ({ ...prev, oldPassword: e.target.value, error: "" }))}
+                    placeholder="Saisissez l'ancien mot de passe"
+                    required
+                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-sm font-bold p-4 focus:border-amber-500 outline-none placeholder:text-white/10 placeholder:font-normal"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Mot de Passe</label>
+                  <input 
+                    type="password"
+                    value={passwordChangeForm.newPassword}
+                    onChange={(e) => setPasswordChangeForm(prev => ({ ...prev, newPassword: e.target.value, error: "" }))}
+                    placeholder="Saisissez le nouveau mot de passe"
+                    required
+                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-sm font-bold p-4 focus:border-amber-500 outline-none placeholder:text-white/10 placeholder:font-normal"
+                  />
+                </div>
+                
+                <AnimatePresence>
+                  {passwordChangeForm.error && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center mt-2">
+                      {passwordChangeForm.error}
+                    </motion.p>
+                  )}
+                  {passwordChangeForm.success && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
+                      {passwordChangeForm.success}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                <div className="pt-2">
+                  <button type="submit" disabled={isChangingPassword || !passwordChangeForm.newPassword || !passwordChangeForm.oldPassword} className="w-full py-4 bg-amber-500 hover:bg-amber-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center">
+                    {isChangingPassword ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Mettre à jour"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
       </AnimatePresence>
 
     </div>

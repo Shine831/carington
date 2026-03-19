@@ -119,7 +119,10 @@ export const getUserById = async (uid: string) => {
 };
 
 export const setUserPin = async (uid: string, pinHash: string) => {
-  await updateDoc(doc(db, "users", uid), { pin: pinHash });
+  await updateDoc(doc(db, "users", uid), { 
+    pin: pinHash,
+    lastPinChange: Date.now()
+  });
 };
 
 export const deleteUserDoc = async (uid: string) => {

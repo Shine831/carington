@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,6 +11,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getBookings, deleteBooking, createReview, getUserById, setUserPin } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 
 const STATUS_MAP = {
   fr: {
@@ -49,6 +51,11 @@ export default function DashboardPage() {
   const [isPinVerified, setIsPinVerified] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
+  
+  // Pin Change State
+  const [showPinChangeModal, setShowPinChangeModal] = useState(false);
+  const [pinChangeForm, setPinChangeForm] = useState({ oldPin: "", newPin: "", error: "", success: "" });
+  const [isChangingPin, setIsChangingPin] = useState(false);
 
   // Route protection
   useEffect(() => {
@@ -119,10 +126,68 @@ export default function DashboardPage() {
     }
   };
 
+  const handlePinChangeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setPinChangeForm(p => ({ ...p, error: "", success: "" }));
+    setIsChangingPin(true);
+
+    try {
+      const userData = await getUserById(user.uid);
+      if (!userData) throw new Error("Erreur serveur.");
+
+      // Check the 24h delay (86400000 ms)
+      const lastChange = userData.lastPinChange || 0;
+      const timeSinceChange = Date.now() - lastChange;
+      if (timeSinceChange < 86400000 && lastChange !== 0) {
+        throw new Error("Vous ne pouvez modifier votre PIN qu'une fois toutes les 24 heures par mesure de sécurité.");
+      }
+
+      // Verify old PIN
+      const oldHashed = await hashPin(pinChangeForm.oldPin);
+      if (oldHashed !== userData.pin) {
+        throw new Error("L'ancien PIN est incorrect.");
+      }
+
+      // Verify new PIN length
+      if (pinChangeForm.newPin.length !== 4) {
+        throw new Error("Le nouveau PIN doit comporter 4 chiffres.");
+      }
+
+      // Save new PIN
+      const newHashed = await hashPin(pinChangeForm.newPin);
+      await setUserPin(user.uid, newHashed);
+      setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "Votre PIN a été modifié avec succès !" });
+      
+      // Auto close after 3s
+      setTimeout(() => {
+        setShowPinChangeModal(false);
+        setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" });
+      }, 3000);
+
+    } catch (err: any) {
+      setPinChangeForm(p => ({ ...p, error: err.message || "Une erreur est survenue." }));
+    } finally {
+      setIsChangingPin(false);
+    }
+  };
+
   const handleDeleteRequest = async (id: string) => {
     if (confirm(language === "fr" ? "Annuler cette demande ?" : "Cancel this request?")) {
       await deleteBooking(id);
       fetchUserBookings();
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!user || !user.email) return;
+    if (confirm(language === "fr" ? "Recevoir un lien de réinitialisation par email ?" : "Receive a reset link by email?")) {
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        alert(language === "fr" ? "Un lien de réinitialisation a été envoyé à votre adresse email." : "A reset link has been sent to your email.");
+      } catch (e: any) {
+        alert("Erreur: " + e.message);
+      }
     }
   };
 
@@ -253,6 +318,24 @@ export default function DashboardPage() {
                   <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Connecté en AES-256</span>
                 </div>
               </div>
+              <button 
+                onClick={handlePasswordReset} 
+                className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
+              >
+                <ShieldAlert className="w-5 h-5 text-white/50 group-hover:text-amber-400 transition-colors" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  {language === "fr" ? "Mot de passe" : "Password"}
+                </span>
+              </button>
+              <button 
+                onClick={() => setShowPinChangeModal(true)} 
+                className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
+              >
+                <Key className="w-5 h-5 text-white/50 group-hover:text-white transition-colors" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  {language === "fr" ? "Securité PIN" : "PIN Security"}
+                </span>
+              </button>
               <button 
                 onClick={() => setShowReviewModal(true)} 
                 className="flex items-center gap-3 bg-[var(--red)]/10 hover:bg-[var(--red)] border border-[var(--red)]/20 hover:border-[var(--red)] px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
@@ -551,6 +634,78 @@ export default function DashboardPage() {
                     language === "fr" ? "Publier mon avis" : "Publish review"
                   )}
                 </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* PIN Change Modal */}
+        {showPinChangeModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+            >
+              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
+              <button disabled={isChangingPin} onClick={() => setShowPinChangeModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                  <Key className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Modifier le PIN</h3>
+                <p className="text-xs font-medium text-white/40 leading-relaxed">
+                  Protégez vos données. Vous ne pouvez modifier ce code qu'une fois toutes les 24h.
+                </p>
+              </div>
+
+              <form onSubmit={handlePinChangeSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Code</label>
+                  <input 
+                    type="password"
+                    value={pinChangeForm.oldPin}
+                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, oldPin: e.target.value, error: "" }))}
+                    placeholder="••••"
+                    maxLength={4}
+                    required
+                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Code</label>
+                  <input 
+                    type="password"
+                    value={pinChangeForm.newPin}
+                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
+                    placeholder="••••"
+                    maxLength={4}
+                    required
+                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
+                  />
+                </div>
+                
+                <AnimatePresence>
+                  {pinChangeForm.error && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center mt-2">
+                      {pinChangeForm.error}
+                    </motion.p>
+                  )}
+                  {pinChangeForm.success && (
+                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
+                      {pinChangeForm.success}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                <div className="pt-2">
+                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 4 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center">
+                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Confirmer"}
+                  </button>
+                </div>
               </form>
             </motion.div>
           </div>
