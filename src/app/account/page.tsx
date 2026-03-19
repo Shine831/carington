@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Lock, Mail, ArrowRight, ShieldCheck, Briefcase, History, AlertCircle, UserPlus } from "lucide-react";
+import { User, Lock, Mail, ArrowRight, ShieldCheck, Briefcase, History, AlertCircle, UserPlus, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +23,7 @@ export default function AccountPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -251,10 +252,13 @@ export default function AccountPage() {
                     <label htmlFor="login-email" className="floating-label font-bold left-14">{t.account.login.email}</label>
                   </div>
                   
-                  <div className="form-group has-icon">
+                  <div className="form-group has-icon relative">
                     <Lock className="form-input-icon text-[var(--muted)]" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="form-input border-2 rounded-xl py-4 pl-14" placeholder=" " id="login-password" />
+                    <input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} required className="form-input border-2 rounded-xl py-4 pl-14 pr-12" placeholder=" " id="login-password" />
                     <label htmlFor="login-password" className="floating-label font-bold left-14">{t.account.login.password}</label>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--red)] transition-colors p-1">
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
 
                   <div className="pt-4">
@@ -330,10 +334,13 @@ export default function AccountPage() {
                     <label htmlFor="reg-email" className="floating-label font-bold left-14">EMAIL</label>
                   </div>
                   
-                  <div className="form-group has-icon">
+                  <div className="form-group has-icon relative">
                     <Lock className="form-input-icon text-[var(--muted)]" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="form-input border-2 rounded-xl py-4 pl-14" placeholder=" " id="reg-password" />
+                    <input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} required className="form-input border-2 rounded-xl py-4 pl-14 pr-12" placeholder=" " id="reg-password" />
                     <label htmlFor="reg-password" className="floating-label font-bold left-14">MOT DE PASSE</label>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--red)] transition-colors p-1">
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
 
                   <div className="pt-4">
