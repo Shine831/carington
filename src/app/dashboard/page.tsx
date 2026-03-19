@@ -126,7 +126,11 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="bg-white/60 backdrop-blur-2xl rounded-[2rem] overflow-hidden shadow-[var(--shadow-xl)] border border-white">
+          <div className="bg-white/60 backdrop-blur-2xl rounded-[2rem] overflow-hidden shadow-[var(--shadow-xl)] border border-white relative group/table">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-slate-300 md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] vertical-text">Scroll</span>
+              <ArrowRight className="w-3 h-3 rotate-0" />
+            </div>
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left text-sm border-collapse min-w-[700px]">
                 <thead>

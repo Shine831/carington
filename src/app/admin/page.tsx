@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
@@ -162,11 +162,11 @@ export default function AdminDashboard() {
   const langKey = language as "fr" | "en";
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex pt-0 relative overflow-x-hidden text-slate-100 font-sans">
+    <div className="min-h-screen bg-[#0A0A0A] flex pt-0 relative overflow-x-hidden text-slate-100 font-sans pb-20 md:pb-0">
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.05]" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
 
-      {/* Sidebar */}
+      {/* Sidebar (Desktop) */}
       <motion.aside className="w-64 xl:w-72 bg-[#050505] flex flex-col fixed top-0 bottom-0 left-0 z-40 hidden md:flex border-r border-white/10">
         <div className="p-8 border-b border-white/5">
           <div className="flex items-center gap-4">
@@ -194,8 +194,39 @@ export default function AdminDashboard() {
         </div>
       </motion.aside>
 
+      {/* Mobile Bottom Nav */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#050505]/90 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around p-2 md:hidden">
+        {NAV.map(({ id, label, icon: Icon, badge }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`flex flex-col items-center gap-1.5 p-2 transition-all relative ${
+              activeTab === id ? "text-[var(--red)]" : "text-white/40"
+            }`}
+          >
+            <Icon className="w-5 h-5" />
+            <span className="text-[8px] font-black uppercase tracking-wider">{label}</span>
+            {badge && (
+              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[var(--red)] text-white text-[7px] font-black rounded-full flex items-center justify-center ring-2 ring-[#050505]">
+                {badge}
+              </span>
+            )}
+            {activeTab === id && (
+              <motion.div layoutId="activeTab" className="absolute -top-2 left-0 right-0 h-0.5 bg-[var(--red)]" />
+            )}
+          </button>
+        ))}
+        <button
+          onClick={handleLogout}
+          className="flex flex-col items-center gap-1.5 p-2 text-white/40"
+        >
+          <LogOut className="w-5 h-5 text-red-500/60" />
+          <span className="text-[8px] font-black uppercase tracking-wider">Sortie</span>
+        </button>
+      </div>
+
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-20 pb-28 md:pb-0">
+      <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-20">
         
         {/* Top Header */}
         <header className="bg-[#0A0A0A]/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-white/5">
@@ -265,7 +296,11 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
+          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl relative group/table">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-white/20 md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] vertical-text">Scroll</span>
+              <ArrowRight className="w-3 h-3 rotate-0" />
+            </div>
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left text-sm border-collapse min-w-[700px]">
                 
