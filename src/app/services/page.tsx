@@ -1,32 +1,43 @@
 "use client";
 
-import { Search, Server, ShieldAlert, Video, Code, PhoneCall, GraduationCap, PenTool, Network, ArrowRight } from "lucide-react";
+import { Search, Server, ShieldAlert, Video, Code, PhoneCall, PenTool, Network, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, SlideLeft } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
+import { getServices } from "@/lib/firebase/db";
+
+const getIconForCategory = (cat: string) => {
+  if (!cat) return Server;
+  const c = cat.toLowerCase();
+  if (c.includes("net") || c.includes("res") || c.includes("cab")) return Network;
+  if (c.includes("voip") || c.includes("tel")) return PhoneCall;
+  if (c.includes("cyber") || c.includes("sec") || c.includes("audit")) return ShieldAlert;
+  if (c.includes("vid") || c.includes("cam") || c.includes("surv")) return Video;
+  if (c.includes("web") || c.includes("dev") || c.includes("app")) return Code;
+  if (c.includes("maint")) return PenTool;
+  return Server;
+};
 
 export default function ServicesPage() {
   const { t, language } = useI18n();
   const [query, setQuery] = useState("");
+  const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const SERVICES = [
-    { id: "infog", tag: "B2B / B2C", icon: Server, title: t.services_page.items.it.title, desc: t.services_page.items.it.desc },
-    { id: "cable", tag: "B2B", icon: Network, title: t.services_page.items.network_cable.title, desc: t.services_page.items.network_cable.desc },
-    { id: "voip", tag: "B2B", icon: PhoneCall, title: t.services_page.items.voip.title, desc: t.services_page.items.voip.desc },
-    { id: "reseau", tag: "B2B / B2C", icon: Network, title: t.services_page.items.network.title, desc: t.services_page.items.network.desc },
-    { id: "cyber", tag: "B2B", icon: ShieldAlert, title: t.services_page.items.cyber.title, desc: t.services_page.items.cyber.desc },
-    { id: "video", tag: "B2B / B2C", icon: Video, title: t.services_page.items.video.title, desc: t.services_page.items.video.desc },
-    { id: "web", tag: "B2B / B2C", icon: Code, title: t.services_page.items.web.title, desc: t.services_page.items.web.desc },
-    { id: "maintenance", tag: "B2B / B2C", icon: PenTool, title: t.services_page.items.maintenance.title, desc: t.services_page.items.maintenance.desc },
-  ];
+  useEffect(() => {
+    getServices().then((data) => {
+      setServices(data.length > 0 ? data : []);
+      setLoading(false);
+    });
+  }, []);
 
-  const filtered = SERVICES.filter(s =>
-    s.title.toLowerCase().includes(query.toLowerCase()) ||
-    s.tag.toLowerCase().includes(query.toLowerCase()) ||
-    s.desc.toLowerCase().includes(query.toLowerCase())
+  const filtered = services.filter(s =>
+    (s.title || "").toLowerCase().includes(query.toLowerCase()) ||
+    (s.category || "").toLowerCase().includes(query.toLowerCase()) ||
+    (s.description || "").toLowerCase().includes(query.toLowerCase())
   );
 
   return (
@@ -70,7 +81,7 @@ export default function ServicesPage() {
             <div className="flex items-center justify-between mb-16 px-2">
               <p className="text-[10px] text-[var(--muted)] font-black uppercase tracking-widest flex items-center gap-3">
                 <span className="w-8 h-px bg-[var(--red)]" />
-                {filtered.length} {t.services_page.solutions_available}
+                {loading ? "..." : filtered.length} {t.services_page.solutions_available}
               </p>
               <div className="h-px flex-1 bg-[var(--border)] mx-8 hidden md:block opacity-50" />
             </div>
@@ -78,8 +89,13 @@ export default function ServicesPage() {
           
           <AnimatePresence mode="popLayout">
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {filtered.map((service, i) => {
-                const Icon = service.icon;
+              {loading ? (
+                /* Loading Skeleton */
+                [1,2,3,4,5,6].map(n => (
+                  <div key={n} className="h-64 rounded-[2.5rem] bg-white border-2 border-slate-50 animate-pulse" />
+                ))
+              ) : filtered.map((service, i) => {
+                const Icon = getIconForCategory(service.category);
                 
                 return (
                   <StaggerItem 
@@ -99,7 +115,7 @@ export default function ServicesPage() {
                               <Icon className="w-7 h-7 text-[var(--red)] group-hover:text-white transition-colors duration-500" />
                             </div>
                             <span className="text-[9px] font-black tracking-widest text-[var(--muted)] border border-slate-200 px-4 py-1.5 rounded-full uppercase bg-white/50 group-hover:border-[var(--red)]/20 transition-colors">
-                              {service.tag}
+                              {service.category || "Service"}
                             </span>
                           </div>
                           
@@ -107,8 +123,8 @@ export default function ServicesPage() {
                             <h3 className="text-xl font-black text-[var(--charcoal)] mb-4 tracking-tighter leading-tight">
                               {service.title}
                             </h3>
-                            <p className="text-[13px] text-[var(--slate)] leading-relaxed mb-8 font-medium">
-                              {service.desc}
+                            <p className="text-[13px] text-[var(--slate)] leading-relaxed mb-8 font-medium line-clamp-3">
+                              {service.description}
                             </p>
                           </div>
                           

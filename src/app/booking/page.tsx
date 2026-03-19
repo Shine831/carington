@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldCheck, Lock, ArrowRight, FileText, ChevronRight, CheckCircle2, AlertCircle, User, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,14 +8,14 @@ import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem } from "@/
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { createBooking } from "@/lib/firebase/db";
+import { createBooking, getServices } from "@/lib/firebase/db";
 
 const INITIAL = {
   clientType: "b2b",
   entity: "",
   email: "",
   phone: "",
-  serviceId: "cyber",
+  serviceId: "",
   budget: "undef",
   timeframe: "normal",
   description: "",
@@ -29,6 +29,16 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [services, setServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    getServices().then((data) => {
+      setServices(data);
+      if (data.length > 0) {
+        setForm(f => ({ ...f, serviceId: data[0].title }));
+      }
+    });
+  }, []);
 
   const set = (field: string, val: string) => setForm((f) => ({ ...f, [field]: val }));
 
@@ -219,14 +229,13 @@ export default function BookingPage() {
                           <div className="form-group bg-white/50 backdrop-blur-sm rounded-xl relative">
                             <select value={form.serviceId} onChange={e => set("serviceId", e.target.value)}
                               className="form-input border-2 border-white/80 bg-transparent rounded-xl py-4 appearance-none shadow-sm focus:bg-white" id="booking-service">
-                              <option value="cyber">{t.services_page.items.cyber.title}</option>
-                              <option value="reseau">{t.services_page.items.network.title}</option>
-                              <option value="infog">{t.services_page.items.it.title}</option>
-                              <option value="video">{t.services_page.items.video.title}</option>
-                              <option value="voip">{t.services_page.items.voip.title}</option>
-                              <option value="web">{t.services_page.items.web.title}</option>
-                              <option value="maintenance">{t.services_page.items.maintenance.title}</option>
-                              <option value="cable">{t.services_page.items.network_cable.title}</option>
+                              {services.length === 0 ? (
+                                <option value="">{language === "fr" ? "Chargement des services..." : "Loading services..."}</option>
+                              ) : (
+                                services.map(s => (
+                                  <option key={s.id} value={s.title}>{s.title}</option>
+                                ))
+                              )}
                             </select>
                             <label htmlFor="booking-service" className="floating-label font-bold text-[var(--slate)]">{t.booking.step2_service}</label>
                             <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]"><ChevronRight className="w-4 h-4 rotate-90" /></div>

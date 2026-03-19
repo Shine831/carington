@@ -8,7 +8,7 @@ import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { getServices, getBookings, getUsers, getMessages, updateBookingStatus, updateMessageStatus, deleteBooking, deleteService, createService, BookingData } from "@/lib/firebase/db";
+import { getServices, getBookings, getUsers, getMessages, updateBookingStatus, updateMessageStatus, updateService, deleteBooking, deleteService, createService, BookingData } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
@@ -107,6 +107,17 @@ export default function AdminDashboard() {
     e.preventDefault();
     await createService(newServiceForm);
     setNewServiceModal(false);
+    fetchData();
+  };
+
+  const [editServiceModal, setEditServiceModal] = useState<any | null>(null);
+
+  const handleUpdateService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editServiceModal) return;
+    const { id, title, description, priceCFA, category } = editServiceModal;
+    await updateService(id, { title, description, priceCFA, category });
+    setEditServiceModal(null);
     fetchData();
   };
 
@@ -345,7 +356,8 @@ export default function AdminDashboard() {
                           <td className="py-4 px-6 font-bold text-white/40 text-[10px] uppercase">{srv.category || "IT"}</td>
                           <td className="py-4 px-6 font-black text-emerald-400 italic">{srv.priceCFA}</td>
                           <td className="py-4 px-6 font-medium text-white/60 text-xs max-w-xs">{srv.description}</td>
-                          <td className="py-4 px-6">
+                          <td className="py-4 px-6 flex items-center gap-2">
+                            <button onClick={() => setEditServiceModal(srv)} className="p-2 bg-blue-500/20 text-blue-500 rounded hover:bg-blue-500/40"><Edit3 className="w-4 h-4" /></button>
                             <button onClick={() => handleDeleteService(srv.id)} className="p-2 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40"><Trash2 className="w-4 h-4" /></button>
                           </td>
                         </tr>
@@ -412,6 +424,7 @@ export default function AdminDashboard() {
             </div>
           </motion.div>
         )}
+
         {/* Change Status & Admin Note Modal */}
         {statusPrompt && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -444,6 +457,25 @@ export default function AdminDashboard() {
                 <div className="flex justify-end gap-3 mt-6">
                   <button type="button" onClick={() => setNewServiceModal(false)} className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-white/10 hover:bg-white/20 text-white">Annuler</button>
                   <button type="submit" className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]">Créer Service</button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Edit Service Modal */}
+        {editServiceModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="bg-[#111] p-8 rounded-3xl border border-blue-500/20 w-full max-w-md relative shadow-[0_0_50px_rgba(59,130,246,0.15)]">
+              <h2 className="text-xl font-black text-white uppercase tracking-tighter mb-6">Modifier le Service</h2>
+              <form onSubmit={handleUpdateService} className="space-y-4">
+                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Titre</label><input required type="text" value={editServiceModal.title} onChange={e => setEditServiceModal({...editServiceModal, title: e.target.value})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white focus:border-blue-500 outline-none transition-colors" /></div>
+                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Catégorie</label><input required type="text" value={editServiceModal.category || ""} onChange={e => setEditServiceModal({...editServiceModal, category: e.target.value})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white focus:border-blue-500 outline-none transition-colors" /></div>
+                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Prix CFA (Mettre 0 pour devis)</label><input required type="number" value={editServiceModal.priceCFA} onChange={e => setEditServiceModal({...editServiceModal, priceCFA: Number(e.target.value)})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white focus:border-blue-500 outline-none transition-colors" /></div>
+                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Description</label><textarea required value={editServiceModal.description} onChange={e => setEditServiceModal({...editServiceModal, description: e.target.value})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white h-24 resize-none focus:border-blue-500 outline-none transition-colors" /></div>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button type="button" onClick={() => setEditServiceModal(null)} className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-white/10 hover:bg-white/20 text-white">Annuler</button>
+                  <button type="submit" className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-blue-500 hover:bg-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]">Mettre à jour</button>
                 </div>
               </form>
             </div>
