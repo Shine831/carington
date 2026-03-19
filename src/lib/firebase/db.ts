@@ -125,6 +125,10 @@ export const setUserPin = async (uid: string, pinHash: string) => {
   });
 };
 
+export const updateUserDoc = async (uid: string, data: Partial<{ displayName: string; email: string; phone: string }>) => {
+  await updateDoc(doc(db, "users", uid), { ...data, updatedAt: serverTimestamp() });
+};
+
 export const deleteUserDoc = async (uid: string) => {
   try {
     await deleteDoc(doc(db, "users", uid));
@@ -209,4 +213,19 @@ export const getReviews = async (serviceId?: string) => {
 
 export const deleteReview = async (id: string) => {
   await deleteDoc(doc(db, "reviews", id));
+};
+
+export const updateReview = async (id: string, data: Partial<{ rating: number; comment: string }>) => {
+  await updateDoc(doc(db, "reviews", id), { ...data, updatedAt: serverTimestamp() });
+};
+
+export const getReviewsByUserId = async (userId: string) => {
+  try {
+    const q = query(collection(db, "reviews"), where("userId", "==", userId));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    console.error("getReviewsByUserId:", e);
+    return [];
+  }
 };

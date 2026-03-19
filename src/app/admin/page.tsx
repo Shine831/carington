@@ -66,6 +66,10 @@ export default function AdminDashboard() {
   const [passwordChangeForm, setPasswordChangeForm] = useState({ oldPassword: "", newPassword: "", error: "", success: "" });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
+  // Profile State
+  const [profileForm, setProfileForm] = useState({ name: "", email: "", currentPassword: "", error: "", success: "" });
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -86,6 +90,7 @@ export default function AdminDashboard() {
       getUserById(user.uid).then(userData => {
         if (userData && userData.pin) setHasPinConfigured(true);
         else setHasPinConfigured(false);
+        setProfileForm({ name: user.displayName || "Admin", email: user.email || "", currentPassword: "", error: "", success: "" });
         setCheckingPin(false);
       });
     }
@@ -240,6 +245,41 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setIsUpdatingProfile(true);
+    setProfileForm(p => ({ ...p, error: "", success: "" }));
+
+    try {
+      const { updateProfile: fbUpdateProfile, updateEmail: fbUpdateEmail } = await import("firebase/auth");
+      const { updateUserDoc } = await import("@/lib/firebase/db");
+
+      // 1. Update Display Name
+      if (profileForm.name !== user.displayName) {
+        await fbUpdateProfile(user, { displayName: profileForm.name });
+        await updateUserDoc(user.uid, { displayName: profileForm.name });
+      }
+
+      // 2. Update Email (requires re-auth)
+      if (profileForm.email !== user.email) {
+        if (!profileForm.currentPassword) {
+           throw new Error("Mot de passe requis pour changer l'email.");
+        }
+        const credential = EmailAuthProvider.credential(user.email!, profileForm.currentPassword);
+        await reauthenticateWithCredential(user, credential);
+        await fbUpdateEmail(user, profileForm.email);
+        await updateUserDoc(user.uid, { email: profileForm.email });
+      }
+
+      setProfileForm(p => ({ ...p, success: "Profil Administrateur mis à jour !", currentPassword: "" }));
+    } catch (err: any) {
+      setProfileForm(p => ({ ...p, error: err.message }));
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
   const handleDeleteReview = async (id: string) => {
     if (confirm(language === "fr" ? "Supprimer ce témoignage définitivement ?" : "Delete this review permanently?")) {
       await deleteReview(id);
@@ -365,6 +405,7 @@ export default function AdminDashboard() {
     { id: "clients",   label: t.admin.nav.clients, icon: Users },
     { id: "services",  label: t.admin.nav.catalog, icon: Briefcase },
     { id: "reviews",   label: language === "fr" ? "Témoignages" : "Reviews", icon: Star, badge: data.reviews.length > 0 ? data.reviews.length : undefined },
+    { id: "profile",   label: language === "fr" ? "Compte" : "Account", icon: Shield },
   ];
 
   const STATS = [
@@ -832,6 +873,111 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
+
+          {/* Profile Tab */}
+          {activeTab === "profile" && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                {/* Meta Side */}
+                <div className="space-y-6">
+                  <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex flex-col items-center text-center relative overflow-hidden">
+                    <AuraGradient color="var(--red)" className="top-0 left-0 w-32 h-32 opacity-10" />
+                    <div className="w-24 h-24 rounded-full bg-[var(--red)] flex items-center justify-center text-3xl font-black text-white mb-6 shadow-[var(--shadow-red)]">
+                      {(user?.displayName || "A")[0]}
+                    </div>
+                    <h3 className="text-2xl font-black text-white tracking-tight">{user?.displayName || "Administrateur"}</h3>
+                    <p className="text-[10px] font-black uppercase text-emerald-400 tracking-[0.2em] mt-2">Accès Super-Privilégié</p>
+                    <div className="mt-8 pt-8 border-t border-white/5 w-full space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-white/20 uppercase">Version Système</span>
+                        <span className="text-[10px] font-bold text-white/60">V2.4.0-STABLE</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                         <span className="text-[10px] font-black text-white/20 uppercase">Dernier Login</span>
+                         <span className="text-[10px] font-bold text-white/60">Aujourd'hui</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-[#111] border border-white/10 rounded-[2rem] space-y-3">
+                    <button onClick={() => setShowPinChangeModal(true)} className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 group">
+                      <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white"><Key className="w-4 h-4 text-emerald-400" /> Code PIN Maître</span>
+                      <ArrowRight className="w-4 h-4 text-white/20" />
+                    </button>
+                    <button onClick={() => setShowPasswordChangeModal(true)} className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 group">
+                      <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white"><ShieldAlert className="w-4 h-4 text-amber-500" /> Mot de Passe</span>
+                      <ArrowRight className="w-4 h-4 text-white/20" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Form Main */}
+                <div className="lg:col-span-2">
+                   <div className="p-8 md:p-10 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden h-full">
+                     <AuraGradient color="var(--red)" className="bottom-[-10%] right-[-10%] w-64 h-64 opacity-[0.05]" />
+                     <h3 className="text-2xl font-black text-white tracking-tighter mb-8 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><Edit3 className="w-5 h-5 text-emerald-400" /></div>
+                        Informations Administrateur
+                     </h3>
+
+                     <form onSubmit={handleProfileUpdate} className="space-y-8 relative z-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                           <div className="space-y-2">
+                             <label className="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] pl-1">Nom d'affichage</label>
+                             <input 
+                               type="text" 
+                               value={profileForm.name} 
+                               onChange={e => setProfileForm({...profileForm, name: e.target.value})}
+                               className="w-full bg-[#050505] border border-white/10 text-white p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-white/5"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] pl-1">Email Principal</label>
+                             <input 
+                               type="email" 
+                               value={profileForm.email} 
+                               onChange={e => setProfileForm({...profileForm, email: e.target.value})}
+                               className="w-full bg-[#050505] border border-white/10 text-white p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-white/5"
+                             />
+                           </div>
+                        </div>
+
+                        <div className="space-y-2 max-w-md">
+                          <label className="text-[10px] font-black uppercase text-amber-500 tracking-[0.2em] pl-1 flex items-center gap-2">
+                             <Lock className="w-3 h-3" /> Mot de passe actuel
+                             <span className="text-white/20 capitalize font-medium italic">(Nécessaire pour changer l'email)</span>
+                          </label>
+                          <input 
+                            type="password" 
+                            value={profileForm.currentPassword}
+                            onChange={e => setProfileForm({...profileForm, currentPassword: e.target.value})}
+                            placeholder="••••••••••••"
+                            className="w-full bg-[#050505] border border-white/10 text-white p-5 rounded-2xl text-sm font-bold focus:border-white/20 outline-none transition-all placeholder:text-white/5"
+                          />
+                        </div>
+
+                        <AnimatePresence>
+                          {profileForm.error && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-[10px] font-black text-red-500 uppercase tracking-widest">{profileForm.error}</motion.p>}
+                          {profileForm.success && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{profileForm.success}</motion.p>}
+                        </AnimatePresence>
+
+                        <div className="pt-6">
+                           <button 
+                             type="submit" 
+                             disabled={isUpdatingProfile}
+                             className="px-10 py-5 bg-white text-black rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center gap-3"
+                           >
+                             {isUpdatingProfile ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Sauvegarder Configuration"}
+                           </button>
+                        </div>
+                     </form>
+                   </div>
+                </div>
+
+              </div>
+            </motion.div>
+          )}
         </div>
       </main>
 

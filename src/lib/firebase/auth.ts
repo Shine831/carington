@@ -3,6 +3,9 @@ import {
   signInWithEmailAndPassword, 
   signOut,
   updateProfile,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
   sendPasswordResetEmail,
@@ -165,4 +168,27 @@ export const resetPassword = async (email: string) => {
     console.error("Error sending password reset:", error.message);
     throw new Error(error.message);
   }
+};
+
+/**
+ * Update user's display name.
+ */
+export const updateUserDisplayName = async (uid: string, newName: string) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("No user logged in.");
+  
+  await updateProfile(user, { displayName: newName });
+  // Sync with Firestore (handled by caller or here)
+};
+
+/**
+ * Update user's email with re-authentication.
+ */
+export const updateUserEmail = async (currentPassword: string, newEmail: string) => {
+  const user = auth.currentUser;
+  if (!user || !user.email) throw new Error("No user logged in.");
+
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updateEmail(user, newEmail);
 };

@@ -70,7 +70,9 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow create: if isSignedIn() &&
         request.resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin();
+      allow update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
     }
 
   }

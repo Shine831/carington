@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,10 +9,10 @@ import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getBookings, deleteBooking, createReview, getUserById, setUserPin } from "@/lib/firebase/db";
-import { logoutUser } from "@/lib/firebase/auth";
-import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
+import { updateProfile, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from "firebase/auth";
+import { updateUserDoc, updateReview, getReviewsByUserId, getBookings, setUserPin, getUserById, deleteBooking, createReview } from "@/lib/firebase/db";
+import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
   fr: {
@@ -57,6 +57,13 @@ export default function DashboardPage() {
   const [pinChangeForm, setPinChangeForm] = useState({ oldPin: "", newPin: "", error: "", success: "" });
   const [isChangingPin, setIsChangingPin] = useState(false);
 
+  // Profile State
+  const [activeTab, setActiveTab] = useState<"projects" | "reviews" | "profile">("projects");
+  const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [profileForm, setProfileForm] = useState({ name: "", email: "", currentPassword: "", error: "", success: "" });
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [editingReview, setEditingReview] = useState<any>(null);
+
   // Route protection
   useEffect(() => {
     if (!authLoading && !user) {
@@ -88,11 +95,20 @@ export default function DashboardPage() {
         } else {
           setHasPinConfigured(false);
         }
+        setProfileForm({ name: user.displayName || "", email: user.email || "", currentPassword: "", error: "", success: "" });
         setCheckingPin(false);
       });
       fetchUserBookings();
+      fetchUserReviews();
     }
   }, [user]);
+
+  const fetchUserReviews = async () => {
+    if (user) {
+      const data = await getReviewsByUserId(user.uid);
+      setUserReviews(data);
+    }
+  };
 
   async function hashPin(pin: string) {
     const enc = new TextEncoder().encode(pin);
@@ -191,6 +207,66 @@ export default function DashboardPage() {
     }
   };
 
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setIsUpdatingProfile(true);
+    setProfileForm(p => ({ ...p, error: "", success: "" }));
+
+    try {
+      // 1. Update Display Name if changed
+      if (profileForm.name !== user.displayName) {
+        await updateProfile(user, { displayName: profileForm.name });
+        await updateUserDoc(user.uid, { displayName: profileForm.name });
+      }
+
+      // 2. Update Email if changed (requires re-auth)
+      if (profileForm.email !== user.email) {
+        if (!profileForm.currentPassword) {
+          throw new Error(language === "fr" ? "Veuillez saisir votre mot de passe pour changer d'email." : "Please enter your password to change email.");
+        }
+        const credential = EmailAuthProvider.credential(user.email!, profileForm.currentPassword);
+        await reauthenticateWithCredential(user, credential);
+        await updateEmail(user, profileForm.email);
+        await updateUserDoc(user.uid, { email: profileForm.email });
+      }
+
+      setProfileForm(p => ({ ...p, success: language === "fr" ? "Profil mis à jour !" : "Profile updated!", currentPassword: "" }));
+    } catch (err: any) {
+      setProfileForm(p => ({ ...p, error: err.message }));
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  const handleDeleteUserReview = async (id: string) => {
+    if (confirm(language === "fr" ? "Supprimer ce témoignage ?" : "Delete this review?")) {
+      const { deleteReview } = await import("@/lib/firebase/db");
+      await deleteReview(id);
+      fetchUserReviews();
+    }
+  };
+
+  const handleUpdateReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingReview) return;
+    setIsSubmittingReview(true);
+    try {
+      await updateReview(editingReview.id, {
+        rating: reviewRating,
+        comment: reviewComment
+      });
+      setEditingReview(null);
+      setReviewRating(0);
+      setReviewComment("");
+      fetchUserReviews();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || reviewRating === 0) return;
@@ -206,6 +282,7 @@ export default function DashboardPage() {
       setShowReviewModal(false);
       setReviewRating(0);
       setReviewComment("");
+      fetchUserReviews();
       alert(language === "fr" ? "Merci pour votre témoignage !" : "Thank you for your review!");
     } catch (err) {
       console.error(err);
@@ -319,154 +396,294 @@ export default function DashboardPage() {
                 </div>
               </div>
               <button 
-                onClick={handlePasswordReset} 
-                className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
-              >
-                <ShieldAlert className="w-5 h-5 text-white/50 group-hover:text-amber-400 transition-colors" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                  {language === "fr" ? "Mot de passe" : "Password"}
-                </span>
-              </button>
-              <button 
-                onClick={() => setShowPinChangeModal(true)} 
-                className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
-              >
-                <Key className="w-5 h-5 text-white/50 group-hover:text-white transition-colors" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                  {language === "fr" ? "Securité PIN" : "PIN Security"}
-                </span>
-              </button>
-              <button 
-                onClick={() => setShowReviewModal(true)} 
+                onClick={() => logoutUser().then(() => router.push("/"))} 
                 className="flex items-center gap-3 bg-[var(--red)]/10 hover:bg-[var(--red)] border border-[var(--red)]/20 hover:border-[var(--red)] px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
               >
-                <Star className="w-5 h-5 text-[var(--red)] group-hover:text-white fill-current transition-colors" />
+                <LogOut className="w-5 h-5 text-[var(--red)] group-hover:text-white transition-colors" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                  {language === "fr" ? "Donner un avis" : "Leave a review"}
+                   Sortie
                 </span>
               </button>
             </div>
           </FadeIn>
         </div>
 
+        {/* Tab Switcher */}
+        <div className="flex gap-2 p-1 bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 mb-12 w-fit mx-auto md:mx-0">
+          {[
+            { id: "projects", label: language === "fr" ? "Projets" : "Projects", icon: FileText },
+            { id: "reviews", label: language === "fr" ? "Avis" : "Reviews", icon: Star },
+            { id: "profile", label: language === "fr" ? "Compte" : "Account", icon: Users }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all ${
+                activeTab === tab.id ? "bg-[var(--red)] text-white shadow-lg" : "text-white/40 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Requests Section */}
-        <FadeUp delay={0.2} className="mb-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-[var(--red)]/10 flex items-center justify-center border border-[var(--red)]/20 shadow-lg shadow-red-950/20"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
-              {language === "fr" ? "Mes Demandes & Devis" : "My Requests & Quotes"}
-            </h2>
-            <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
-              {language === "fr" ? "Nouveau Devis" : "New Quote"}
-            </Link>
-          </div>
+        {activeTab === "projects" && (
+          <FadeUp delay={0.2} className="mb-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-[var(--red)]/10 flex items-center justify-center border border-[var(--red)]/20 shadow-lg shadow-red-950/20"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
+                {language === "fr" ? "Mes Demandes & Devis" : "My Requests & Quotes"}
+              </h2>
+              <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
+                {language === "fr" ? "Nouveau Devis" : "New Quote"}
+              </Link>
+            </div>
 
-          {/* Mobile Cards View */}
-          <div className="md:hidden space-y-6">
-            {loading ? (
-              <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
-            ) : bookings.length === 0 ? (
-              <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</div>
-            ) : bookings.map((req) => {
-              const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-              const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
-              const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
-              
-              return (
-                <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl">
-                  {/* Status Indicator Bar */}
-                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
-                  
-                  <div className="space-y-4 pl-2">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                         <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Dossier #{req.id.slice(0, 8).toUpperCase()}</span>
-                         <h3 className="text-white font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
+            {/* Mobile Cards View */}
+            <div className="md:hidden space-y-6">
+              {loading ? (
+                <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
+              ) : bookings.length === 0 ? (
+                <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</div>
+              ) : bookings.map((req) => {
+                const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+                const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
+                
+                return (
+                  <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl">
+                    <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
+                    <div className="space-y-4 pl-2">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                           <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Dossier #{req.id.slice(0, 8).toUpperCase()}</span>
+                           <h3 className="text-white font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
+                        </div>
+                        <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls} bg-transparent`}>{mapObj.label}</span>
                       </div>
-                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls} bg-transparent`}>{mapObj.label}</span>
+                      <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Date</p>
+                          <p className="text-xs font-bold text-white tracking-widest">{date}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Budget</p>
+                          <p className="text-xs font-black text-emerald-400 italic">Devis Client</p>
+                        </div>
+                      </div>
+                      {req.adminNote && (
+                        <div className="p-4 bg-[var(--red)]/5 border border-[var(--red)]/10 rounded-2xl italic text-[11px] text-white/70 leading-relaxed">
+                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">Note Admin</span>
+                          "{req.adminNote}"
+                        </div>
+                      )}
+                      {req.status === "PENDING" && (
+                        <button 
+                          onClick={() => handleDeleteRequest(req.id)}
+                          className="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all mt-4"
+                        >
+                          <AlertTriangle className="w-4 h-4" /> Annuler Demande
+                        </button>
+                      )}
                     </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                      <div>
-                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Date</p>
-                        <p className="text-xs font-bold text-white tracking-widest">{date}</p>
+            {/* Desktop Table View */}
+            <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-xl border border-white/10 relative group/table hidden md:block">
+              <div className="overflow-x-auto custom-scrollbar">
+                <table className="w-full text-left text-sm border-collapse min-w-[800px]">
+                  <thead>
+                    <tr className="bg-white/5 border-b border-white/5">
+                      {["Dossier ID", "Date", "Service", "Statut", "Note Admin", "Action"].map(h => (
+                        <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-white/40">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    <AnimatePresence>
+                      {loading ? (
+                         <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
+                      ) : bookings.length === 0 ? (
+                        <tr><td colSpan={6} className="text-center py-24 text-white/30 font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</td></tr>
+                      ) : bookings.map((req, i) => {
+                        const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+                        const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                        return (
+                          <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-white/5 transition-all group">
+                            <td className="py-6 px-8 font-mono font-black text-[10px] text-[var(--red)] tracking-widest">#{req.id.slice(0, 8).toUpperCase()}</td>
+                            <td className="py-6 px-8 font-black text-white/40 text-[11px] tracking-widest">{date}</td>
+                            <td className="py-6 px-8 font-black text-white text-sm tracking-tight uppercase">{req.serviceId}</td>
+                            <td className="py-6 px-8">
+                              <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${mapObj.cls} bg-transparent`}>
+                                {mapObj.label}
+                              </span>
+                            </td>
+                            <td className="py-6 px-8 font-bold text-white/60 text-xs italic leading-relaxed max-w-xs truncate">
+                              {req.adminNote || "-"}
+                            </td>
+                            <td className="py-6 px-8">
+                              {req.status === "PENDING" && (
+                                <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-white hover:bg-red-500 tracking-widest border border-red-500/30 px-4 py-2 rounded-xl transition-all">
+                                  {language === "fr" ? "Annuler" : "Cancel"}
+                                </button>
+                              )}
+                            </td>
+                          </motion.tr>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </FadeUp>
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === "reviews" && (
+          <FadeUp delay={0.2} className="mb-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-950/20"><Star className="w-5 h-5 text-amber-500 fill-current" /></div>
+                {language === "fr" ? "Mes Témoignages" : "My Reviews"}
+              </h2>
+              <button onClick={() => { setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true); }} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
+                {language === "fr" ? "Nouvel Avis" : "New Review"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {userReviews.length === 0 ? (
+                <div className="col-span-full py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">
+                  {language === "fr" ? "Vous n'avez pas encore laissé d'avis." : "You haven't left any reviews yet."}
+                </div>
+              ) : userReviews.map((rev) => (
+                <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map(s => (
+                          <Star key={s} className={`w-3 h-3 ${s <= rev.rating ? "text-amber-400 fill-amber-400" : "text-white/10"}`} />
+                        ))}
                       </div>
-                      <div>
-                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Budget</p>
-                        <p className="text-xs font-black text-emerald-400 italic">Devis Client</p>
-                      </div>
+                      <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{rev.createdAt ? new Date(rev.createdAt.seconds * 1000).toLocaleDateString() : "Récemment"}</span>
                     </div>
-
-                    {req.adminNote && (
-                      <div className="p-4 bg-[var(--red)]/5 border border-[var(--red)]/10 rounded-2xl italic text-[11px] text-white/70 leading-relaxed">
-                        <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">Note Admin</span>
-                        "{req.adminNote}"
-                      </div>
-                    )}
-
-                    {req.status === "PENDING" && (
-                      <button 
-                        onClick={() => handleDeleteRequest(req.id)}
-                        className="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all mt-4"
-                      >
-                        <AlertTriangle className="w-4 h-4" /> Annuler Demande
-                      </button>
-                    )}
+                    <p className="text-sm font-medium text-white/70 leading-relaxed mb-6 italic">"{rev.comment}"</p>
+                  </div>
+                  <div className="flex gap-4 border-t border-white/5 pt-4">
+                    <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-white/40 hover:text-white transition-colors tracking-widest">Modifier</button>
+                    <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[9px] font-black uppercase text-red-500/60 hover:text-red-500 transition-colors tracking-widest">Supprimer</button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Desktop Table View */}
-          <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-xl border border-white/10 relative group/table hidden md:block">
-            <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full text-left text-sm border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="bg-white/5 border-b border-white/5">
-                    {["Dossier ID", "Date", "Service", "Statut", "Note Admin", "Action"].map(h => (
-                      <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-white/40">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  <AnimatePresence>
-                    {loading ? (
-                       <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
-                    ) : bookings.length === 0 ? (
-                      <tr><td colSpan={6} className="text-center py-24 text-white/30 font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</td></tr>
-                    ) : bookings.map((req, i) => {
-                      const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-                      const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
-                      return (
-                        <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-white/5 transition-all group">
-                          <td className="py-6 px-8 font-mono font-black text-[10px] text-[var(--red)] tracking-widest">#{req.id.slice(0, 8).toUpperCase()}</td>
-                          <td className="py-6 px-8 font-black text-white/40 text-[11px] tracking-widest">{date}</td>
-                          <td className="py-6 px-8 font-black text-white text-sm tracking-tight uppercase">{req.serviceId}</td>
-                          <td className="py-6 px-8">
-                            <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${mapObj.cls} bg-transparent`}>
-                              {mapObj.label}
-                            </span>
-                          </td>
-                          <td className="py-6 px-8 font-bold text-white/60 text-xs italic leading-relaxed max-w-xs truncate">
-                            {req.adminNote || "-"}
-                          </td>
-                          <td className="py-6 px-8">
-                            {req.status === "PENDING" && (
-                              <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-white hover:bg-red-500 tracking-widest border border-red-500/30 px-4 py-2 rounded-xl transition-all">
-                                {language === "fr" ? "Annuler" : "Cancel"}
-                              </button>
-                            )}
-                          </td>
-                        </motion.tr>
-                      );
-                    })}
-                  </AnimatePresence>
-                </tbody>
-              </table>
+              ))}
             </div>
-          </div>
-        </FadeUp>
+          </FadeUp>
+        )}
+
+        {/* Profile Tab */}
+        {activeTab === "profile" && (
+          <FadeUp delay={0.2} className="mb-16">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-950/20"><Users className="w-5 h-5 text-blue-500" /></div>
+              <h2 className="text-2xl font-black text-white tracking-tight">
+                {language === "fr" ? "Gestion du Compte" : "Account Settings"}
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Profile Meta Cards */}
+              <div className="lg:col-span-1 space-y-6">
+                <div className="p-8 bg-white/5 border border-white/10 rounded-[2rem] flex flex-col items-center text-center">
+                  <div className="w-20 h-20 rounded-full bg-[var(--red)] flex items-center justify-center text-2xl font-black text-white mb-4 shadow-[var(--shadow-red)]">
+                    {firstName[0]}
+                  </div>
+                  <h3 className="text-xl font-black text-white tracking-tight">{user.displayName || "Sans Nom"}</h3>
+                  <p className="text-xs font-black uppercase text-white/40 tracking-[0.2em] mt-1">{user.email}</p>
+                </div>
+
+                <div className="p-8 bg-white/5 border border-white/10 rounded-[2rem] space-y-4">
+                   <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Sécurité PIN</span>
+                     <button onClick={() => setShowPinChangeModal(true)} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">Modifier</button>
+                   </div>
+                   <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Mot de passe</span>
+                     <button onClick={handlePasswordReset} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">Réinitialiser</button>
+                   </div>
+                </div>
+              </div>
+
+              {/* Edit Form */}
+              <div className="lg:col-span-2">
+                <div className="p-8 md:p-10 bg-white/5 border border-white/10 rounded-[2.5rem] relative overflow-hidden">
+                  <AuraGradient color="var(--red)" className="bottom-0 right-0 w-64 h-64 opacity-[0.05]" />
+                  <form onSubmit={handleProfileUpdate} className="space-y-6 relative z-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">Nom Complet</label>
+                        <input 
+                          type="text" 
+                          value={profileForm.name}
+                          onChange={(e) => setProfileForm(p => ({ ...p, name: e.target.value }))}
+                          className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">Adresse Email</label>
+                        <input 
+                          type="email" 
+                          value={profileForm.email}
+                          onChange={(e) => setProfileForm(p => ({ ...p, email: e.target.value }))}
+                          className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-emerald-400 tracking-[0.2em] pl-1 flex items-center gap-2">
+                         <Lock className="w-3 h-3" /> Mot de passe actuel
+                         <span className="text-white/20 capitalize font-medium italic">(Requis pour changer d'email)</span>
+                      </label>
+                      <input 
+                        type="password" 
+                        value={profileForm.currentPassword}
+                        onChange={(e) => setProfileForm(p => ({ ...p, currentPassword: e.target.value }))}
+                        placeholder="••••••••"
+                        className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-xl text-sm font-bold focus:border-white/30 outline-none transition-all placeholder:text-white/5"
+                      />
+                    </div>
+
+                    <AnimatePresence>
+                      {profileForm.error && (
+                        <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{profileForm.error}</motion.p>
+                      )}
+                      {profileForm.success && (
+                        <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">{profileForm.success}</motion.p>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="pt-4">
+                      <button 
+                        type="submit" 
+                        disabled={isUpdatingProfile}
+                        className="relative group overflow-hidden px-8 py-4 bg-white text-black font-black text-[11px] uppercase tracking-[0.25em] rounded-xl shadow-2xl active:scale-95 transition-all disabled:opacity-50"
+                      >
+                        <span className="relative z-10 flex items-center gap-2">
+                          {isUpdatingProfile ? "En cours..." : "Sauvegarder les modifications"}
+                        </span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </FadeUp>
+        )}
              {/* Support Grid */}
         <StaggerContainer className="grid md:grid-cols-2 gap-8">
           <StaggerItem>
@@ -584,7 +801,7 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmitReview} className="space-y-6">
+              <form onSubmit={editingReview ? handleUpdateReview : handleSubmitReview} className="space-y-6">
                 <div>
                   <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
                     {language === "fr" ? "Note (1 à 5 étoiles)" : "Rating (1 to 5 stars)"}
@@ -600,12 +817,19 @@ export default function DashboardPage() {
                         className="p-2 -m-2 group transition-transform hover:scale-110 active:scale-95"
                       >
                         <Star className={`w-8 h-8 transition-colors ${
-                          (hoverRating || reviewRating) >= star ? "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" : "text-white/10"
+                          (hoverRating || reviewRating) >= star ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" : "text-white/10"
                         }`} />
                       </button>
                     ))}
                   </div>
                 </div>
+
+                {editingReview && (
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">Modification de l'avis du</span>
+                    <span className="text-[10px] font-bold text-white tracking-widest">{new Date(editingReview.createdAt?.seconds * 1000).toLocaleDateString()}</span>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
@@ -631,7 +855,9 @@ export default function DashboardPage() {
                   {isSubmittingReview ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    language === "fr" ? "Publier mon avis" : "Publish review"
+                    editingReview 
+                      ? (language === "fr" ? "Mettre à jour" : "Update review")
+                      : (language === "fr" ? "Publier mon avis" : "Publish review")
                   )}
                 </button>
               </form>
