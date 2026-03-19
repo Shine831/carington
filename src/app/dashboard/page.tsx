@@ -243,18 +243,36 @@ export default function DashboardPage() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-2xl font-black text-white tracking-tight">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
-                  <span className="px-2 py-0.5 rounded-lg bg-[var(--red)]/10 text-[var(--red)] text-[8px] font-black uppercase tracking-widest border border-[var(--red)]/20">Active SLA</span>
+                  <h3 className="text-2xl font-black text-white tracking-tight leading-none">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
+                  <span className="px-2 py-0.5 rounded-lg bg-[var(--red)]/10 text-[var(--red)] text-[8px] font-black uppercase tracking-widest border border-[var(--red)]/20 shadow-[0_0_10px_rgba(238,28,37,0.1)]">Active SLA</span>
                 </div>
-                <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Expertise critique à votre service. Intervention garantie en moins de 2H pour tous vos actifs numériques.</p>
+                <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Expertise critique à votre service. Intervention garantie en moins de 120min pour tous vos actifs numériques.</p>
                 
-                <div className="flex items-center gap-6 mb-8 py-4 border-y border-white/5">
-                  <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Disponibilité</span><span className="text-xs font-bold text-emerald-400">24/7/365</span></div>
-                  <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Temps de réponse</span><span className="text-xs font-bold text-white"> &lt; 120min</span></div>
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center justify-between py-3 border-y border-white/5">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Canaux Actifs</span>
+                      <div className="flex gap-2 mt-1">
+                        {["WhatsApp", "Email", "Ticket"].map(c => <span key={c} className="text-[8px] font-bold text-white/60 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">{c}</span>)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block">Agent Dédié</span>
+                      <span className="text-[10px] font-bold text-[var(--red)] tracking-tight uppercase">Support Premium</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-8 px-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Dispo 24/7/365</span><span className="text-[10px] font-bold text-white tracking-widest">OPÉRATIONNEL</span></div>
+                    </div>
+                    <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Latence Ticketing</span><span className="text-[10px] font-bold text-white tracking-widest">87ms AVG</span></div>
+                  </div>
                 </div>
 
-                <Link href="/contact" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-inner">
-                  Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)]" />
+                <Link href="/contact" className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-[var(--red)]/30 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-inner group/btn">
+                  Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)] group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -271,15 +289,33 @@ export default function DashboardPage() {
                    <h3 className="text-2xl font-black text-white tracking-tight">Cloud & <span className="text-emerald-400">Infra.</span></h3>
                    <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">Live Monitor</span>
                  </div>
-                 <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Contrôle total sur votre infrastructure. Supervision proactive et maintenance automatisée 24/7.</p>
+                 <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Supervision proactive et maintenance automatisée. Maîtrisez la croissance de votre infrastructure.</p>
                  
-                 <div className="flex items-center gap-6 mb-8 py-4 border-y border-white/5">
-                   <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Status</span><span className="text-xs font-bold text-emerald-400 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Opérationnel</span></div>
-                   <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Uptime global</span><span className="text-xs font-bold text-white">99.99%</span></div>
+                 <div className="space-y-4 mb-8">
+                   <div className="flex items-center justify-between py-3 border-y border-white/5">
+                     <div className="flex flex-col">
+                       <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Localisations Nodes</span>
+                       <div className="flex gap-2 mt-1">
+                          {["Douala-C1", "Paris-V1"].map(l => <span key={l} className="text-[8px] font-black text-emerald-400/80 bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/10">{l}</span>)}
+                       </div>
+                     </div>
+                     <div className="text-right">
+                       <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block">Backups Actifs</span>
+                       <span className="text-[10px] font-bold text-white uppercase tabular-nums tracking-widest">14 / 30 Jours</span>
+                     </div>
+                   </div>
+                   
+                   <div className="flex items-center gap-8 px-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
+                        <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Global Uptime</span><span className="text-[10px] font-bold text-white tracking-widest">99.99%</span></div>
+                      </div>
+                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Resource Load</span><span className="text-[10px] font-bold text-emerald-400 tracking-widest uppercase">Excellent</span></div>
+                   </div>
                  </div>
 
-                 <Link href="/services" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95">
-                   Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-400" />
+                 <Link href="/services" className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-emerald-500/30 uppercase tracking-[0.2em] transition-all active:scale-95 group/btn2">
+                   Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-400 group-hover/btn2:translate-x-1 transition-transform" />
                  </Link>
                </div>
              </div>
