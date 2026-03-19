@@ -24,22 +24,19 @@ export function useAuth() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       if (firebaseUser) {
-        // Block unverified email/password accounts
-        if (!firebaseUser.emailVerified) {
-          setAuthState({
-            user: null,
-            role: null,
-            loading: false,
-            emailVerified: false,
-          });
-          return;
-        }
-
         try {
           const userDocRef = doc(db, "users", firebaseUser.uid);
           const userDoc = await getDoc(userDocRef);
+          const role = userDoc.exists() ? (userDoc.data()?.role as "CLIENT" | "ADMIN") : "CLIENT";
 
-          // If verified but no Firestore doc yet, create it (happens on first login after verification)
+          // ADMINs bypass email verification (accounts created manually in Firebase console)
+          // CLIENTs must have verified their email before accessing the app
+          if (!firebaseUser.emailVerified && role !== "ADMIN") {
+            setAuthState({ user: null, role: null, loading: false, emailVerified: false });
+            return;
+          }
+
+          // If Firestore doc doesn't exist yet, create it (first login after email verification)
           if (!userDoc.exists()) {
             await createUserDocument(
               firebaseUser.uid,
@@ -49,15 +46,11 @@ export function useAuth() {
             );
           }
 
-          // Refetch after potential creation
-          const freshDoc = await getDoc(userDocRef);
-          const role = freshDoc.exists() ? freshDoc.data()?.role : "CLIENT";
-
           setAuthState({
             user: firebaseUser,
-            role: role as "CLIENT" | "ADMIN",
+            role,
             loading: false,
-            emailVerified: true,
+            emailVerified: firebaseUser.emailVerified,
           });
         } catch (error) {
           console.error("Error fetching user role:", error);

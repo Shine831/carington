@@ -45,8 +45,10 @@ export default function AccountPage() {
     setError("");
     try {
       await loginUser({ email, password });
+      // useEffect handles redirect once useAuth updates
     } catch (err: any) {
       if (err.message === "EMAIL_NOT_VERIFIED") {
+        // CLIENT with unverified email → show verification screen with resend button
         setPendingEmail(email);
         setPendingPassword(password);
         setPendingVerification(true);

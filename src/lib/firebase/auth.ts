@@ -70,20 +70,34 @@ export const createUserDocument = async (uid: string, email: string, displayName
 
 /**
  * Log in an existing user with Email/Password.
- * Rejects login if email is not yet verified.
+ * Admins can log in regardless of emailVerified status.
+ * CLIENT accounts must have a verified email.
  */
 export const loginUser = async (data: LoginData) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
     const user = userCredential.user;
 
-    if (!user.emailVerified) {
-      // Sign them out and throw an error
-      await signOut(auth);
-      throw new Error("EMAIL_NOT_VERIFIED");
+    // If email is already verified, allow everyone through
+    if (user.emailVerified) {
+      return user;
     }
 
-    return user;
+    // Email not verified — check if this user is an ADMIN (admins bypass verification)
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const role = userDoc.exists() ? userDoc.data()?.role : "CLIENT";
+      if (role === "ADMIN") {
+        // ADMIN accounts don't require email verification
+        return user;
+      }
+    } catch {
+      // If Firestore lookup fails, fall through to client check
+    }
+
+    // CLIENT with unverified email — block access
+    await signOut(auth);
+    throw new Error("EMAIL_NOT_VERIFIED");
   } catch (error: any) {
     console.error("Error logging in:", error.message);
     throw new Error(error.message);
