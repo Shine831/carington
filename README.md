@@ -1,87 +1,71 @@
-# E-Jarnauld Soft - Solutions Informatiques 🚀
+# 🏛️ E-JARNALUD SOFT — Elite IT Architecture
 
-Bienvenue sur le dépôt officiel du projet **E-Jarnauld Soft**, une plateforme web premium dédiée aux services informatiques, à l'infogérance, et aux solutions Cloud & Réseaux pour les entreprises (B2B) et particuliers (B2C) au Cameroun et à l'international.
+> **Souveraineté Numérique & Résilience Infrastructurelle.**  
+> Plateforme premium de gestion de services informatiques et cybersécurité pour le Cameroun et l'international.
 
-L'application offre une expérience utilisateur fluide, un design immersif (Glassmorphism, animations fluides), et intègre un espace client et un tableau de bord administrateur sécurisés.
-
----
-
-## ✨ Fonctionnalités Principales
-
-- **Dashboard Administrateur Intégré :** Gestion complète du CRUD pour les Devis (réservation), Services, Clients et Messages via une interface moderne et temps-réel.
-- **Espace Client Sécurisé :** Permet aux utilisateurs de suivre l'évolution de leurs requêtes et devis en cours d'exécution de façon transparente en lien avec l'Administrateur.
-- **Réservation et Formulaires Intelligents :** Soumission de demandes de devis et support technique reliée en flux continu à une base de données cloud.
-- **Support Multilingue (i18n) :** Navigation et interfaces dynamiquement traduites en Français et Anglais.
-- **Design Elite 2026 :** Interface propulsée par Tailwind CSS et Framer Motion offrant un branding professionnel (Shine Noir), des dégradés complexes (Aura), et une architecture 100 % Responsive (Mobile, Tablette, Desktop).
+![Licence](https://img.shields.io/badge/Status-Production--Ready-emerald?style=for-the-badge)
+![Tech Stack](https://img.shields.io/badge/Stack-Next.js%20%7C%20Firebase%20%7C%20Framer-black?style=for-the-badge)
+![UI](https://img.shields.io/badge/Design-Shine%20Noir%202026-C8102E?style=for-the-badge)
 
 ---
 
-## 🛠️ Stack Technique
+## 💎 Vision & Excellence
+E-JARNALUD SOFT n'est pas qu'un simple prestataire IT. Nous architecturons des écosystèmes numériques robustes, alliant **performance brute** et **sécurité sans compromis**. Cette plateforme est la vitrine de notre savoir-faire technologique, offrant une interface immersive de haute précision.
 
-- **Framework Front-End :** [Next.js 14](https://nextjs.org/) (App Router, React 18)
-- **Langage :** TypeScript
-- **Style & Interface :** Tailwind CSS, Framer Motion (Animations), Lucide React (Icônes)
-- **Back-End & Base de données :** Firebase (Auth & Firestore)
-- **Déploiement Cible :** Vercel
+### 🚀 Points Forts
+*   **Catalogue Dynamique** : Gestion en temps réel des expertises (Cyber, Réseaux, VoIP, etc.) via Firestore.
+*   **Audit d'Intervention** : Système de demande de devis et de suivi opérationnel chiffré.
+*   **Dashboard Elite** : Interface d'administration "Full CRUD" pour une gestion agile du catalogue et des requêtes.
+*   **Design 2026** : Esthétique "Shine Noir" avec Glassmorphism, animations cinématiques et réactivité totale (Mobile & Desktop).
+*   **Authentification Multi-Canal** : Accès sécurisé via Email/Mot de passe et Google SSO.
 
 ---
 
-## 🚀 Installation & Lancement Local
+## 🛠️ Stack Technologique
+L'infrastructure repose sur les technologies les plus résilientes du marché :
 
-### Prérequis
-- Node.js (version 18+ recommandée)
-- npm ou yarn
-- Un projet Firebase pré-configuré (Auth, Firestore)
+*   **Core** : [Next.js](https://nextjs.org/) (App Router) — Vitesse et SEO optimisés.
+*   **Database & Backend** : [Firebase Firestore](https://firebase.google.com/) — Multi-tenant, temps réel et serveurs haute disponibilité.
+*   **Security** : Firebase Auth (RBAC : Admin/Client) & Firestore Security Rules.
+*   **Styling** : Tailwind CSS 4.0 (Performance & Flexibilité).
+*   **Motion** : Framer Motion (Interactions microscopiques & cinématiques).
+*   **Icons** : Lucide React (Architecture visuelle claire).
 
-### 1. Cloner le projet
-\`\`\`bash
-git clone https://github.com/votre-nom/ejarnauld-soft.git
-cd ejarnauld-soft
-\`\`\`
+---
 
-### 2. Variables d'environnement
-Créez un fichier `.env.local` à la racine du projet et insérez vos identifiants Firebase :
-\`\`\`env
-NEXT_PUBLIC_FIREBASE_API_KEY="VOTRE_CLÉ"
+## ⚙️ Déploiement & Configuration
+
+### 1. Prérequis
+Assurez-vous d'avoir un projet Firebase actif avec **Authentication** et **Cloud Firestore** activés.
+
+### 2. Variables d'Environnement
+Créez un fichier `.env.local` et renseignez les clés suivantes :
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSy..."
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="ejarnauld-soft.firebaseapp.com"
 NEXT_PUBLIC_FIREBASE_PROJECT_ID="ejarnauld-soft"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="..."
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="ejarnauld-soft.appspot.com"
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="..."
 NEXT_PUBLIC_FIREBASE_APP_ID="..."
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID="..."
-\`\`\`
+```
 
-### 3. Installer les dépendances
-\`\`\`bash
+### 3. Lancement Local
+```bash
 npm install
-\`\`\`
-
-### 4. Lancer le serveur de développement
-\`\`\`bash
 npm run dev
-\`\`\`
-L'application sera accessible sur [http://localhost:3000](http://localhost:3000).
+```
+
+### 4. Déploiement Vercel
+Connectez simplement votre dépôt GitHub à [Vercel](https://vercel.com/). Les variables d'environnement doivent être ajoutées dans les paramètres du projet Vercel pour le déploiement en production.
 
 ---
 
-## 🔒 Sécurité et Firestore Rules
-
-Ce projet intègre des règles de sécurité strictes pour Firestore garantissant que :
-- Les profils utilisateurs ne sont accessibles ou modifiables que par leurs propriétaires respectifs et l'Administrateur.
-- Les réservations et requêtes sont chiffrées (AES-256 E2E) et cloisonnées par utilisateur.
-- Les modifications de statut ou l'ajout de composants catalogue sont restreints par le Rôle `ADMIN`.
-
-**Configuration du Compte Administrateur:**
-Le compte administrateur racine (ex: \`admin@gmail.com\`) bénéficie de permissions globales une fois flaggé dans la collection \`users\` correspondante.
+## 🔒 Sécurité Firestore
+Le projet utilise des règles de sécurité granulaires. L'accès aux données est restreint par rôle (`ADMIN` vs `CLIENT`). Assurez-vous de charger les règles définies pour garantir l'intégrité du système.
 
 ---
 
-## 🌐 Déploiement
-
-Le guide de déploiement privilégié pour cette architecture est via **Vercel**. 
-Il suffit de connecter le dépôt GitHub sur la console Vercel, et d'insérer les variables d'environnement (`NEXT_PUBLIC_FIREBASE_*`) dans les paramètres du projet avant le déploiement.
-
----
-
-### Copyright
-© 2026 E-Jarnauld Soft. Tous droits réservés.
+## 📄 Licence & Copyright
+© 2026 **E-JARNALUD SOFT**. Tous droits réservés.  
+Conception et développement orientés vers l'excellence infrastructurelle.

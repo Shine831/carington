@@ -1,3 +1,0 @@
-src/app/dashboard/page.tsx(48,7): error TS2552: Cannot find name 'getBookings'. Did you mean 'setBookings'?
-src/app/dashboard/page.tsx(49,16): error TS7006: Parameter 'data' implicitly has an 'any' type.
-src/app/dashboard/page.tsx(50,17): error TS7006: Parameter 'err' implicitly has an 'any' type.
