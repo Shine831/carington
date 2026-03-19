@@ -9,6 +9,7 @@ import { TiltCard, MagneticButton, BentoCard, SpatialLayer } from "@/components/
 import { ParticleBackground } from "@/components/ui/ParticleBackground";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
+import { TestimonialsSection } from "@/components/ui/Testimonials";
 
 export default function Home() {
   const { t, language } = useI18n();
@@ -362,6 +363,9 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* ── TESTIMONIALS (Premium 2026) ────────────────────────── */}
+      <TestimonialsSection language={language} />
 
       {/* ── FAQ ────────────────────────────────────────────────── */}
       <section className="section-py bg-[var(--off-white)]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +9,7 @@ import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getBookings, deleteBooking } from "@/lib/firebase/db";
+import { getBookings, deleteBooking, createReview } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
@@ -34,6 +34,13 @@ export default function DashboardPage() {
   
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Review Modal State
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Client";
 
@@ -62,6 +69,23 @@ export default function DashboardPage() {
     if (confirm(language === "fr" ? "Annuler cette demande ?" : "Cancel this request?")) {
       await deleteBooking(id);
       fetchUserBookings();
+    }
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || reviewRating === 0) return;
+    setIsSubmittingReview(true);
+    try {
+      await createReview(user.displayName || "Client", "Expérience Générale", reviewRating, reviewComment);
+      setShowReviewModal(false);
+      setReviewRating(0);
+      setReviewComment("");
+      alert(language === "fr" ? "Merci pour votre témoignage !" : "Thank you for your review!");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -112,6 +136,15 @@ export default function DashboardPage() {
                   <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Connecté en AES-256</span>
                 </div>
               </div>
+              <button 
+                onClick={() => setShowReviewModal(true)} 
+                className="flex items-center gap-3 bg-[var(--red)]/10 hover:bg-[var(--red)] border border-[var(--red)]/20 hover:border-[var(--red)] px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
+              >
+                <Star className="w-5 h-5 text-[var(--red)] group-hover:text-white fill-current transition-colors" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  {language === "fr" ? "Donner un avis" : "Leave a review"}
+                </span>
+              </button>
             </div>
           </FadeIn>
         </div>
@@ -324,6 +357,88 @@ export default function DashboardPage() {
         </StaggerContainer>
 
       </div>
+
+      {/* Review Modal */}
+      <AnimatePresence>
+        {showReviewModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowReviewModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-lg bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+            >
+              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
+              <button onClick={() => setShowReviewModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="mb-8">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 border border-[var(--red)]/20 flex items-center justify-center mb-6">
+                  <Star className="w-8 h-8 text-[var(--red)] fill-current" />
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight mb-2">
+                  {language === "fr" ? "Votre avis compte" : "Your feedback matters"}
+                </h3>
+                <p className="text-sm font-medium text-white/40 leading-relaxed">
+                  {language === "fr" ? "Aidez-nous à affiner notre excellence en partageant votre expérience avec E-Jarnauld Soft." : "Help us refine our excellence by sharing your experience with E-Jarnauld Soft."}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmitReview} className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
+                    {language === "fr" ? "Note (1 à 5 étoiles)" : "Rating (1 to 5 stars)"}
+                  </label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        className="p-2 -m-2 group transition-transform hover:scale-110 active:scale-95"
+                      >
+                        <Star className={`w-8 h-8 transition-colors ${
+                          (hoverRating || reviewRating) >= star ? "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" : "text-white/10"
+                        }`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
+                    {language === "fr" ? "Votre Témoignage" : "Your Testimonial"}
+                  </label>
+                  <div className="relative">
+                    <MessageSquare className="absolute top-4 left-4 w-5 h-5 text-white/20" />
+                    <textarea 
+                      required
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder={language === "fr" ? "Ex: Déploiement parfait, équipe très réactive..." : "Ex: Perfect deployment, highly responsive team..."}
+                      className="w-full h-32 pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-medium text-white outline-none focus:border-[var(--red)]/50 focus:bg-[#1A1A1A] transition-all resize-none"
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={reviewRating === 0 || isSubmittingReview || !reviewComment.trim()}
+                  className="w-full py-4 rounded-xl bg-[var(--red)] text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
+                >
+                  {isSubmittingReview ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    language === "fr" ? "Publier mon avis" : "Publish review"
+                  )}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
