@@ -195,33 +195,33 @@ export default function AdminDashboard() {
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#050505]/90 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around p-2 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-2xl border-t border-white/10 z-50 flex items-center justify-around px-2 py-3 pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         {NAV.map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className={`flex flex-col items-center gap-1.5 p-2 transition-all relative ${
-              activeTab === id ? "text-[var(--red)]" : "text-white/40"
+              activeTab === id ? "text-[var(--red)] scale-110" : "text-white/40"
             }`}
           >
             <Icon className="w-5 h-5" />
-            <span className="text-[8px] font-black uppercase tracking-wider">{label}</span>
+            <span className="text-[7.5px] font-black uppercase tracking-widest">{label}</span>
             {badge && (
-              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[var(--red)] text-white text-[7px] font-black rounded-full flex items-center justify-center ring-2 ring-[#050505]">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[var(--red)] text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-[#050505] shadow-lg">
                 {badge}
               </span>
             )}
             {activeTab === id && (
-              <motion.div layoutId="activeTab" className="absolute -top-2 left-0 right-0 h-0.5 bg-[var(--red)]" />
+              <motion.div layoutId="activeTabMobile" className="absolute -bottom-1 w-6 h-0.5 bg-[var(--red)] rounded-full" />
             )}
           </button>
         ))}
         <button
           onClick={handleLogout}
-          className="flex flex-col items-center gap-1.5 p-2 text-white/40"
+          className="flex flex-col items-center gap-1.5 p-2 text-white/40 active:text-red-500 transition-colors"
         >
-          <LogOut className="w-5 h-5 text-red-500/60" />
-          <span className="text-[8px] font-black uppercase tracking-wider">Sortie</span>
+          <LogOut className="w-5 h-5 text-red-500/80" />
+          <span className="text-[7.5px] font-black uppercase tracking-widest">Sortie</span>
         </button>
       </div>
 
@@ -231,9 +231,9 @@ export default function AdminDashboard() {
         {/* Top Header */}
         <header className="bg-[#0A0A0A]/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-white/5">
           <div className="flex items-center gap-4 md:gap-6 relative">
-            <button onClick={() => fetchData()} title="Actualiser les données" className="px-3 md:px-5 py-2.5 rounded-xl border border-[var(--red)]/50 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-               <Clock className="w-4 h-4 md:hidden" />
-               <span className="hidden md:inline">Actualiser les données</span>
+            <button onClick={() => fetchData()} title="Actualiser les données" className="px-4 md:px-5 py-2.5 rounded-xl bg-[var(--red)]/10 border border-[var(--red)]/30 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-red-950/20 active:scale-95">
+               <Clock className="w-4 h-4" />
+               <span className="hidden sm:inline">Actualiser</span>
             </button>
 
             <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-white/40 hover:text-white p-2.5 bg-white/5 border border-white/10 rounded-xl">
@@ -297,7 +297,114 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl relative group/table">
+          <div className="md:hidden space-y-4 mb-8">
+            {activeTab === "requests" && data.requests.map((req) => {
+              const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+              return (
+                <div key={req.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-4">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-mono text-white/40">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
+                    <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-black text-lg tracking-tight leading-tight mb-1">{req.entity}</h3>
+                    <p className="text-[var(--red)] text-xs font-bold tracking-widest">{req.phone}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 py-3 border-y border-white/5">
+                    <div>
+                      <p className="text-[8px] font-black uppercase text-white/40 tracking-widest mb-1">Service</p>
+                      <p className="text-xs font-bold text-white/80">{req.serviceId}</p>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black uppercase text-white/40 tracking-widest mb-1">Budget</p>
+                      <p className="text-xs font-black text-emerald-400">{req.budget}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setSelectedBooking(req)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all border border-white/5">
+                      <Eye className="w-4 h-4" /> Détails
+                    </button>
+                    <select 
+                      value={req.status} 
+                      onChange={(e) => attemptStatusChange(req.id, e.target.value)} 
+                      className="flex-1 py-3 bg-[#1A1A1A] border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest px-3 focus:border-[var(--red)] outline-none"
+                    >
+                      <option value="PENDING">En attente</option>
+                      <option value="ACTIVE">Actif</option>
+                      <option value="COMPLETED">Terminé</option>
+                      <option value="REJECTED">Rejeté</option>
+                    </select>
+                  </div>
+                </div>
+              );
+            })}
+
+            {activeTab === "messages" && data.messages.map((msg) => {
+              const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
+              return (
+                <div key={msg.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-4">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-mono text-white/40">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
+                    <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-black text-base tracking-tight mb-1">{msg.name}</h3>
+                    <p className="text-[var(--red)] text-xs font-bold leading-tight truncate">{msg.email}</p>
+                  </div>
+                  <p className="text-xs text-white/70 italic line-clamp-2 leading-relaxed">"{msg.subject}: {msg.message}"</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => setSelectedMessage(msg)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/5">
+                      <Mail className="w-4 h-4" /> Lire
+                    </button>
+                    <button onClick={() => handleUpdateMessage(msg.id, "READ")} className="flex-1 py-3 bg-[#1A1A1A] border border-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-xl">
+                      Marquer Lu
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            {activeTab === "clients" && data.clients.map((cli) => (
+              <div key={cli.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-mono text-white/40">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
+                  <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>{cli.role || "CLIENT"}</span>
+                </div>
+                <h3 className="text-white font-black text-base tracking-tight">{cli.displayName || "Client Sans Nom"}</h3>
+                <p className="text-slate-400 text-xs font-bold">{cli.email}</p>
+                <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest border-t border-white/5 pt-3">UID: {cli.uid}</p>
+              </div>
+            ))}
+
+            {activeTab === "services" && data.services.map((srv) => (
+              <div key={srv.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-4">
+                <div className="flex justify-between items-start">
+                  <span className="px-3 py-1 rounded-lg bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest border border-white/5">{srv.category || "General"}</span>
+                  <span className="text-sm font-black text-emerald-400 italic">{srv.priceCFA} CFA</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-black text-base tracking-tight mb-2 uppercase">{srv.title}</h3>
+                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3">{srv.description}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setEditServiceModal(srv)} className="flex-1 py-3 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-blue-500/20">
+                    <Edit3 className="w-4 h-4" /> Modifier
+                  </button>
+                  <button onClick={() => handleDeleteService(srv.id)} className="flex-1 py-3 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20">
+                    <Trash2 className="w-4 h-4" /> Supprimer
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {data[activeTab as keyof typeof data].length === 0 && (
+              <div className="py-20 text-center card bg-[#111] border border-white/10 rounded-[2rem]">
+                <p className="text-white/40 font-bold uppercase tracking-widest text-xs">Aucune donnée disponible</p>
+              </div>
+            )}
+          </div>
+
+          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl relative group/table hidden md:block">
             <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-white/20 md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
               <span className="text-[8px] font-black uppercase tracking-[0.2em] vertical-text">Scroll</span>
               <ArrowRight className="w-3 h-3 rotate-0" />
