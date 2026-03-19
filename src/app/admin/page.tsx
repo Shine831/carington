@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
@@ -296,44 +296,60 @@ export default function AdminDashboard() {
                <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black shadow-[var(--shadow-red)]">+ Ajouter Service</button>
             )}
           </div>
-
-          <div className="md:hidden space-y-4 mb-8">
+                   <div className="md:hidden space-y-6 mb-12">
             {activeTab === "requests" && data.requests.map((req) => {
               const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+              const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
+              
               return (
-                <div key={req.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-4">
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-mono text-white/40">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
-                    <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-black text-lg tracking-tight leading-tight mb-1">{req.entity}</h3>
-                    <p className="text-[var(--red)] text-xs font-bold tracking-widest">{req.phone}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 py-3 border-y border-white/5">
-                    <div>
-                      <p className="text-[8px] font-black uppercase text-white/40 tracking-widest mb-1">Service</p>
-                      <p className="text-xs font-bold text-white/80">{req.serviceId}</p>
+                <div key={req.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl shadow-2xl">
+                  {/* Status Indicator Bar */}
+                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor} shadow-[0_0_20px_rgba(0,0,0,0.5)]`} />
+                  
+                  <div className="p-6 space-y-5">
+                    <div className="flex justify-between items-start pl-2">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
+                        <h3 className="text-white font-black text-xl tracking-tight leading-tight">{req.entity}</h3>
+                      </div>
+                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls}`}>{mapObj.label}</span>
                     </div>
-                    <div>
-                      <p className="text-[8px] font-black uppercase text-white/40 tracking-widest mb-1">Budget</p>
-                      <p className="text-xs font-black text-emerald-400">{req.budget}</p>
+
+                    <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 ml-2">
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Service</p>
+                        <p className="text-xs font-bold text-white leading-tight">{req.serviceId}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Budget</p>
+                        <p className="text-sm font-black text-emerald-400 italic">{req.budget}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setSelectedBooking(req)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all border border-white/5">
-                      <Eye className="w-4 h-4" /> Détails
-                    </button>
-                    <select 
-                      value={req.status} 
-                      onChange={(e) => attemptStatusChange(req.id, e.target.value)} 
-                      className="flex-1 py-3 bg-[#1A1A1A] border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest px-3 focus:border-[var(--red)] outline-none"
-                    >
-                      <option value="PENDING">En attente</option>
-                      <option value="ACTIVE">Actif</option>
-                      <option value="COMPLETED">Terminé</option>
-                      <option value="REJECTED">Rejeté</option>
-                    </select>
+
+                    <div className="flex flex-col gap-3 pl-2">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10"><Phone className="w-3.5 h-3.5 text-[var(--red)]" /></div>
+                         <span className="text-sm font-bold text-white/70">{req.phone}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-2 pl-2">
+                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] hover:from-red-600 hover:to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all">
+                        <Eye className="w-5 h-5" /> Ouvrir
+                      </button>
+                      <div className="flex-1 relative">
+                        <select 
+                          value={req.status} 
+                          onChange={(e) => attemptStatusChange(req.id, e.target.value)} 
+                          className="w-full h-full py-4 bg-[#1A1A1A] border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest px-4 focus:border-[var(--red)] outline-none appearance-none text-center"
+                        >
+                          <option value="PENDING">Statut</option>
+                          <option value="ACTIVE">Actif</option>
+                          <option value="COMPLETED">Fini</option>
+                          <option value="REJECTED">Refus</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -341,65 +357,82 @@ export default function AdminDashboard() {
 
             {activeTab === "messages" && data.messages.map((msg) => {
               const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
+              const accentColor = msg.status === "UNREAD" ? "bg-red-500" : msg.status === "READ" ? "bg-slate-500" : "bg-emerald-500";
+
               return (
-                <div key={msg.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-4">
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-mono text-white/40">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
-                    <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-black text-base tracking-tight mb-1">{msg.name}</h3>
-                    <p className="text-[var(--red)] text-xs font-bold leading-tight truncate">{msg.email}</p>
-                  </div>
-                  <p className="text-xs text-white/70 italic line-clamp-2 leading-relaxed">"{msg.subject}: {msg.message}"</p>
-                  <div className="flex gap-2">
-                    <button onClick={() => setSelectedMessage(msg)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/5">
-                      <Mail className="w-4 h-4" /> Lire
-                    </button>
-                    <button onClick={() => handleUpdateMessage(msg.id, "READ")} className="flex-1 py-3 bg-[#1A1A1A] border border-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-xl">
-                      Marquer Lu
-                    </button>
+                <div key={msg.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl shadow-2xl">
+                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
+                  <div className="p-6 space-y-5">
+                    <div className="flex justify-between items-start pl-2">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
+                        <h3 className="text-white font-black text-lg tracking-tight">{msg.name}</h3>
+                      </div>
+                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls}`}>{mapObj.label}</span>
+                    </div>
+
+                    <p className="text-xs text-white/60 font-bold px-4 py-3 bg-white/5 rounded-2xl border border-white/5 ml-2 leading-relaxed">
+                      <span className="text-[var(--red)] block text-[10px] uppercase font-black mb-1">Sujet: {msg.subject}</span>
+                      {msg.message}
+                    </p>
+
+                    <div className="flex gap-3 pt-2 pl-2">
+                      <button onClick={() => setSelectedMessage(msg)} className="flex-[1.5] py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all">
+                        <Mail className="w-5 h-5" /> Lire Message
+                      </button>
+                      <button onClick={() => handleUpdateMessage(msg.id, "READ")} className="flex-1 py-4 bg-[#1A1A1A] border border-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl active:bg-white/5">
+                        Marquer Lu
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
             })}
 
             {activeTab === "clients" && data.clients.map((cli) => (
-              <div key={cli.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-mono text-white/40">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
-                  <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>{cli.role || "CLIENT"}</span>
+              <div key={cli.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl p-6 space-y-4 shadow-xl">
+                <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${cli.role === 'ADMIN' ? 'bg-[var(--red)]' : 'bg-blue-500'}`} />
+                <div className="flex justify-between items-center pl-2">
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
+                  <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>{cli.role || "CLIENT"}</span>
                 </div>
-                <h3 className="text-white font-black text-base tracking-tight">{cli.displayName || "Client Sans Nom"}</h3>
-                <p className="text-slate-400 text-xs font-bold">{cli.email}</p>
-                <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest border-t border-white/5 pt-3">UID: {cli.uid}</p>
+                <div className="pl-2">
+                  <h3 className="text-white font-black text-xl tracking-tight mb-1">{cli.displayName || "Client Sans Nom"}</h3>
+                  <p className="text-[var(--red)] text-xs font-bold tracking-widest">{cli.email}</p>
+                </div>
+                <div className="pl-2 pt-3 border-t border-white/5 flex items-center justify-between">
+                   <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">UID: {cli.uid.substring(0, 10)}...</p>
+                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><Users className="w-4 h-4 text-white/20" /></div>
+                </div>
               </div>
             ))}
 
             {activeTab === "services" && data.services.map((srv) => (
-              <div key={srv.id} className="card p-5 bg-[#111] border border-white/10 rounded-[1.5rem] space-y-4">
-                <div className="flex justify-between items-start">
-                  <span className="px-3 py-1 rounded-lg bg-white/5 text-white/40 text-[9px] font-black uppercase tracking-widest border border-white/5">{srv.category || "General"}</span>
-                  <span className="text-sm font-black text-emerald-400 italic">{srv.priceCFA} CFA</span>
+              <div key={srv.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl p-6 space-y-5 shadow-xl">
+                <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-emerald-500" />
+                <div className="flex justify-between items-start pl-2">
+                   <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/50 text-[10px] font-black uppercase tracking-widest border border-white/5">{srv.category || "General"}</span>
+                   <span className="text-lg font-black text-emerald-400 italic tracking-tighter shadow-emerald-500/20">{srv.priceCFA} CFA</span>
                 </div>
-                <div>
-                  <h3 className="text-white font-black text-base tracking-tight mb-2 uppercase">{srv.title}</h3>
-                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3">{srv.description}</p>
+                <div className="pl-2">
+                  <h3 className="text-white font-black text-xl tracking-tight mb-2 uppercase leading-tight group-hover:text-[var(--red)] transition-colors">{srv.title}</h3>
+                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3 font-medium bg-white/5 p-4 rounded-2xl border border-white/5">{srv.description}</p>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setEditServiceModal(srv)} className="flex-1 py-3 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-blue-500/20">
-                    <Edit3 className="w-4 h-4" /> Modifier
+                <div className="flex gap-3 pl-2">
+                  <button onClick={() => setEditServiceModal(srv)} className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
+                    <Edit3 className="w-4 h-4" /> Editer
                   </button>
-                  <button onClick={() => handleDeleteService(srv.id)} className="flex-1 py-3 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20">
-                    <Trash2 className="w-4 h-4" /> Supprimer
+                  <button onClick={() => handleDeleteService(srv.id)} className="flex-1 py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20 active:scale-95 transition-all">
+                    <Trash2 className="w-4 h-4" /> Suppr
                   </button>
                 </div>
               </div>
             ))}
 
             {data[activeTab as keyof typeof data].length === 0 && (
-              <div className="py-20 text-center card bg-[#111] border border-white/10 rounded-[2rem]">
-                <p className="text-white/40 font-bold uppercase tracking-widest text-xs">Aucune donnée disponible</p>
+              <div className="py-24 text-center rounded-[2.5rem] border border-dashed border-white/10 bg-[#0D0D0D]/50 backdrop-blur-xl">
+                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6"><Search className="w-8 h-8 text-white/20" /></div>
+                <p className="text-white/40 font-black uppercase tracking-[0.2em] text-xs">Aucune donnée détectée</p>
               </div>
             )}
           </div>

@@ -75,96 +75,150 @@ export default function DashboardPage() {
   const langKey = language as "fr" | "en";
 
   return (
-    <div className="min-h-[100svh] pt-32 pb-40 bg-[var(--off-white)] relative overflow-hidden">
+    <div className="min-h-[100svh] pt-32 pb-40 bg-[#0A0A0A] text-white relative overflow-hidden">
       {/* Background Ambience */}
-      <AuraGradient color="var(--red)" className="top-0 right-0 w-[600px] h-[600px] opacity-[0.03]" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
+      <AuraGradient color="var(--red)" className="top-0 right-0 w-[600px] h-[600px] opacity-[0.05]" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
 
       <div className="container-xl relative z-10 max-w-6xl">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 border-b border-white/50 pb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 border-b border-white/10 pb-10">
           <FadeUp>
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-2 w-8 bg-[var(--red)] rounded-full" />
-              <span className="text-[10px] font-black text-[var(--red)] uppercase tracking-[0.2em]">
+              <div className="h-2 w-8 bg-[var(--red)] rounded-full shadow-[0_0_15px_rgba(238,28,37,0.5)]" />
+              <span className="text-[10px] font-black text-[var(--red)] uppercase tracking-[0.25em]">
                 {t.dashboard.title}
               </span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-black text-[var(--charcoal)] tracking-tighter mb-2">
+            <h1 className="text-4xl lg:text-6xl font-black text-white tracking-tighter mb-4">
               Espace <span className="text-[var(--red)]">Client.</span>
             </h1>
-            <p className="text-sm font-medium text-[var(--slate)] max-w-lg leading-relaxed">
+            <p className="text-sm font-medium text-white/40 max-w-lg leading-relaxed">
               Gérez vos services, suivez l'avancement de vos demandes de devis et interventions techniques en temps réel.
             </p>
           </FadeUp>
           
           <FadeIn delay={0.3}>
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-md border border-white px-6 py-4 rounded-2xl shadow-[var(--shadow-glass)]">
-                <ShieldCheck className="w-5 h-5 text-emerald-500" />
+              <div className="flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-5 rounded-[2rem] shadow-2xl">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-emerald-700 font-black uppercase tracking-[0.2em]">
+                  <span className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em]">
                     {t.dashboard.secure}
                   </span>
-                  <span className="text-[9px] text-[var(--slate)] font-bold">AES-256 E2E</span>
+                  <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Connecté en AES-256</span>
                 </div>
               </div>
             </div>
           </FadeIn>
         </div>
 
-        {/* Requests Table Section */}
+        {/* Requests Section */}
         <FadeUp delay={0.2} className="mb-16">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-3">
-              <FileText className="w-6 h-6 text-[var(--red)]" /> 
+            <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-[var(--red)]/10 flex items-center justify-center border border-[var(--red)]/20 shadow-lg shadow-red-950/20"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
               {language === "fr" ? "Mes Demandes & Devis" : "My Requests & Quotes"}
             </h2>
-            <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)]">
+            <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
               {language === "fr" ? "Nouveau Devis" : "New Quote"}
             </Link>
           </div>
 
-          <div className="bg-white/60 backdrop-blur-2xl rounded-[2rem] overflow-hidden shadow-[var(--shadow-xl)] border border-white relative group/table">
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-slate-300 md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] vertical-text">Scroll</span>
-              <ArrowRight className="w-3 h-3 rotate-0" />
-            </div>
+          {/* Mobile Cards View */}
+          <div className="md:hidden space-y-6">
+            {loading ? (
+              <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
+            ) : bookings.length === 0 ? (
+              <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</div>
+            ) : bookings.map((req) => {
+              const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+              const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+              const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
+              
+              return (
+                <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl p-6 shadow-2xl">
+                  {/* Status Indicator Bar */}
+                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
+                  
+                  <div className="space-y-4 pl-2">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1">
+                         <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Dossier #{req.id.slice(0, 8).toUpperCase()}</span>
+                         <h3 className="text-white font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
+                      </div>
+                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls} bg-transparent`}>{mapObj.label}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Date</p>
+                        <p className="text-xs font-bold text-white tracking-widest">{date}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Budget</p>
+                        <p className="text-xs font-black text-emerald-400 italic">Devis Client</p>
+                      </div>
+                    </div>
+
+                    {req.adminNote && (
+                      <div className="p-4 bg-[var(--red)]/5 border border-[var(--red)]/10 rounded-2xl italic text-[11px] text-white/70 leading-relaxed">
+                        <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">Note Admin</span>
+                        "{req.adminNote}"
+                      </div>
+                    )}
+
+                    {req.status === "PENDING" && (
+                      <button 
+                        onClick={() => handleDeleteRequest(req.id)}
+                        className="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all mt-4"
+                      >
+                        <AlertTriangle className="w-4 h-4" /> Annuler Demande
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 relative group/table hidden md:block">
             <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full text-left text-sm border-collapse min-w-[700px]">
+              <table className="w-full text-left text-sm border-collapse min-w-[800px]">
                 <thead>
-                  <tr className="bg-white/50 border-b border-slate-100">
+                  <tr className="bg-white/5 border-b border-white/5">
                     {["Dossier ID", "Date", "Service", "Statut", "Note Admin", "Action"].map(h => (
-                      <th key={h} className="py-5 px-6 md:px-8 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--slate)] whitespace-nowrap">{h}</th>
+                      <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-white/40">{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100/50">
+                <tbody className="divide-y divide-white/5">
                   <AnimatePresence>
                     {loading ? (
-                       <tr><td colSpan={6} className="text-center py-16"><div className="w-8 h-8 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto" /></td></tr>
+                       <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
                     ) : bookings.length === 0 ? (
-                      <tr><td colSpan={6} className="text-center py-16 text-[var(--slate)] font-bold">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</td></tr>
+                      <tr><td colSpan={6} className="text-center py-24 text-white/30 font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</td></tr>
                     ) : bookings.map((req, i) => {
                       const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                       const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
                       return (
-                        <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-white/40 transition-all group">
-                          <td className="py-6 px-6 md:px-8 font-mono font-black text-[10px] text-[var(--red)]">#{req.id.slice(0, 8).toUpperCase()}</td>
-                          <td className="py-6 px-6 md:px-8 font-bold text-[var(--slate)] text-xs">{date}</td>
-                          <td className="py-6 px-6 md:px-8 font-bold text-[var(--charcoal)] tracking-tight">{req.serviceId.toUpperCase()}</td>
-                          <td className="py-6 px-6 md:px-8">
-                            <span className={`inline-flex items-center px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider border ${mapObj.cls}`}>
+                        <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-white/5 transition-all group">
+                          <td className="py-6 px-8 font-mono font-black text-[10px] text-[var(--red)] tracking-widest">#{req.id.slice(0, 8).toUpperCase()}</td>
+                          <td className="py-6 px-8 font-black text-white/40 text-[11px] tracking-widest">{date}</td>
+                          <td className="py-6 px-8 font-black text-white text-sm tracking-tight uppercase">{req.serviceId}</td>
+                          <td className="py-6 px-8">
+                            <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${mapObj.cls} bg-transparent`}>
                               {mapObj.label}
                             </span>
                           </td>
-                          <td className="py-6 px-6 md:px-8 font-bold text-[var(--charcoal)] text-xs italic">
+                          <td className="py-6 px-8 font-bold text-white/60 text-xs italic leading-relaxed max-w-xs truncate">
                             {req.adminNote || "-"}
                           </td>
-                          <td className="py-6 px-6 md:px-8">
+                          <td className="py-6 px-8">
                             {req.status === "PENDING" && (
-                              <button onClick={() => handleDeleteRequest(req.id)} className="text-[10px] font-black uppercase text-red-500 hover:text-red-700 tracking-widest border border-red-200 px-3 py-1 rounded-lg">
+                              <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-white hover:bg-red-500 tracking-widest border border-red-500/30 px-4 py-2 rounded-xl transition-all">
                                 {language === "fr" ? "Annuler" : "Cancel"}
                               </button>
                             )}
@@ -178,38 +232,37 @@ export default function DashboardPage() {
             </div>
           </div>
         </FadeUp>
-        
-        {/* Support Grid */}
-        <StaggerContainer className="grid md:grid-cols-2 gap-6">
+             {/* Support Grid */}
+        <StaggerContainer className="grid md:grid-cols-2 gap-8">
           <StaggerItem>
-            <div className="card bg-white/60 p-10 border border-white rounded-[2.5rem] shadow-[var(--shadow-glass)] flex items-start gap-6 group hover:border-red-100 transition-colors">
-              <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-colors duration-500">
+            <div className="card bg-white/5 p-10 border border-white/10 rounded-[2.5rem] shadow-2xl flex items-start flex-col sm:flex-row gap-8 group hover:border-[var(--red)]/30 transition-all duration-500">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 border border-[var(--red)]/20 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-all duration-500 shadow-lg shadow-red-950/20">
                 <AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
               </div>
-              <div>
-                <h3 className="text-xl font-black text-[var(--charcoal)] mb-3 tracking-tight">Support Prioritaire</h3>
-                <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Un problème urgent ? Notre équipe technique intervient en moins de 2H pour les contrats actifs.</p>
-                <Link href="/contact" className="flex items-center gap-2 text-[10px] font-black text-[var(--charcoal)] hover:text-[var(--red)] uppercase tracking-widest transition-colors">
-                  Ouvrir un ticket <ArrowRight className="w-4 h-4" />
+              <div className="flex-1">
+                <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
+                <p className="text-sm text-white/40 font-medium leading-relaxed mb-8">Un problème urgent ? Notre équipe technique intervient en moins de 2H pour les contrats actifs. Protection 24/7 de vos actifs numériques.</p>
+                <Link href="/contact" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95">
+                  Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)]" />
                 </Link>
               </div>
             </div>
           </StaggerItem>
           
           <StaggerItem>
-             <div className="card bg-[#0A0A0A] p-10 border border-[#222] rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.5)] flex items-start flex-col sm:flex-row gap-6 group relative overflow-hidden">
-               <AuraGradient color="var(--red)" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.1]" />
-               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10 transition-colors group-hover:bg-[var(--red)]">
+             <div className="card bg-[#050505] p-10 border border-white/5 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex items-start flex-col sm:flex-row gap-8 group relative overflow-hidden ring-1 ring-white/10 hover:ring-[var(--red)]/30 transition-all duration-500">
+               <AuraGradient color="var(--red)" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.08]" />
+               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10 transition-all duration-500 group-hover:bg-[var(--red)] shadow-inner">
                  <Cpu className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
                </div>
-               <div className="relative z-10">
+               <div className="relative z-10 flex-1">
                  <div className="flex items-center gap-3 mb-3">
-                   <h3 className="text-xl font-black text-white tracking-tight">Cloud & Infra</h3>
-                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                   <h3 className="text-2xl font-black text-white tracking-tight">Cloud & <span className="text-emerald-400">Infra.</span></h3>
+                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)] border border-emerald-400/50" />
                  </div>
-                 <p className="text-sm text-white/50 font-medium leading-relaxed mb-6">Tous vos services réseau et cloud fonctionnent de manière optimale sur notre infrastructure Tier-III.</p>
-                 <Link href="/services" className="flex items-center gap-2 text-[10px] font-black text-[var(--red)] hover:text-white uppercase tracking-widest transition-colors">
-                   Explorer le catalogue <ArrowRight className="w-4 h-4" />
+                 <p className="text-sm text-white/40 font-medium leading-relaxed mb-8">Tous vos services réseau et cloud fonctionnent de manière optimale sur notre infrastructure Tier-III. Supervision temps réel active.</p>
+                 <Link href="/services" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95">
+                   Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-400" />
                  </Link>
                </div>
              </div>
