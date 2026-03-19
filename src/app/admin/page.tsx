@@ -40,11 +40,20 @@ export default function AdminDashboard() {
   const { user, role, loading: authLoading } = useAuth();
   
   const [activeTab, setActiveTab] = useState("requests");
-  const [data, setData] = useState({ requests: [] as any[], clients: [] as any[], services: [] as any[], messages: [] as any[], reviews: [] as any[] });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [data, setData] = useState<{ requests: any[], clients: any[], services: any[], messages: any[], reviews: any[] }>({ 
+    requests: [], 
+    clients: [], 
+    services: [], 
+    messages: [], 
+    reviews: [] 
+  });
   const [loading, setLoading] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false); // Modals state
 
-  const [showNotifications, setShowNotifications] = useState(false)  // Modals state
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [statusPrompt, setStatusPrompt] = useState<{ id: string, status: string } | null>(null);
   const [adminNote, setAdminNote] = useState("");
@@ -894,8 +903,8 @@ export default function AdminDashboard() {
                         <span className="text-[10px] font-bold text-white/60">V2.4.0-STABLE</span>
                       </div>
                       <div className="flex items-center justify-between">
-                         <span className="text-[10px] font-black text-white/20 uppercase">Dernier Login</span>
-                         <span className="text-[10px] font-bold text-white/60">Aujourd'hui</span>
+                          <span className="text-[10px] font-black text-white/20 uppercase">Dernier Login</span>
+                          <span className="text-[10px] font-bold text-white/60">Aujourd{"'"}hui</span>
                       </div>
                     </div>
                   </div>
@@ -924,7 +933,7 @@ export default function AdminDashboard() {
                      <form onSubmit={handleProfileUpdate} className="space-y-8 relative z-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                            <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] pl-1">Nom d'affichage</label>
+                             <label className="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] pl-1">Nom d{"'"}affichage</label>
                              <input 
                                type="text" 
                                value={profileForm.name} 
@@ -946,7 +955,7 @@ export default function AdminDashboard() {
                         <div className="space-y-2 max-w-md">
                           <label className="text-[10px] font-black uppercase text-amber-500 tracking-[0.2em] pl-1 flex items-center gap-2">
                              <Lock className="w-3 h-3" /> Mot de passe actuel
-                             <span className="text-white/20 capitalize font-medium italic">(Nécessaire pour changer l'email)</span>
+                             <span className="text-white/20 capitalize font-medium italic">(Nécessaire pour changer l{"'"}email)</span>
                           </label>
                           <input 
                             type="password" 
@@ -991,12 +1000,12 @@ export default function AdminDashboard() {
               <button onClick={() => setSelectedBooking(null)} className="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white p-2"><X className="w-6 h-6" /></button>
               <h2 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-6 mt-2">Détails de la demande</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-white text-base md:text-lg">{selectedBooking.entity} <span className="text-[9px] bg-white/10 px-2 py-1 rounded ml-2">{selectedBooking.clientType}</span></p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-white text-xs md:text-sm">{selectedBooking.email}<br/>{selectedBooking.phone}</p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Service Choisi</span><p className="font-bold text-[var(--red)]">{selectedBooking.serviceId}</p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Budget Alloué</span><p className="font-bold text-emerald-400 italic">{selectedBooking.budget}</p></div>
-                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Délai d'intervention</span><p className="font-bold text-white/80">{selectedBooking.timeframe}</p></div>
-                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Description Technique</span><p className="p-4 bg-white/5 rounded-2xl text-white/80 whitespace-pre-line text-xs md:text-sm leading-relaxed">{selectedBooking.description}</p></div>
+                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-white text-base md:text-lg">{(selectedBooking as any).entity} <span className="text-[9px] bg-white/10 px-2 py-1 rounded ml-2">{(selectedBooking as any).clientType}</span></p></div>
+                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-white text-xs md:text-sm">{(selectedBooking as any).email}<br/>{(selectedBooking as any).phone}</p></div>
+                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Service Choisi</span><p className="font-bold text-[var(--red)]">{(selectedBooking as any).serviceId}</p></div>
+                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Budget Alloué</span><p className="font-bold text-emerald-400 italic">{(selectedBooking as any).budget}</p></div>
+                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Délai d{"'"}intervention</span><p className="font-bold text-white/80">{(selectedBooking as any).timeframe}</p></div>
+                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Description Technique</span><p className="p-4 bg-white/5 rounded-2xl text-white/80 whitespace-pre-line text-xs md:text-sm leading-relaxed">{(selectedBooking as any).description}</p></div>
               </div>
             </div>
           </motion.div>

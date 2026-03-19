@@ -18,13 +18,23 @@ import { db } from "./config";
 // SERVICES
 // ============================================================
 
-export const getServices = async () => {
+export interface Service {
+  id: string;
+  title: string;
+  description: string;
+  priceCFA: number;
+  category?: string;
+  createdAt?: any;
+}
+
+export const getServices = async (): Promise<Service[]> => {
   try {
     const q = query(collection(db, "services"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
-  } catch (error: any) {
-    console.error("getServices:", error.message);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Service));
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("getServices:", err.message);
     return [];
   }
 };
@@ -57,20 +67,21 @@ export interface BookingData {
   description: string;
 }
 
-export const getBookings = async (userId?: string) => {
+export const getBookings = async (userId?: string): Promise<any[]> => {
   try {
     const ref = collection(db, "bookings");
     const q = userId
       ? query(ref, where("userId", "==", userId))
       : query(ref, orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
-    const data = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+    const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as any));
     if (userId) {
-      data.sort((a: any, b: any) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+      data.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
     }
     return data;
-  } catch (error: any) {
-    console.error("getBookings:", error.message);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("getBookings:", err.message);
     return [];
   }
 };
@@ -84,7 +95,7 @@ export const createBooking = async (data: BookingData) => {
 };
 
 export const updateBookingStatus = async (bookingId: string, status: string, adminNote?: string) => {
-  const payload: any = { status, updatedAt: serverTimestamp() };
+  const payload: Record<string, unknown> = { status, updatedAt: serverTimestamp() };
   if (adminNote !== undefined) payload.adminNote = adminNote;
   await updateDoc(doc(db, "bookings", bookingId), payload);
 };
@@ -97,18 +108,19 @@ export const deleteBooking = async (bookingId: string) => {
 // USERS (Admin only)
 // ============================================================
 
-export const getUsers = async () => {
+export const getUsers = async (): Promise<any[]> => {
   try {
     const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
-  } catch (error: any) {
-    console.error("getUsers:", error.message);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as any));
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("getUsers:", err.message);
     return [];
   }
 };
 
-export const getUserById = async (uid: string) => {
+export const getUserById = async (uid: string): Promise<any | null> => {
   try {
     const snap = await getDoc(doc(db, "users", uid));
     if (snap.exists()) return { id: snap.id, ...snap.data() } as any;
@@ -132,9 +144,10 @@ export const updateUserDoc = async (uid: string, data: Partial<{ displayName: st
 export const deleteUserDoc = async (uid: string) => {
   try {
     await deleteDoc(doc(db, "users", uid));
-  } catch (error: any) {
-    console.error("deleteUserDoc:", error.message);
-    throw error;
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("deleteUserDoc:", err.message);
+    throw err;
   }
 };
 
@@ -142,13 +155,14 @@ export const deleteUserDoc = async (uid: string) => {
 // CONTACT MESSAGES (Admin only)
 // ============================================================
 
-export const getMessages = async () => {
+export const getMessages = async (): Promise<any[]> => {
   try {
     const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
-    return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
-  } catch (error: any) {
-    console.error("getMessages:", error.message);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("getMessages:", err.message);
     return [];
   }
 };
@@ -190,22 +204,21 @@ export const createReview = async (userId: string, authorName: string, serviceId
   });
 };
 
-export const getReviews = async (serviceId?: string) => {
+export const getReviews = async (serviceId?: string): Promise<any[]> => {
   try {
     const ref = collection(db, "reviews");
-    // Fetch all without orderBy to avoid composite index issues — sort client-side
     const snap = await getDocs(ref);
-    let results = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+    let results = snap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
     if (serviceId) {
-      results = results.filter((r: any) => r.serviceId === serviceId);
+      results = results.filter((r) => r.serviceId === serviceId);
     }
-    results.sort((a: any, b: any) => {
+    results.sort((a, b) => {
       const aTime = a.createdAt?.seconds ?? 0;
       const bTime = b.createdAt?.seconds ?? 0;
       return bTime - aTime;
     });
     return results;
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("getReviews error:", e);
     return [];
   }

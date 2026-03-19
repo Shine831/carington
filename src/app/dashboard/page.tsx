@@ -380,7 +380,7 @@ export default function DashboardPage() {
               Bonjour, <span className="text-[var(--red)]">{firstName}.</span>
             </h1>
             <p className="text-sm font-medium text-white/40 max-w-lg leading-relaxed">
-              Ravi de vous revoir. Suivez l'avancement de vos projets et bénéficiez de notre expertise technique en temps réel.
+              Ravi de vous revoir. Suivez l{"'"}avancement de vos projets et bénéficiez de notre expertise technique en temps réel.
             </p>
           </FadeUp>
           
@@ -417,7 +417,7 @@ export default function DashboardPage() {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
               className={`flex items-center gap-3 px-6 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all ${
                 activeTab === tab.id ? "bg-[var(--red)] text-white shadow-lg" : "text-white/40 hover:text-white hover:bg-white/5"
               }`}
@@ -447,9 +447,9 @@ export default function DashboardPage() {
                 <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
               ) : bookings.length === 0 ? (
                 <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</div>
-              ) : bookings.map((req) => {
+              ) : bookings.map((req: any) => {
                 const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-                const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
                 const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
                 
                 return (
@@ -562,7 +562,7 @@ export default function DashboardPage() {
                 <div className="col-span-full py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">
                   {language === "fr" ? "Vous n'avez pas encore laissé d'avis." : "You haven't left any reviews yet."}
                 </div>
-              ) : userReviews.map((rev) => (
+              ) : userReviews.map((rev: any) => (
                 <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start mb-4">
@@ -573,7 +573,7 @@ export default function DashboardPage() {
                       </div>
                       <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{rev.createdAt ? new Date(rev.createdAt.seconds * 1000).toLocaleDateString() : "Récemment"}</span>
                     </div>
-                    <p className="text-sm font-medium text-white/70 leading-relaxed mb-6 italic">"{rev.comment}"</p>
+                    <p className="text-sm font-medium text-white/70 leading-relaxed mb-6 italic">{'"'}{rev.comment}{'"'}</p>
                   </div>
                   <div className="flex gap-4 border-t border-white/5 pt-4">
                     <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-white/40 hover:text-white transition-colors tracking-widest">Modifier</button>
@@ -922,7 +922,7 @@ export default function DashboardPage() {
                   )}
                   {pinChangeForm.success && (
                     <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
-                      {pinChangeForm.success}
+                       {pinChangeForm.success}
                     </motion.p>
                   )}
                 </AnimatePresence>
