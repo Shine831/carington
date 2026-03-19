@@ -41,6 +41,8 @@ export default function AdminDashboard() {
   const [data, setData] = useState({ requests: [] as any[], clients: [] as any[], services: [] as any[], messages: [] as any[] });
   const [loading, setLoading] = useState(true);
 
+  const [showNotifications, setShowNotifications] = useState(false);
+
   // Modals state
   const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
   const [statusPrompt, setStatusPrompt] = useState<{ id: string, status: string } | null>(null);
@@ -120,29 +122,30 @@ export default function AdminDashboard() {
   if (authLoading || role !== "ADMIN") {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 mb-6"><Shield className="w-6 h-6 text-[var(--red)] animate-pulse" /></div>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-[var(--red)]/20 bg-white/5 mb-6"><Shield className="w-6 h-6 text-[var(--red)] animate-pulse" /></div>
       </div>
     );
   }
 
-  const pendingReqs = data.requests.filter(r => r.status === "PENDING").length;
-  const unreadMsgs = data.messages.filter(m => m.status === "UNREAD").length;
-  const activeReqs = data.requests.filter(r => r.status === "ACTIVE").length;
-  const solvedReqs = data.requests.filter(r => r.status === "COMPLETED").length;
-  const vipClients = data.clients.length;
+  const pendingReqsCount = data.requests.filter(r => r.status === "PENDING").length;
+  const unreadMsgsCount = data.messages.filter(m => m.status === "UNREAD").length;
+  const activeReqsCount = data.requests.filter(r => r.status === "ACTIVE").length;
+  const solvedReqsCount = data.requests.filter(r => r.status === "COMPLETED").length;
+  const vipClientsCount = data.clients.length;
+  const totalNotifications = pendingReqsCount + unreadMsgsCount;
 
   const NAV = [
-    { id: "requests",  label: t.admin.nav.requests, icon: FileText, badge: pendingReqs > 0 ? pendingReqs : undefined },
-    { id: "messages",  label: language === "fr" ? "Messages" : "Messages", icon: Mail, badge: unreadMsgs > 0 ? unreadMsgs : undefined },
+    { id: "requests",  label: t.admin.nav.requests, icon: FileText, badge: pendingReqsCount > 0 ? pendingReqsCount : undefined },
+    { id: "messages",  label: language === "fr" ? "Messages" : "Messages", icon: Mail, badge: unreadMsgsCount > 0 ? unreadMsgsCount : undefined },
     { id: "clients",   label: t.admin.nav.clients, icon: Users },
     { id: "services",  label: t.admin.nav.catalog, icon: Briefcase },
   ];
 
   const STATS = [
-    { label: "En attente", value: pendingReqs.toString(), icon: AlertTriangle, color: "text-[var(--red)]" },
-    { label: "Actives", value: activeReqs.toString(), icon: Clock, color: "text-amber-500" },
-    { label: "Résolus", value: solvedReqs.toString(), icon: CheckCircle, color: "text-emerald-500" },
-    { label: "Utilisateurs", value: vipClients.toString(), icon: Users, color: "text-blue-500" },
+    { label: "En attente", value: loading ? "..." : pendingReqsCount.toString(), icon: AlertTriangle, color: "text-[var(--red)]" },
+    { label: "Actives", value: loading ? "..." : activeReqsCount.toString(), icon: Clock, color: "text-amber-500" },
+    { label: "Résolus", value: loading ? "..." : solvedReqsCount.toString(), icon: CheckCircle, color: "text-emerald-500" },
+    { label: "Utilisateurs", value: loading ? "..." : vipClientsCount.toString(), icon: Users, color: "text-blue-500" },
   ];
 
   const langKey = language as "fr" | "en";
@@ -181,35 +184,60 @@ export default function AdminDashboard() {
       </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-10 pb-28 md:pb-0">
+      <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-20 pb-28 md:pb-0">
         
         {/* Top Header */}
-        <header className="bg-[#0A0A0A]/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-30 border-b border-white/5">
-          <div className="flex items-center gap-4 md:gap-6">
-            <button className="relative text-white/40 hover:text-white p-2 bg-white/5 border border-white/10 rounded-xl hidden sm:flex">
-              <Bell className="w-5 h-5" />
-              {(pendingReqs > 0 || unreadMsgs > 0) && <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-[#0A0A0A]" />}
+        <header className="bg-[#0A0A0A]/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-white/5">
+          <div className="flex items-center gap-4 md:gap-6 relative">
+            <button onClick={() => fetchData()} className="mr-4 px-5 py-2.5 rounded-xl border border-[var(--red)]/50 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+               Actualiser les données
             </button>
+
+            <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-white/40 hover:text-white p-2 bg-white/5 border border-white/10 rounded-xl hidden sm:flex">
+              <Bell className="w-5 h-5" />
+              {totalNotifications > 0 && <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-[#0A0A0A]" />}
+            </button>
+
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="absolute top-full right-24 mt-2 w-80 bg-[#111111] border border-white/10 shadow-2xl rounded-2xl p-4 z-50">
+                  <h4 className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Centre de Notifications</h4>
+                  {totalNotifications === 0 ? (
+                    <p className="text-xs text-center text-white/40 py-4">Aucune nouvelle notification.</p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {pendingReqsCount > 0 && (
+                        <li onClick={() => { setActiveTab("requests"); setShowNotifications(false); }} className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs text-yellow-500 cursor-pointer hover:bg-yellow-500/20 transition-all flex items-center gap-3"><AlertTriangle className="w-4 h-4" /> <strong>{pendingReqsCount}</strong> requêtes en attente</li>
+                      )}
+                      {unreadMsgsCount > 0 && (
+                        <li onClick={() => { setActiveTab("messages"); setShowNotifications(false); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-[var(--red)] cursor-pointer hover:bg-red-500/20 transition-all flex items-center gap-3"><Mail className="w-4 h-4" /> <strong>{unreadMsgsCount}</strong> messages non lus</li>
+                      )}
+                    </ul>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="flex items-center gap-4 pl-6 border-l border-white/10">
               <div className="text-right"><p className="text-[10px] font-black text-white uppercase tracking-wider">Super Admin</p></div>
-              <div className="w-10 h-10 rounded-xl bg-[var(--red)] text-white flex items-center justify-center font-black text-sm ring-2 ring-white/10">SA</div>
+              <div className="w-10 h-10 rounded-xl bg-[var(--red)] text-white flex items-center justify-center font-black text-sm ring-2 ring-white/10 shadow-[var(--shadow-red)]">SA</div>
             </div>
           </div>
         </header>
 
-        <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden">
+        <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden z-10">
           
           {/* Stats Bento */}
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
             {STATS.map(({ label, value, icon: Icon, color }) => (
               <StaggerItem key={label}>
-                <div className="card p-5 md:p-8 bg-[#111111] border border-white/10 relative h-full flex flex-col justify-between rounded-xl">
+                <div className="card p-5 md:p-8 bg-gradient-to-br from-[#111111] to-[#0A0A0A] border border-white/10 relative h-full flex flex-col justify-between rounded-2xl shadow-xl hover:border-white/20 transition-all">
                   <div className="relative z-10 mb-4">
-                    <p className="text-[9px] md:text-[10px] font-black text-white/50 uppercase tracking-[0.1em]">{label}</p>
-                    <p className="text-2xl md:text-4xl font-black text-white tracking-tighter italic">{value}</p>
+                    <p className="text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.1em]">{label}</p>
+                    <p className="text-3xl md:text-5xl font-black text-white tracking-tighter italic mt-2 drop-shadow-lg">{value}</p>
                   </div>
-                  <div className={`absolute bottom-5 right-5 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 ${color}`}>
-                    <Icon className="w-4 h-4 md:w-5 md:h-5" />
+                  <div className={`absolute bottom-5 right-5 w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/5 ${color} shadow-inner`}>
+                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
                   </div>
                 </div>
               </StaggerItem>
@@ -222,36 +250,38 @@ export default function AdminDashboard() {
               <h2 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase line-clamp-1">Base de données ({activeTab})</h2>
             </div>
             {activeTab === "services" && (
-               <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black">+ Service</button>
+               <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black shadow-[var(--shadow-red)]">+ Ajouter Service</button>
             )}
-            <button onClick={fetchData} className="btn border border-white/20 text-white px-6 py-3 text-[10px] uppercase font-black">Actualiser</button>
           </div>
 
-          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10">
+          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left text-sm border-collapse min-w-[700px]">
                 
                 {activeTab === "requests" && (
                   <>
                     <thead>
-                      <tr className="bg-white/5 border-b border-white/10">{["Date", "Client", "Service / Délai", "Devis", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr>
+                      <tr className="bg-[#1A1A1A] border-b border-white/10">{["Date", "Client", "Service / Délai", "Devis", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                      {data.requests.length === 0 ? (<tr><td colSpan={6} className="text-center py-10 text-white/40 font-bold">Aucune requête.</td></tr>) : data.requests.map((req) => {
+                      {data.requests.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-white/40 font-bold">Aucune requête.</td></tr>) : data.requests.map((req) => {
                         const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                         return (
-                          <tr key={req.id} className="hover:bg-white/5">
-                            <td className="py-4 px-6 font-mono text-[9px] text-white/40">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-4 px-6 font-black text-white">{req.entity} <br/><span className="text-[var(--red)] text-[9px]">{req.phone}</span></td>
-                            <td className="py-4 px-6 font-bold text-white/70">{req.serviceId} <br/><span className="text-[10px] text-white/30">{req.timeframe}</span></td>
-                            <td className="py-4 px-6 font-black text-emerald-400 italic">{req.budget}</td>
-                            <td className="py-4 px-6"><span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase border ${mapObj.cls}`}>{mapObj.label}</span></td>
-                            <td className="py-4 px-6 flex items-center gap-2">
-                              <select value={req.status} onChange={(e) => attemptStatusChange(req.id, e.target.value)} className="bg-white/5 border border-white/10 text-white/70 rounded-lg text-[10px] p-2 focus:outline-none">
-                                <option value="PENDING">PENDING</option><option value="ACTIVE">ACTIVE</option><option value="COMPLETED">COMPLETED</option><option value="REJECTED">REJECTED</option>
+                          <tr key={req.id} className="hover:bg-white/5 transition-colors group">
+                            <td className="py-5 px-6 font-mono text-[10px] text-white/40">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                            <td className="py-5 px-6 font-black text-white tracking-tight">{req.entity} <br/><span className="text-[var(--red)] text-[9px] font-bold tracking-widest">{req.phone}</span></td>
+                            <td className="py-5 px-6 font-bold text-white/80">{req.serviceId} <br/><span className="text-[9px] text-white/40 uppercase tracking-widest">{req.timeframe}</span></td>
+                            <td className="py-5 px-6 font-black text-emerald-400 italic text-base">{req.budget}</td>
+                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span></td>
+                            <td className="py-5 px-6 flex items-center gap-2">
+                              <select value={req.status} onChange={(e) => attemptStatusChange(req.id, e.target.value)} className="bg-[#222222] border border-white/10 text-white rounded-lg text-[10px] p-2.5 font-bold uppercase cursor-pointer hover:border-white/30 focus:border-[var(--red)] focus:outline-none transition-all">
+                                <option value="PENDING" className="bg-[#1A1A1A] text-white">PENDING</option>
+                                <option value="ACTIVE" className="bg-[#1A1A1A] text-white">ACTIVE</option>
+                                <option value="COMPLETED" className="bg-[#1A1A1A] text-white">COMPLETED</option>
+                                <option value="REJECTED" className="bg-[#1A1A1A] text-white">REJECTED</option>
                               </select>
-                              <button onClick={() => setSelectedBooking(req)} className="p-2 bg-white/10 rounded hover:bg-white/20 text-white"><Eye className="w-4 h-4" /></button>
-                              <button onClick={() => handleDeleteBooking(req.id)} className="p-2 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40"><Trash2 className="w-4 h-4" /></button>
+                              <button onClick={() => setSelectedBooking(req)} className="p-2.5 bg-white/10 rounded-lg hover:bg-white/20 text-white transition-colors" title="Voir détails"><Eye className="w-4 h-4" /></button>
+                              <button onClick={() => handleDeleteBooking(req.id)} className="p-2.5 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors" title="Supprimer définitivement"><Trash2 className="w-4 h-4" /></button>
                             </td>
                           </tr>
                         );
@@ -262,20 +292,22 @@ export default function AdminDashboard() {
 
                 {activeTab === "messages" && (
                   <>
-                    <thead><tr className="bg-white/5 border-b border-white/10">{["Date", "Nom", "Email", "Sujet", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
+                    <thead><tr className="bg-[#1A1A1A] border-b border-white/10">{["Date", "Nom", "Email", "Sujet", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
                     <tbody className="divide-y divide-white/5">
-                      {data.messages.length === 0 ? (<tr><td colSpan={6} className="text-center py-10 text-white/40 font-bold">Aucun message.</td></tr>) : data.messages.map((msg) => {
+                      {data.messages.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-white/40 font-bold">Aucun message.</td></tr>) : data.messages.map((msg) => {
                          const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
                          return (
-                          <tr key={msg.id} className="hover:bg-white/5">
-                            <td className="py-4 px-6 font-mono text-[9px] text-white/40">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-4 px-6 font-black text-white">{msg.name}</td>
-                            <td className="py-4 px-6 font-bold text-[var(--red)]">{msg.email}</td>
-                            <td className="py-4 px-6 font-medium text-white/70 max-w-xs truncate">{msg.subject}: {msg.message}</td>
-                            <td className="py-4 px-6"><span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${mapObj.cls}`}>{mapObj.label}</span></td>
-                            <td className="py-4 px-6">
-                              <select value={msg.status} onChange={(e) => handleUpdateMessage(msg.id, e.target.value)} className="bg-white/5 border border-white/10 text-white/70 rounded-lg text-[10px] p-2 focus:outline-none">
-                                <option value="UNREAD">UNREAD</option><option value="READ">READ</option><option value="REPLIED">REPLIED</option>
+                          <tr key={msg.id} className="hover:bg-white/5 transition-colors group">
+                            <td className="py-5 px-6 font-mono text-[10px] text-white/40">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                            <td className="py-5 px-6 font-black text-white">{msg.name}</td>
+                            <td className="py-5 px-6 font-bold text-[var(--red)]">{msg.email}</td>
+                            <td className="py-5 px-6 font-medium text-white/70 max-w-[200px] truncate" title={msg.message}>{msg.subject}: {msg.message}</td>
+                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span></td>
+                            <td className="py-5 px-6">
+                              <select value={msg.status} onChange={(e) => handleUpdateMessage(msg.id, e.target.value)} className="bg-[#222222] border border-white/10 text-white rounded-lg text-[10px] p-2.5 font-bold uppercase cursor-pointer hover:border-white/30 focus:border-[var(--red)] focus:outline-none transition-all">
+                                <option value="UNREAD" className="bg-[#1A1A1A] text-white">UNREAD</option>
+                                <option value="READ" className="bg-[#1A1A1A] text-white">READ</option>
+                                <option value="REPLIED" className="bg-[#1A1A1A] text-white">REPLIED</option>
                               </select>
                             </td>
                           </tr>

@@ -110,54 +110,84 @@ export default function ContactPage() {
               <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-64 h-64 opacity-[0.03]" />
               
               <h2 className="display-sm text-[var(--charcoal)] mb-10 tracking-tight">{t.contact.form_title}</h2>
-              <form className="space-y-6 relative z-10">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="form-group">
-                    <input type="text" className="form-input border-2 rounded-xl py-4" placeholder=" " id="contact-name" />
-                    <label htmlFor="contact-name" className="floating-label font-bold">{t.contact.form.name}</label>
-                  </div>
-                  <div className="form-group">
-                    <input type="email" className="form-input border-2 rounded-xl py-4" placeholder=" " id="contact-email" />
-                    <label htmlFor="contact-email" className="floating-label font-bold">{t.contact.form.email}</label>
-                  </div>
-                </div>
+                <AnimatePresence mode="wait">
+                  {success ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                      className="text-center py-10"
+                    >
+                      <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 mx-auto flex items-center justify-center mb-6 shadow-[0_10px_40px_rgba(16,185,129,0.2)]">
+                        <CheckCircle2 className="w-10 h-10" />
+                      </div>
+                      <h3 className="text-2xl font-black text-[var(--charcoal)] mb-4 tracking-tighter">
+                        {language === "fr" ? "Message envoyé avec succès !" : "Message sent successfully!"}
+                      </h3>
+                      <p className="text-sm font-medium text-[var(--slate)] mb-8">
+                        {language === "fr" ? "Notre équipe vous répondra dans les plus brefs délais." : "Our team will get back to you shortly."}
+                      </p>
+                      <button onClick={() => { setSuccess(false); setForm({ name: "", email: "", phone: "", subject: "devis", message: "" }); }} className="btn btn-red px-8 py-3 text-[10px] uppercase font-black">
+                        {language === "fr" ? "Nouveau message" : "New message"}
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.form 
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="space-y-6 relative z-10"
+                      onSubmit={handleSubmit}
+                    >
+                      {error && (
+                        <div className="p-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold flex items-center gap-3">
+                          <AlertCircle className="w-5 h-5 shrink-0" /> {error}
+                        </div>
+                      )}
 
-                <div className="form-group">
-                  <select defaultValue="" className="form-input appearance-none border-2 rounded-xl py-4" id="contact-subject">
-                    <option value="" disabled></option>
-                    <option value="devis">{t.contact.form.subjects.quote}</option>
-                    <option value="support">{t.contact.form.subjects.support}</option>
-                    <option value="audit">{t.contact.form.subjects.audit}</option>
-                    <option value="other">{t.contact.form.subjects.other}</option>
-                  </select>
-                  <label htmlFor="contact-subject" className="floating-label font-bold">{t.contact.form.subject}</label>
-                  <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
-                    <ChevronRight className="w-4 h-4 rotate-90" />
-                  </div>
-                </div>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="form-group">
+                          <input type="text" value={form.name} onChange={e => set("name", e.target.value)} className="form-input border-2 rounded-xl py-4" placeholder=" " id="contact-name" />
+                          <label htmlFor="contact-name" className="floating-label font-bold">{t.contact.form.name}</label>
+                        </div>
+                        <div className="form-group">
+                          <input type="email" value={form.email} onChange={e => set("email", e.target.value)} className="form-input border-2 rounded-xl py-4" placeholder=" " id="contact-email" />
+                          <label htmlFor="contact-email" className="floating-label font-bold">{t.contact.form.email}</label>
+                        </div>
+                      </div>
 
-                <div className="form-group">
-                  <textarea rows={6} className="form-input resize-none border-2 rounded-xl py-4" placeholder=" " id="contact-message" />
-                  <label htmlFor="contact-message" className="floating-label font-bold">{t.contact.form.message}</label>
-                </div>
+                      <div className="form-group">
+                        <select value={form.subject} onChange={e => set("subject", e.target.value)} className="form-input appearance-none border-2 rounded-xl py-4" id="contact-subject">
+                          <option value="devis">{t.contact.form.subjects.quote}</option>
+                          <option value="support">{t.contact.form.subjects.support}</option>
+                          <option value="audit">{t.contact.form.subjects.audit}</option>
+                          <option value="other">{t.contact.form.subjects.other}</option>
+                        </select>
+                        <label htmlFor="contact-subject" className="floating-label font-bold">{t.contact.form.subject}</label>
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]">
+                          <ChevronRight className="w-4 h-4 rotate-90" />
+                        </div>
+                      </div>
 
-                <div className="pt-4">
-                  <motion.button
-                    type="submit"
-                    onClick={handleSubmit}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    disabled={loading}
-                    className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)] disabled:opacity-60"
-                  >
-                    {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" />{language === "fr" ? "Envoi..." : "Sending..."}</> : <>{t.contact.form.send} <Send className="w-4 h-4 ml-2" /></>}
-                  </motion.button>
-                  <p className="text-[10px] font-black text-[var(--muted)] mt-5 flex items-center gap-2 uppercase tracking-widest">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {t.contact.form.secure}
-                  </p>
-                </div>
-              </form>
+                      <div className="form-group">
+                        <textarea rows={6} value={form.message} onChange={e => set("message", e.target.value)} className="form-input resize-none border-2 rounded-xl py-4" placeholder=" " id="contact-message" />
+                        <label htmlFor="contact-message" className="floating-label font-bold">{t.contact.form.message}</label>
+                      </div>
+
+                      <div className="pt-4">
+                        <motion.button
+                          type="submit"
+                          whileHover={{ scale: 1.02, y: -2 }}
+                          whileTap={{ scale: 0.98 }}
+                          disabled={loading}
+                          className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)] disabled:opacity-60"
+                        >
+                          {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" />{language === "fr" ? "Envoi..." : "Sending..."}</> : <>{t.contact.form.send} <Send className="w-4 h-4 ml-2" /></>}
+                        </motion.button>
+                        <p className="text-[10px] font-black text-[var(--muted)] mt-5 flex items-center gap-2 uppercase tracking-widest">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          {t.contact.form.secure}
+                        </p>
+                      </div>
+                    </motion.form>
+                  )}
+                </AnimatePresence>
             </div>
           </SlideRight>
         </div>
