@@ -103,7 +103,7 @@ export default function DashboardPage() {
           
           <FadeIn delay={0.3}>
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-5 rounded-[2rem] shadow-2xl">
+              <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/10 px-6 py-5 rounded-[2rem] shadow-xl">
                 <ShieldCheck className="w-5 h-5 text-emerald-400" />
                 <div className="flex flex-col">
                   <span className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em]">
@@ -140,7 +140,7 @@ export default function DashboardPage() {
               const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
               
               return (
-                <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl p-6 shadow-2xl">
+                <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl">
                   {/* Status Indicator Bar */}
                   <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
                   
@@ -186,7 +186,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Desktop Table View */}
-          <div className="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 relative group/table hidden md:block">
+          <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-xl border border-white/10 relative group/table hidden md:block">
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left text-sm border-collapse min-w-[800px]">
                 <thead>

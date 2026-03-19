@@ -195,7 +195,7 @@ export default function AdminDashboard() {
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-2xl border-t border-white/10 z-50 flex items-center justify-around px-2 py-3 pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md border-t border-white/10 z-50 flex items-center justify-around px-2 py-3 pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         {NAV.map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
 
             <AnimatePresence>
               {showNotifications && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="absolute top-full right-24 mt-2 w-80 bg-[#111111] border border-white/10 shadow-2xl rounded-2xl p-4 z-50">
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="absolute top-full right-0 sm:right-24 mt-2 w-[calc(100vw-2rem)] max-w-[360px] bg-[#111111] border border-white/10 shadow-2xl rounded-2xl p-4 z-50">
                   <h4 className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Centre de Notifications</h4>
                   {totalNotifications === 0 ? (
                     <p className="text-xs text-center text-white/40 py-4">Aucune nouvelle notification.</p>
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
               const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
               
               return (
-                <div key={req.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl shadow-2xl">
+                <div key={req.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md shadow-xl">
                   {/* Status Indicator Bar */}
                   <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor} shadow-[0_0_20px_rgba(0,0,0,0.5)]`} />
                   
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
               const accentColor = msg.status === "UNREAD" ? "bg-red-500" : msg.status === "READ" ? "bg-slate-500" : "bg-emerald-500";
 
               return (
-                <div key={msg.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl shadow-2xl">
+                <div key={msg.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md shadow-xl">
                   <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
                   <div className="p-6 space-y-5">
                     <div className="flex justify-between items-start pl-2">
@@ -390,7 +390,7 @@ export default function AdminDashboard() {
             })}
 
             {activeTab === "clients" && data.clients.map((cli) => (
-              <div key={cli.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl p-6 space-y-4 shadow-xl">
+              <div key={cli.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 space-y-4 shadow-xl">
                 <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${cli.role === 'ADMIN' ? 'bg-[var(--red)]' : 'bg-blue-500'}`} />
                 <div className="flex justify-between items-center pl-2">
                   <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
@@ -408,7 +408,7 @@ export default function AdminDashboard() {
             ))}
 
             {activeTab === "services" && data.services.map((srv) => (
-              <div key={srv.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-2xl p-6 space-y-5 shadow-xl">
+              <div key={srv.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 space-y-5 shadow-xl">
                 <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-emerald-500" />
                 <div className="flex justify-between items-start pl-2">
                    <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/50 text-[10px] font-black uppercase tracking-widest border border-white/5">{srv.category || "General"}</span>
