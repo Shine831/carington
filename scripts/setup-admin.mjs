@@ -2,21 +2,28 @@
 // ADMIN SETUP SCRIPT — E-JARNALUD SOFT
 // Run ONCE: node scripts/setup-admin.mjs
 // ============================================================
-// This script creates the unique Super Admin account in
-// Firebase (Auth + Firestore) for:
-//   - Email:    admin@gmail.com
-//   - Password: admin
-//   - Role:     ADMIN
-// 
-// IMPORTANT: After first run, this credential allows login via
-// the /account page. The single-admin lock is enforced by
-// Firestore Security Rules (only one ADMIN document can exist).
-// Delete or rename this file after running once.
+// Crée le Super Admin : admin@gmail.com / admin123
+// Stratégie : създава le compte Auth, se connecte immédiatement
+// avec les credentials, puis écrit le document Firestore (authentifié).
 // ============================================================
 
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { getFirestore, doc, setDoc, serverTimestamp, getDocs, collection, query, where } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp,
+  getDocs,
+  collection,
+  query,
+  where,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJa8HUjCJYmg9VLeD2f30Ot_JtGR8pNV8",
@@ -31,42 +38,62 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-async function createAdmin() {
-  console.log("🔐 Checking for existing ADMIN accounts...");
+const ADMIN_EMAIL = "admin@gmail.com";
+const ADMIN_PASSWORD = "admin123";
 
-  // Guard: ensure no other admin already exists
+async function createAdmin() {
+  console.log("🔐 Checking for existing ADMIN accounts...\n");
+
+  // Step 1 — Create the Firebase Auth user
+  let uid;
+  try {
+    const credential = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+    uid = credential.user.uid;
+    await updateProfile(credential.user, { displayName: "Super Admin" });
+    console.log("✅ Firebase Auth account created.");
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      console.log("⚠️  Firebase Auth account already exists. Signing in to sync Firestore...");
+      const cred = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+      uid = cred.user.uid;
+    } else {
+      throw err;
+    }
+  }
+
+  // Step 2 — Sign in to get valid auth session (required for Firestore rules)
+  await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+  const currentUser = auth.currentUser;
+  console.log(`✅ Signed in as: ${currentUser.email} (uid: ${currentUser.uid})`);
+
+  // Step 3 — Check if Firestore doc already exists
   const q = query(collection(db, "users"), where("role", "==", "ADMIN"));
   const snapshot = await getDocs(q);
 
   if (!snapshot.empty) {
-    console.log("⚠️  An ADMIN account already exists. Setup aborted to prevent duplicates.");
+    console.log("\n⚠️  An ADMIN document already exists in Firestore. Setup aborted to prevent duplicates.");
     process.exit(0);
   }
 
-  console.log("✅ No existing admin found. Creating Super Admin...");
-
-  const credential = await createUserWithEmailAndPassword(auth, "admin@gmail.com", "admin");
-  const user = credential.user;
-
-  await updateProfile(user, { displayName: "Super Admin" });
-
-  await setDoc(doc(db, "users", user.uid), {
-    uid: user.uid,
-    email: "admin@gmail.com",
+  // Step 4 — Write Firestore document (authenticated, so rules allow it)
+  await setDoc(doc(db, "users", currentUser.uid), {
+    uid: currentUser.uid,
+    email: ADMIN_EMAIL,
     displayName: "Super Admin",
     role: "ADMIN",
     createdAt: serverTimestamp(),
   });
 
-  console.log("🎉 Super Admin created successfully!");
-  console.log("   Email:   admin@gmail.com");
-  console.log("   Password: admin");
-  console.log("   Role:    ADMIN");
-  console.log("\n⚠️  Remember to delete this script after use.");
+  console.log("\n🎉 Super Admin created successfully!");
+  console.log("   Email:    admin@gmail.com");
+  console.log("   Password: admin123");
+  console.log("   Role:     ADMIN");
+  console.log("\n⚠️  Suppress this script or delete it after use for security.");
   process.exit(0);
 }
 
 createAdmin().catch((err) => {
-  console.error("❌ Error creating admin:", err.message);
+  console.error("\n❌ Error creating admin:", err.message);
+  console.error("   Code:", err.code);
   process.exit(1);
 });
