@@ -9,7 +9,7 @@ import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getBookings } from "@/lib/firebase/db";
+import { getBookings, deleteBooking } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
@@ -42,25 +42,31 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  const handleLogout = async () => {
-    await logoutUser();
-    router.push("/");
-  };
-
-  useEffect(() => {
+  const fetchUserBookings = () => {
     if (user) {
       setLoading(true);
       getBookings(user.uid)
-        .then((data) => setBookings(data))
-        .catch((err) => console.error(err))
+        .then((data: any) => setBookings(data))
+        .catch((err: any) => console.error(err))
         .finally(() => setLoading(false));
     }
+  };
+
+  useEffect(() => {
+    fetchUserBookings();
   }, [user]);
+
+  const handleDeleteRequest = async (id: string) => {
+    if (confirm(language === "fr" ? "Annuler cette demande ?" : "Cancel this request?")) {
+      await deleteBooking(id);
+      fetchUserBookings();
+    }
+  };
 
   // Loading Screen
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-[var(--off-white)] flex items-center justify-center">
+      <div className="min-h-[100svh] bg-[var(--off-white)] flex items-center justify-center">
         <div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
       </div>
     );
@@ -104,15 +110,6 @@ export default function DashboardPage() {
                   <span className="text-[9px] text-[var(--slate)] font-bold">AES-256 E2E</span>
                 </div>
               </div>
-              <motion.button
-                onClick={handleLogout}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-200 bg-white/60 backdrop-blur-md hover:border-red-200 hover:bg-red-50/50 hover:text-[var(--red)] transition-all text-[11px] font-black uppercase tracking-widest text-[var(--slate)] shadow-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                {language === "fr" ? "Déconnexion" : "Logout"}
-              </motion.button>
             </div>
           </FadeIn>
         </div>
@@ -134,7 +131,7 @@ export default function DashboardPage() {
               <table className="w-full text-left text-sm border-collapse min-w-[700px]">
                 <thead>
                   <tr className="bg-white/50 border-b border-slate-100">
-                    {["Dossier ID", "Date", "Service", "Description", "Statut", "Note Admin"].map(h => (
+                    {["Dossier ID", "Date", "Service", "Statut", "Note Admin", "Action"].map(h => (
                       <th key={h} className="py-5 px-6 md:px-8 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--slate)] whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -153,7 +150,6 @@ export default function DashboardPage() {
                           <td className="py-6 px-6 md:px-8 font-mono font-black text-[10px] text-[var(--red)]">#{req.id.slice(0, 8).toUpperCase()}</td>
                           <td className="py-6 px-6 md:px-8 font-bold text-[var(--slate)] text-xs">{date}</td>
                           <td className="py-6 px-6 md:px-8 font-bold text-[var(--charcoal)] tracking-tight">{req.serviceId.toUpperCase()}</td>
-                          <td className="py-6 px-6 md:px-8 font-medium text-[var(--slate)] text-xs max-w-xs truncate">{req.description}</td>
                           <td className="py-6 px-6 md:px-8">
                             <span className={`inline-flex items-center px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider border ${mapObj.cls}`}>
                               {mapObj.label}
@@ -161,6 +157,13 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-6 px-6 md:px-8 font-bold text-[var(--charcoal)] text-xs italic">
                             {req.adminNote || "-"}
+                          </td>
+                          <td className="py-6 px-6 md:px-8">
+                            {req.status === "PENDING" && (
+                              <button onClick={() => handleDeleteRequest(req.id)} className="text-[10px] font-black uppercase text-red-500 hover:text-red-700 tracking-widest border border-red-200 px-3 py-1 rounded-lg">
+                                {language === "fr" ? "Annuler" : "Cancel"}
+                              </button>
+                            )}
                           </td>
                         </motion.tr>
                       );
@@ -182,9 +185,9 @@ export default function DashboardPage() {
               <div>
                 <h3 className="text-xl font-black text-[var(--charcoal)] mb-3 tracking-tight">Support Prioritaire</h3>
                 <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Un problème urgent ? Notre équipe technique intervient en moins de 2H pour les contrats actifs.</p>
-                <button className="flex items-center gap-2 text-[10px] font-black text-[var(--charcoal)] hover:text-[var(--red)] uppercase tracking-widest transition-colors">
+                <Link href="/contact" className="flex items-center gap-2 text-[10px] font-black text-[var(--charcoal)] hover:text-[var(--red)] uppercase tracking-widest transition-colors">
                   Ouvrir un ticket <ArrowRight className="w-4 h-4" />
-                </button>
+                </Link>
               </div>
             </div>
           </StaggerItem>
@@ -192,8 +195,8 @@ export default function DashboardPage() {
           <StaggerItem>
              <div className="card bg-[#0A0A0A] p-10 border border-[#222] rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.5)] flex items-start flex-col sm:flex-row gap-6 group relative overflow-hidden">
                <AuraGradient color="var(--red)" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.1]" />
-               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10">
-                 <Cpu className="w-8 h-8 text-[var(--red)]" />
+               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10 transition-colors group-hover:bg-[var(--red)]">
+                 <Cpu className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
                </div>
                <div className="relative z-10">
                  <div className="flex items-center gap-3 mb-3">

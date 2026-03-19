@@ -6,18 +6,7 @@ import { motion } from "framer-motion";
 export const Logo = () => {
   return (
     <Link href="/" className="flex items-center gap-3 z-50 group">
-      {/* 3 Red Pills Motif */}
-      <div className="flex flex-col gap-[3px] items-center justify-center">
-        <motion.div 
-          initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 0.5, delay: 0.1 }}
-          className="h-2 w-7 bg-[var(--red)] rounded-full group-hover:bg-[#ff2a33] transition-colors" />
-        <motion.div 
-          initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 0.5, delay: 0.2 }}
-          className="h-2 w-8 bg-[var(--red)] rounded-full group-hover:bg-[#ff2a33] transition-colors" />
-        <motion.div 
-          initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 0.5, delay: 0.3 }}
-          className="h-2 w-7 bg-[var(--red)] rounded-full group-hover:bg-[#ff2a33] transition-colors" />
-      </div>
+      <img src="/logo.jpg" alt="E-Jarnauld Soft Logo" className="h-10 md:h-12 w-auto object-contain group-hover:scale-105 transition-transform" />
 
       <div className="flex flex-col">
         <span className="font-black text-xl leading-none text-[var(--charcoal)] tracking-tighter uppercase whitespace-nowrap">

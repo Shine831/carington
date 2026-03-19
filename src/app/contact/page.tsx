@@ -42,10 +42,10 @@ export default function ContactPage() {
   };
 
   const CONTACT_ITEMS = [
-    { icon: Phone, label: t.contact.items.std, val: "+237 600 00 00 00" },
-    { icon: Phone, label: t.contact.items.urgency, val: "+237 699 99 99 99", red: true },
-    { icon: Mail, label: t.contact.items.email, val: "contact@ejarnalud.cm" },
-    { icon: Clock, label: t.contact.items.hours, val: t.contact.items.hours_val },
+    { icon: MapPin, label: "SIÈGE SOCIAL", val: "Marché NDOPASSI, Douala" },
+    { icon: Phone, label: "APPEL & WHATSAPP", val: "+237 654 74 93 57", red: true },
+    { icon: Phone, label: "LIGNE TECHNIQUE", val: "+237 697 16 72 59" },
+    { icon: Mail, label: "EMAIL SUPPORT", val: "cust_care@ejs-cm.com" },
   ];
 
   return (
@@ -143,12 +143,14 @@ export default function ContactPage() {
 
                 <div className="pt-4">
                   <motion.button
-                    type="button"
+                    type="submit"
+                    onClick={handleSubmit}
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)]"
+                    disabled={loading}
+                    className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)] disabled:opacity-60"
                   >
-                    {t.contact.form.send} <Send className="w-4 h-4 ml-2" />
+                    {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" />{language === "fr" ? "Envoi..." : "Sending..."}</> : <>{t.contact.form.send} <Send className="w-4 h-4 ml-2" /></>}
                   </motion.button>
                   <p className="text-[10px] font-black text-[var(--muted)] mt-5 flex items-center gap-2 uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
