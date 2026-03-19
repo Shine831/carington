@@ -237,7 +237,8 @@ export default function DashboardPage() {
              {/* Support Grid */}
         <StaggerContainer className="grid md:grid-cols-2 gap-8">
           <StaggerItem>
-            <div className="card bg-white/5 p-10 border border-white/10 rounded-[2.5rem] shadow-2xl flex items-start flex-col sm:flex-row gap-8 group hover:border-[var(--red)]/30 transition-all duration-500">
+            <div className="relative overflow-hidden p-10 border border-white/10 rounded-[2.5rem] bg-[#0D0D0D] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-start flex-col sm:flex-row gap-8 group transition-all duration-500 hover:border-[var(--red)]/40 hover:shadow-[0_0_30px_rgba(238,28,37,0.1)]">
+              <AuraGradient color="var(--red)" className="top-[-20%] left-[-10%] w-64 h-64 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity" />
               <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 border border-[var(--red)]/20 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-all duration-500 shadow-lg shadow-red-950/20">
                 <AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
               </div>
@@ -251,13 +252,13 @@ export default function DashboardPage() {
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center justify-between py-3 border-y border-white/5">
                     <div className="flex flex-col">
-                      <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Canaux Actifs</span>
+                      <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Canaux Actifs</span>
                       <div className="flex gap-2 mt-1">
-                        {["WhatsApp", "Email", "Ticket"].map(c => <span key={c} className="text-[8px] font-bold text-white/60 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">{c}</span>)}
+                        {["WhatsApp", "Email", "Ticket"].map(c => <span key={c} className="text-[8px] font-bold text-white/80 bg-white/10 px-2 py-0.5 rounded-md border border-white/10">{c}</span>)}
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block">Agent Dédié</span>
+                      <span className="text-[9px] font-black text-white/40 uppercase tracking-widest block">Agent Dédié</span>
                       <span className="text-[10px] font-bold text-[var(--red)] tracking-tight uppercase">Support Premium</span>
                     </div>
                   </div>
@@ -265,13 +266,13 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-8 px-2">
                     <div className="flex items-center gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Dispo 24/7/365</span><span className="text-[10px] font-bold text-white tracking-widest">OPÉRATIONNEL</span></div>
+                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Dispo 24/7/365</span><span className="text-[10px] font-bold text-white tracking-widest">OPÉRATIONNEL</span></div>
                     </div>
-                    <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Latence Ticketing</span><span className="text-[10px] font-bold text-white tracking-widest">87ms AVG</span></div>
+                    <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Latence Ticketing</span><span className="text-[10px] font-bold text-white tracking-widest">87ms AVG</span></div>
                   </div>
                 </div>
 
-                <Link href="/contact" className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-[var(--red)]/30 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-inner group/btn">
+                <Link href="/contact" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-[var(--red)]/30 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-inner group/btn">
                   Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)] group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -279,8 +280,8 @@ export default function DashboardPage() {
           </StaggerItem>
           
           <StaggerItem>
-             <div className="card bg-[#050505] p-10 border border-white/5 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex items-start flex-col sm:flex-row gap-8 group relative overflow-hidden ring-1 ring-white/10 hover:ring-[var(--red)]/30 transition-all duration-500">
-               <AuraGradient color="var(--red)" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.08]" />
+             <div className="relative overflow-hidden p-10 border border-white/5 rounded-[2.5rem] bg-[#050505] shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex items-start flex-col sm:flex-row gap-8 group ring-1 ring-white/10 hover:ring-[var(--red)]/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.05)] transition-all duration-500">
+               <AuraGradient color="emerald" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.08] group-hover:opacity-[0.15] transition-opacity" />
                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10 transition-all duration-500 group-hover:bg-[var(--red)] shadow-inner">
                  <Cpu className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
                </div>
@@ -289,18 +290,18 @@ export default function DashboardPage() {
                    <h3 className="text-2xl font-black text-white tracking-tight">Cloud & <span className="text-emerald-400">Infra.</span></h3>
                    <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">Live Monitor</span>
                  </div>
-                 <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Supervision proactive et maintenance automatisée. Maîtrisez la croissance de votre infrastructure.</p>
+                 <p className="text-sm text-white/70 font-medium leading-relaxed mb-6">Supervision proactive et maintenance automatisée. Maîtrisez la croissance de votre infrastructure.</p>
                  
                  <div className="space-y-4 mb-8">
                    <div className="flex items-center justify-between py-3 border-y border-white/5">
                      <div className="flex flex-col">
-                       <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Localisations Nodes</span>
+                       <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Localisations Nodes</span>
                        <div className="flex gap-2 mt-1">
-                          {["Douala-C1", "Paris-V1"].map(l => <span key={l} className="text-[8px] font-black text-emerald-400/80 bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/10">{l}</span>)}
+                          {["Douala-C1", "Paris-V1"].map(l => <span key={l} className="text-[8px] font-black text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">{l}</span>)}
                        </div>
                      </div>
                      <div className="text-right">
-                       <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block">Backups Actifs</span>
+                       <span className="text-[9px] font-black text-white/40 uppercase tracking-widest block">Backups Actifs</span>
                        <span className="text-[10px] font-bold text-white uppercase tabular-nums tracking-widest">14 / 30 Jours</span>
                      </div>
                    </div>
@@ -308,13 +309,13 @@ export default function DashboardPage() {
                    <div className="flex items-center gap-8 px-2">
                       <div className="flex items-center gap-3">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-                        <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Global Uptime</span><span className="text-[10px] font-bold text-white tracking-widest">99.99%</span></div>
+                        <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Global Uptime</span><span className="text-[10px] font-bold text-white tracking-widest">99.99%</span></div>
                       </div>
-                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/20 uppercase">Resource Load</span><span className="text-[10px] font-bold text-emerald-400 tracking-widest uppercase">Excellent</span></div>
+                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Resource Load</span><span className="text-[10px] font-bold text-emerald-400 tracking-widest uppercase">Excellent</span></div>
                    </div>
                  </div>
 
-                 <Link href="/services" className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-emerald-500/30 uppercase tracking-[0.2em] transition-all active:scale-95 group/btn2">
+                 <Link href="/services" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-emerald-500/30 uppercase tracking-[0.2em] transition-all active:scale-95 group/btn2">
                    Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-400 group-hover/btn2:translate-x-1 transition-transform" />
                  </Link>
                </div>
