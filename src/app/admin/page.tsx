@@ -32,6 +32,17 @@ const STATUS_MAP = {
   }
 };
 
+const INITIAL_SERVICES = [
+  { title: "Infogérance", category: "IT", description: "Maintenance préventive, helpdesk, mises à jour critiques et licences logicielles.", priceCFA: 0 },
+  { title: "Câblage Informatique", category: "Network", description: "Câblage Cat6A, fibre optique, baies de brassage et certification de liens.", priceCFA: 0 },
+  { title: "Téléphonie d'entreprise (VoIP)", category: "VoIP", description: "Standards IP, files d'attente, enregistrements et intégration CRM.", priceCFA: 0 },
+  { title: "Réseaux Informatiques", category: "Network", description: "Déploiement routeurs, switchs, Wi-Fi entreprise et VPN sécurisé.", priceCFA: 0 },
+  { title: "Sécurité Informatique", category: "Security", description: "Tests d'intrusion (Pen-Testing), sécurisation cloud/hybride et pare-feux industriels.", priceCFA: 0 },
+  { title: "Vidéosurveillance & Contrôle d'accès", category: "Security", description: "Caméras HD intelligentes, accès biométriques et sauvegarde cloud.", priceCFA: 0 },
+  { title: "Services Web", category: "Web", description: "Création de plateformes sur-mesure (Next.js, React), hébergement et noms de domaine.", priceCFA: 0 },
+  { title: "Maintenance & Formation", category: "IT", description: "Interventions curatives urgentes et formation IT spécialisée pour ou contre la cyber-menace.", priceCFA: 0 }
+];
+
 export default function AdminDashboard() {
   const { t, language } = useI18n();
   const router = useRouter();
@@ -100,6 +111,28 @@ export default function AdminDashboard() {
     if (confirm(language === "fr" ? "Supprimer définitivement ?" : "Delete permanently?")) {
       await deleteBooking(id);
       fetchData();
+    }
+  };
+
+  const handleSeedServices = async () => {
+    if (!confirm("Voulez-vous restaurer les 8 services originaux ? Cela supprimera le catalogue actuel (si non vide).")) return;
+    setLoading(true);
+    try {
+      // 1. Clear current
+      for (const s of data.services) {
+        await deleteService(s.id);
+      }
+      // 2. Add initial services
+      for (const s of INITIAL_SERVICES) {
+        await createService(s);
+      }
+      alert("Catalogue restauré !");
+    } catch (e) {
+      console.error("Error seeding services:", e);
+      alert("Erreur lors de la restauration du catalogue.");
+    } finally {
+      fetchData();
+      setLoading(false);
     }
   };
 
@@ -260,7 +293,17 @@ export default function AdminDashboard() {
               <h2 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase line-clamp-1">Base de données ({activeTab})</h2>
             </div>
             {activeTab === "services" && (
-               <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black shadow-[var(--shadow-red)]">+ Ajouter Service</button>
+               <div className="flex gap-3">
+                 <button onClick={async () => {
+                    if(!confirm("Restaurer les 8 services originaux ?")) return;
+                    setLoading(true);
+                    for(const s of data.services) await deleteService(s.id);
+                    for(const s of INITIAL_SERVICES) await createService(s);
+                    fetchData();
+                    alert("Catalogue restauré !");
+                 }} className="px-6 py-3 text-[10px] uppercase font-black border border-white/20 hover:bg-white/5 rounded-xl transition-all">Restaurer Catalogue</button>
+                 <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black shadow-[var(--shadow-red)]">+ Ajouter Service</button>
+               </div>
             )}
           </div>
 
