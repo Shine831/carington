@@ -1,9 +1,9 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
@@ -12,12 +12,28 @@ import { useAuth } from "@/hooks/useAuth";
 import { getBookings } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
+const STATUS_MAP = {
+  fr: {
+    PENDING:   { label: "En attente", cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
+    ACTIVE:    { label: "En cours",   cls: "bg-blue-50 text-blue-800 border-blue-200" },
+    COMPLETED: { label: "Terminé",    cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+    REJECTED:  { label: "Rejeté",     cls: "bg-red-50 text-red-800 border-red-200" },
+  },
+  en: {
+    PENDING:   { label: "Pending", cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
+    ACTIVE:    { label: "Active",   cls: "bg-blue-50 text-blue-800 border-blue-200" },
+    COMPLETED: { label: "Completed",    cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+    REJECTED:  { label: "Rejected",     cls: "bg-red-50 text-red-800 border-red-200" },
+  }
+};
+
 export default function DashboardPage() {
   const { t, language } = useI18n();
   const router = useRouter();
-  const { user, role, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   
   const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Route protection
   useEffect(() => {
@@ -31,16 +47,17 @@ export default function DashboardPage() {
     router.push("/");
   };
 
-  // Fetch Firestore data once user is authenticated
   useEffect(() => {
     if (user) {
+      setLoading(true);
       getBookings(user.uid)
         .then((data) => setBookings(data))
-        .catch((err) => console.error("Firestore Error:", err));
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
     }
   }, [user]);
 
-  // Loading Screen to prevent flickering
+  // Loading Screen
   if (authLoading || !user) {
     return (
       <div className="min-h-screen bg-[var(--off-white)] flex items-center justify-center">
@@ -49,8 +66,10 @@ export default function DashboardPage() {
     );
   }
 
+  const langKey = language as "fr" | "en";
+
   return (
-    <div className="min-h-screen pt-32 pb-40 bg-[var(--off-white)] relative overflow-hidden">
+    <div className="min-h-[100svh] pt-32 pb-40 bg-[var(--off-white)] relative overflow-hidden">
       {/* Background Ambience */}
       <AuraGradient color="var(--red)" className="top-0 right-0 w-[600px] h-[600px] opacity-[0.03]" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
@@ -69,8 +88,8 @@ export default function DashboardPage() {
             <h1 className="text-4xl lg:text-5xl font-black text-[var(--charcoal)] tracking-tighter mb-2">
               Espace <span className="text-[var(--red)]">Client.</span>
             </h1>
-            <p className="text-sm font-medium text-[var(--slate)]">
-              Gérez vos services et suivez nos interventions en temps réel.
+            <p className="text-sm font-medium text-[var(--slate)] max-w-lg leading-relaxed">
+              Gérez vos services, suivez l'avancement de vos demandes de devis et interventions techniques en temps réel.
             </p>
           </FadeUp>
           
@@ -89,7 +108,7 @@ export default function DashboardPage() {
                 onClick={handleLogout}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-5 py-4 rounded-2xl border border-slate-200 bg-white/60 backdrop-blur-md hover:border-red-200 hover:bg-red-50 hover:text-[var(--red)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--slate)]"
+                className="flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-200 bg-white/60 backdrop-blur-md hover:border-red-200 hover:bg-red-50/50 hover:text-[var(--red)] transition-all text-[11px] font-black uppercase tracking-widest text-[var(--slate)] shadow-sm"
               >
                 <LogOut className="w-4 h-4" />
                 {language === "fr" ? "Déconnexion" : "Logout"}
@@ -98,85 +117,98 @@ export default function DashboardPage() {
           </FadeIn>
         </div>
 
-        {/* Client Bento Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Requests Table Section */}
+        <FadeUp delay={0.2} className="mb-16">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-3">
+              <FileText className="w-6 h-6 text-[var(--red)]" /> 
+              {language === "fr" ? "Mes Demandes & Devis" : "My Requests & Quotes"}
+            </h2>
+            <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)]">
+              {language === "fr" ? "Nouveau Devis" : "New Quote"}
+            </Link>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-2xl rounded-[2rem] overflow-hidden shadow-[var(--shadow-xl)] border border-white">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left text-sm border-collapse min-w-[700px]">
+                <thead>
+                  <tr className="bg-white/50 border-b border-slate-100">
+                    {["Dossier ID", "Date", "Service", "Description", "Statut", "Note Admin"].map(h => (
+                      <th key={h} className="py-5 px-6 md:px-8 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--slate)] whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100/50">
+                  <AnimatePresence>
+                    {loading ? (
+                       <tr><td colSpan={6} className="text-center py-16"><div className="w-8 h-8 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto" /></td></tr>
+                    ) : bookings.length === 0 ? (
+                      <tr><td colSpan={6} className="text-center py-16 text-[var(--slate)] font-bold">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</td></tr>
+                    ) : bookings.map((req, i) => {
+                      const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+                      const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                      return (
+                        <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-white/40 transition-all group">
+                          <td className="py-6 px-6 md:px-8 font-mono font-black text-[10px] text-[var(--red)]">#{req.id.slice(0, 8).toUpperCase()}</td>
+                          <td className="py-6 px-6 md:px-8 font-bold text-[var(--slate)] text-xs">{date}</td>
+                          <td className="py-6 px-6 md:px-8 font-bold text-[var(--charcoal)] tracking-tight">{req.serviceId.toUpperCase()}</td>
+                          <td className="py-6 px-6 md:px-8 font-medium text-[var(--slate)] text-xs max-w-xs truncate">{req.description}</td>
+                          <td className="py-6 px-6 md:px-8">
+                            <span className={`inline-flex items-center px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider border ${mapObj.cls}`}>
+                              {mapObj.label}
+                            </span>
+                          </td>
+                          <td className="py-6 px-6 md:px-8 font-bold text-[var(--charcoal)] text-xs italic">
+                            {req.adminNote || "-"}
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </FadeUp>
+        
+        {/* Support Grid */}
+        <StaggerContainer className="grid md:grid-cols-2 gap-6">
+          <StaggerItem>
+            <div className="card bg-white/60 p-10 border border-white rounded-[2.5rem] shadow-[var(--shadow-glass)] flex items-start gap-6 group hover:border-red-100 transition-colors">
+              <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-colors duration-500">
+                <AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-[var(--charcoal)] mb-3 tracking-tight">Support Prioritaire</h3>
+                <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Un problème urgent ? Notre équipe technique intervient en moins de 2H pour les contrats actifs.</p>
+                <button className="flex items-center gap-2 text-[10px] font-black text-[var(--charcoal)] hover:text-[var(--red)] uppercase tracking-widest transition-colors">
+                  Ouvrir un ticket <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </StaggerItem>
           
-          {/* Active Services (Bento Left) */}
-          <StaggerContainer className="lg:col-span-8 space-y-6">
-            <StaggerItem>
-              <div className="bg-white/60 backdrop-blur-2xl border border-white rounded-[2rem] p-8 shadow-[var(--shadow-glass)]">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-xl font-black text-[var(--charcoal)] tracking-tight">Mes Services Actifs</h2>
-                  <Link href="/services">
-                    <button className="flex items-center gap-2 text-[10px] font-black text-[var(--red)] uppercase tracking-widest hover:underline decoration-2 underline-offset-4 transition-all">
-                      Nouveau Service <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </Link>
-                </div>
+          <StaggerItem>
+             <div className="card bg-[#0A0A0A] p-10 border border-[#222] rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.5)] flex items-start flex-col sm:flex-row gap-6 group relative overflow-hidden">
+               <AuraGradient color="var(--red)" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.1]" />
+               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10">
+                 <Cpu className="w-8 h-8 text-[var(--red)]" />
+               </div>
+               <div className="relative z-10">
+                 <div className="flex items-center gap-3 mb-3">
+                   <h3 className="text-xl font-black text-white tracking-tight">Cloud & Infra</h3>
+                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                 </div>
+                 <p className="text-sm text-white/50 font-medium leading-relaxed mb-6">Tous vos services réseau et cloud fonctionnent de manière optimale sur notre infrastructure Tier-III.</p>
+                 <Link href="/services" className="flex items-center gap-2 text-[10px] font-black text-[var(--red)] hover:text-white uppercase tracking-widest transition-colors">
+                   Explorer le catalogue <ArrowRight className="w-4 h-4" />
+                 </Link>
+               </div>
+             </div>
+          </StaggerItem>
+        </StaggerContainer>
 
-                <div className="space-y-4">
-                  {bookings.filter(b => b.status === "PENDING" || b.status === "CONFIRMED").length > 0 ? (
-                    bookings.filter(b => b.status === "PENDING" || b.status === "CONFIRMED").map((ticket) => (
-                      <motion.div
-                        key={ticket.id}
-                        whileHover={{ scale: 1.01 }}
-                        className="bg-white border text-left p-6 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:border-[var(--red)]/30 hover:shadow-sm transition-all group"
-                      >
-                        <div className="flex items-center gap-5">
-                          <div className="w-12 h-12 bg-[var(--off-white)] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-red-50 transition-colors">
-                            <Activity className="w-5 h-5 text-[var(--red)]" />
-                          </div>
-                          <div>
-                            <h3 className="font-black text-[var(--charcoal)] text-sm tracking-tight mb-1">{ticket.service.title}</h3>
-                            <p className="text-xs text-[var(--slate)] font-medium">Contrat #{ticket.id.split('-')[0]}</p>
-                          </div>
-                        </div>
-                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shrink-0 ${
-                          ticket.status === "CONFIRMED" 
-                            ? "bg-emerald-50 text-emerald-600 border border-emerald-100" 
-                            : "bg-amber-50 text-amber-600 border border-amber-100"
-                        }`}>
-                          {ticket.status === "CONFIRMED" ? "ACTIF" : "EN ATTENTE"}
-                        </span>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-center py-10 bg-[var(--off-white)] rounded-2xl border border-dashed border-slate-200">
-                      <Server className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-                      <p className="text-sm font-medium text-[var(--muted)]">Aucun service en cours.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </StaggerItem>
-          </StaggerContainer>
-
-          {/* Intervention History (Bento Right) */}
-          <StaggerContainer className="lg:col-span-4 space-y-6">
-            <StaggerItem>
-              <div className="bg-white/60 backdrop-blur-2xl border border-white rounded-[2rem] p-8 shadow-[var(--shadow-glass)] h-full">
-                <h2 className="text-xl font-black text-[var(--charcoal)] tracking-tight mb-8">Historique des Interventions</h2>
-                
-                <div className="space-y-6 relative before:absolute before:inset-0 before:left-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-slate-100">
-                  {bookings.filter(b => b.status === "COMPLETED").length > 0 ? (
-                    bookings.filter(b => b.status === "COMPLETED").map((ticket, i) => (
-                      <div key={ticket.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-white bg-slate-100 group-[.is-active]:bg-[var(--red)] shadow shrink-0 z-10"></div>
-                        <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-xl border border-slate-100 bg-white group-[.is-active]:border-[var(--red)]/20 shadow-sm transition-all text-xs">
-                          <div className="font-black text-[var(--charcoal)] mb-1">{ticket.service.title}</div>
-                          <div className="text-[10px] font-medium text-[var(--slate)]">Intervention finalisée le {new Date(ticket.date || Date.now()).toLocaleDateString()}</div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-xs font-medium text-[var(--muted)] ml-10">Aucune intervention passée.</p>
-                  )}
-                </div>
-              </div>
-            </StaggerItem>
-          </StaggerContainer>
-
-        </div>
       </div>
     </div>
   );

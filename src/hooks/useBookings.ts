@@ -37,10 +37,9 @@ export function useBookings() {
   }, [fetchBookings]);
 
   // Expose mutation wrappers allowing for an immediate refetch
-  const submitBooking = async (serviceId: string) => {
-    if (!user) throw new Error("Must be logged in to book.");
+  const submitBooking = async (bookingData: import("@/lib/firebase/db").BookingData) => {
     try {
-      await createBooking(user.uid, serviceId);
+      await createBooking(bookingData);
       await fetchBookings();
     } catch (err: any) {
       throw err;

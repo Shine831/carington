@@ -1,28 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, Settings, BarChart, Bell, Search, ChevronRight, AlertTriangle, Clock, CheckCircle, Shield, TrendingUp } from "lucide-react";
+import { Users, Briefcase, FileText, Settings, BarChart, Bell, Search, ChevronRight, AlertTriangle, Clock, CheckCircle, Shield, TrendingUp, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, SlideLeft } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { getServices, getBookings } from "@/lib/firebase/db";
-
-// Real data fetched from Firestore via getBookings()
-const REQUESTS: any[] = [];
+import { getServices, getBookings, getUsers, getMessages, updateBookingStatus, updateMessageStatus, deleteBooking } from "@/lib/firebase/db";
 
 const STATUS_MAP = {
   fr: {
-    pending:   { label: "En attente", cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
-    active:    { label: "En cours",   cls: "bg-blue-50 text-blue-800 border-blue-200" },
-    completed: { label: "Terminé",    cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+    PENDING:   { label: "En attente", cls: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
+    ACTIVE:    { label: "En cours",   cls: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
+    COMPLETED: { label: "Terminé",    cls: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
+    REJECTED:  { label: "Rejeté",     cls: "bg-red-500/10 text-red-500 border-red-500/20" },
+    UNREAD:    { label: "Non lu",     cls: "bg-red-500/10 text-red-500 border-red-500/20" },
+    READ:      { label: "Lu",         cls: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
+    REPLIED:   { label: "Répondu",    cls: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" }
   },
   en: {
-    pending:   { label: "Pending", cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
-    active:    { label: "Active",   cls: "bg-blue-50 text-blue-800 border-blue-200" },
-    completed: { label: "Completed",    cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+    PENDING:   { label: "Pending", cls: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
+    ACTIVE:    { label: "Active",   cls: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
+    COMPLETED: { label: "Completed",    cls: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
+    REJECTED:  { label: "Rejected",     cls: "bg-red-500/10 text-red-500 border-red-500/20" },
+    UNREAD:    { label: "Unread",     cls: "bg-red-500/10 text-red-500 border-red-500/20" },
+    READ:      { label: "Read",         cls: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
+    REPLIED:   { label: "Replied",    cls: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" }
   }
 };
 
@@ -32,18 +37,55 @@ export default function AdminDashboard() {
   const { user, role, loading: authLoading } = useAuth();
   
   const [activeTab, setActiveTab] = useState("requests");
-  const [requests, setRequests] = useState<any[]>([]); // To be populated via API
+  const [data, setData] = useState({ requests: [] as any[], clients: [] as any[], services: [] as any[], messages: [] as any[] });
+  const [loading, setLoading] = useState(true);
 
   // Route Protection: Keep out non-admins
   useEffect(() => {
     if (!authLoading) {
-      if (!user) {
-        router.push("/account");
-      } else if (role !== "ADMIN") {
-        router.push("/dashboard");
-      }
+      if (!user) router.push("/account");
+      else if (role !== "ADMIN") router.push("/dashboard");
     }
   }, [user, role, authLoading, router]);
+
+  const fetchData = useCallback(async () => {
+    if (role !== "ADMIN") return;
+    setLoading(true);
+    try {
+      const [reqs, clis, srvs, msgs] = await Promise.all([
+        getBookings(),
+        getUsers(),
+        getServices(),
+        getMessages()
+      ]);
+      setData({ requests: reqs, clients: clis, services: srvs, messages: msgs });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [role]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleUpdateBooking = async (id: string, status: string) => {
+    await updateBookingStatus(id, status);
+    fetchData();
+  };
+
+  const handleUpdateMessage = async (id: string, status: any) => {
+    await updateMessageStatus(id, status);
+    fetchData();
+  };
+
+  const handleDeleteBooking = async (id: string) => {
+    if (confirm(language === "fr" ? "Supprimer définitivement ?" : "Delete permanently?")) {
+      await deleteBooking(id);
+      fetchData();
+    }
+  };
 
   // Loading Screen
   if (authLoading || role !== "ADMIN") {
@@ -60,19 +102,28 @@ export default function AdminDashboard() {
     );
   }
 
+  const pendingReqs = data.requests.filter(r => r.status === "PENDING").length;
+  const unreadMsgs = data.messages.filter(m => m.status === "UNREAD").length;
+
   const NAV = [
-    { id: "dashboard", label: t.admin.nav.overview, icon: BarChart },
-    { id: "requests",  label: t.admin.nav.requests, icon: FileText, badge: 4 },
+    { id: "requests",  label: t.admin.nav.requests, icon: FileText, badge: pendingReqs > 0 ? pendingReqs : undefined },
+    { id: "messages",  label: language === "fr" ? "Messages" : "Messages", icon: Mail, badge: unreadMsgs > 0 ? unreadMsgs : undefined },
     { id: "clients",   label: t.admin.nav.clients, icon: Users },
     { id: "services",  label: t.admin.nav.catalog, icon: Briefcase },
   ];
 
+  const activeReqs = data.requests.filter(r => r.status === "ACTIVE").length;
+  const solvedReqs = data.requests.filter(r => r.status === "COMPLETED").length;
+  const vipClients = data.clients.filter(c => c.role === "VIP" || c.role === "CLIENT").length;
+
   const STATS = [
-    { label: t.admin.stats.pending, value: "12", icon: AlertTriangle, colorCls: "bg-yellow-50 text-yellow-500" },
-    { label: t.admin.stats.active, value: "8", icon: Clock, colorCls: "bg-blue-50 text-blue-500" },
-    { label: t.admin.stats.completed, value: "145", icon: CheckCircle, colorCls: "bg-emerald-50 text-emerald-600" },
-    { label: t.admin.stats.revenue, value: "18.2M", icon: TrendingUp, colorCls: "bg-red-50 text-[var(--red)]" },
+    { label: "Requêtes en attente", value: pendingReqs.toString(), icon: AlertTriangle, color: "text-[var(--red)]" },
+    { label: "Interventions Actives", value: activeReqs.toString(), icon: Clock, color: "text-amber-500" },
+    { label: "Dossiers Résolus", value: solvedReqs.toString(), icon: CheckCircle, color: "text-emerald-500" },
+    { label: "Total Utilisateurs", value: vipClients.toString(), icon: Users, color: "text-blue-500" },
   ];
+
+  const langKey = language as "fr" | "en";
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex pt-0 relative overflow-x-hidden text-slate-100 font-sans">
@@ -93,7 +144,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{t.admin.tag}</p>
-              <p className="font-black text-white text-sm tracking-tight text-emerald-400">ACTIVE SESSION (ADMIN)</p>
+              <p className="font-black text-white text-sm tracking-tight text-emerald-400">ACTIVE SESSION</p>
             </div>
           </div>
         </div>
@@ -122,8 +173,8 @@ export default function AdminDashboard() {
         </nav>
         
         <div className="p-6 border-t border-white/5">
-          <button className="w-full flex items-center gap-4 px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
-            <Settings className="w-4 h-4" /> {t.admin.nav.settings}
+          <button onClick={() => window.open("https://console.firebase.google.com")} className="w-full flex items-center gap-4 px-5 py-4 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
+            <Settings className="w-4 h-4" /> Console Firebase
           </button>
         </div>
       </motion.aside>
@@ -153,7 +204,7 @@ export default function AdminDashboard() {
               className="relative text-white/40 hover:text-white transition-all p-2 bg-white/5 border border-white/10 rounded-xl hidden sm:flex"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-[#0A0A0A]" />
+              {(pendingReqs > 0 || unreadMsgs > 0) && <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-[#0A0A0A]" />}
             </motion.button>
             <div className="flex items-center gap-4 md:pl-6 md:border-l border-white/10 border-transparent">
               <div className="text-right hidden lg:block">
@@ -171,12 +222,7 @@ export default function AdminDashboard() {
         <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden">
           {/* Stats Bento Grid */}
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-            {[
-              { label: "Requêtes Entrantes", value: "12", icon: Bell, color: "text-[var(--red)]", delay: 0 },
-              { label: "Interventions Actives", value: "8", icon: Clock, color: "text-amber-500", delay: 0.1 },
-              { label: "Dossiers Résolus", value: "145", icon: CheckCircle, color: "text-emerald-500", delay: 0.2 },
-              { label: "Utilisateurs VIP", value: "84", icon: Users, color: "text-blue-500", delay: 0.3 },
-            ].map(({ label, value, icon: Icon, color, delay }) => (
+            {STATS.map(({ label, value, icon: Icon, color }, i) => (
               <StaggerItem key={label}>
                 <motion.div
                   whileHover={{ y: -5, scale: 1.02 }}
@@ -202,11 +248,12 @@ export default function AdminDashboard() {
                 <p className="text-[9px] md:text-[10px] font-black text-[var(--red)] uppercase tracking-widest mt-1">Live Monitoring</p>
               </div>
               <motion.button
+                onClick={fetchData}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 className="btn btn-red w-full sm:w-auto text-[9px] md:text-[10px] justify-center font-black uppercase tracking-widest py-3 md:py-4 px-6 md:px-8 shadow-[var(--shadow-red)] shadow-red-900/50 border border-[var(--red)]"
               >
-                + Ajouter
+                Actualiser
               </motion.button>
             </div>
 
@@ -214,72 +261,172 @@ export default function AdminDashboard() {
             <div className="bg-[#111111] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/10 relative">
               <div className="overflow-x-auto custom-scrollbar pb-2">
                 <table className="w-full text-left text-xs md:text-sm border-collapse min-w-[700px]">
-                  <thead>
-                    <tr className="bg-white/5 border-b border-white/10">
-                      {[t.admin.table.id, t.admin.table.client, "Service", "Valeur", "Statut", "Action"].map(h => (
-                        <th key={h} className="py-4 md:py-6 px-4 md:px-8 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/50 whitespace-nowrap">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    <AnimatePresence>
-                      {REQUESTS.map((req, i) => {
-                        const isCompleted = req.status === "completed";
-                        const isActive = req.status === "active";
-                        return (
-                          <motion.tr
-                            key={req.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="hover:bg-white/5 transition-all group"
-                          >
-                            <td className="py-4 md:py-6 px-4 md:px-8 font-mono font-black text-[9px] md:text-[10px] text-[var(--red)]">{req.id}</td>
-                            <td className="py-4 md:py-6 px-4 md:px-8 font-bold text-white whitespace-nowrap tracking-tight">{req.client}</td>
-                            <td className="py-4 md:py-6 px-4 md:px-8 text-[10px] md:text-xs font-medium text-white/70 whitespace-nowrap">{req.type}</td>
-                            <td className="py-4 md:py-6 px-4 md:px-8 font-black text-[var(--red)] whitespace-nowrap italic font-serif serif-italic">{req.value}</td>
-                            <td className="py-4 md:py-6 px-4 md:px-8">
-                              <span className={`inline-flex items-center px-3 py-1 md:px-4 md:py-1.5 rounded-lg md:rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-wider border ${
-                                isCompleted ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : 
-                                isActive ? "bg-amber-500/10 text-amber-400 border-amber-500/20" : 
-                                "bg-white/5 text-white/60 border-white/10"
-                              }`}>
-                                {req.status}
-                              </span>
-                            </td>
-                            <td className="py-4 md:py-6 px-4 md:px-8 text-right">
-                              <button className="flex items-center justify-center gap-2 text-[9px] md:text-[10px] font-black text-white/50 uppercase tracking-widest group-hover:text-white transition-colors border border-white/10 px-3 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-white/10 w-full sm:w-auto whitespace-nowrap">
-                                Éditer
-                              </button>
-                            </td>
-                          </motion.tr>
-                        );
-                      })}
-                    </AnimatePresence>
-                  </tbody>
+                  
+                  {activeTab === "requests" && (
+                    <>
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/10">
+                          {["Client", "Entité & Type", "Service", "Budget", "Statut", "Action"].map(h => (
+                            <th key={h} className="py-4 md:py-6 px-4 md:px-8 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/50 whitespace-nowrap">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        <AnimatePresence>
+                          {data.requests.length === 0 ? (
+                            <tr><td colSpan={6} className="text-center py-10 text-white/40 font-bold">Aucune requête.</td></tr>
+                          ) : data.requests.map((req, i) => {
+                            const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+                            return (
+                              <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="hover:bg-white/5 transition-all group">
+                                <td className="py-4 px-4 md:px-8 font-black text-[var(--red)]">{req.email} <br/><span className="text-white/40 text-[9px]">{req.phone}</span></td>
+                                <td className="py-4 px-4 md:px-8 font-bold text-white tracking-tight">{req.entity} <br/><span className="text-white/40 uppercase tracking-widest text-[9px]">{req.clientType}</span></td>
+                                <td className="py-4 px-4 md:px-8 text-[10px] md:text-xs font-medium text-white/70">{req.serviceId}</td>
+                                <td className="py-4 px-4 md:px-8 font-black text-emerald-400 italic font-serif serif-italic">{req.budget}</td>
+                                <td className="py-4 px-4 md:px-8">
+                                  <span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${mapObj.cls}`}>
+                                    {mapObj.label}
+                                  </span>
+                                </td>
+                                <td className="py-4 px-4 md:px-8">
+                                  <select 
+                                    value={req.status} 
+                                    onChange={(e) => handleUpdateBooking(req.id, e.target.value)}
+                                    className="bg-white/5 border border-white/10 text-white/70 rounded-lg text-[10px] p-2 focus:outline-none focus:border-[var(--red)] font-bold uppercase tracking-widest"
+                                  >
+                                    <option value="PENDING">PENDING</option>
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="COMPLETED">COMPLETED</option>
+                                    <option value="REJECTED">REJECTED</option>
+                                  </select>
+                                  <button onClick={() => handleDeleteBooking(req.id)} className="ml-2 text-red-500/50 hover:text-red-500 font-bold text-[10px] uppercase">Supprimer</button>
+                                </td>
+                              </motion.tr>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </tbody>
+                    </>
+                  )}
+
+                  {activeTab === "messages" && (
+                    <>
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/10">
+                          {["Origine", "Sujet", "Message", "Date", "Statut", "Action"].map(h => (
+                            <th key={h} className="py-4 px-4 md:px-8 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        <AnimatePresence>
+                          {data.messages.length === 0 ? (
+                            <tr><td colSpan={6} className="text-center py-10 text-white/40 font-bold">Aucun message.</td></tr>
+                          ) : data.messages.map((msg, i) => {
+                            const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
+                            const date = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                            return (
+                              <motion.tr key={msg.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="hover:bg-white/5 transition-all">
+                                <td className="py-4 px-4 font-black text-white">{msg.name} <br/><span className="text-[var(--red)] text-[9px]">{msg.email}</span></td>
+                                <td className="py-4 px-4 font-bold text-white/70">{msg.subject}</td>
+                                <td className="py-4 px-4 font-medium text-white/50 max-w-xs truncate">{msg.message}</td>
+                                <td className="py-4 px-4 text-[10px] text-white/40">{date}</td>
+                                <td className="py-4 px-4">
+                                  <span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${mapObj.cls}`}>
+                                    {mapObj.label}
+                                  </span>
+                                </td>
+                                <td className="py-4 px-4">
+                                  <select 
+                                    value={msg.status} 
+                                    onChange={(e) => handleUpdateMessage(msg.id, e.target.value)}
+                                    className="bg-white/5 border border-white/10 text-white/70 rounded-lg text-[10px] p-2 focus:outline-none focus:border-[var(--red)] font-bold uppercase tracking-widest"
+                                  >
+                                    <option value="UNREAD">UNREAD</option>
+                                    <option value="READ">READ</option>
+                                    <option value="REPLIED">REPLIED</option>
+                                  </select>
+                                </td>
+                              </motion.tr>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </tbody>
+                    </>
+                  )}
+
+                  {activeTab === "clients" && (
+                    <>
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/10">
+                          {["Nom", "Email", "Rôle", "ID", "Date"].map(h => (
+                            <th key={h} className="py-4 px-4 md:px-8 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        <AnimatePresence>
+                          {data.clients.length === 0 ? (
+                            <tr><td colSpan={5} className="text-center py-10 text-white/40 font-bold">Aucun utilisateur.</td></tr>
+                          ) : data.clients.map((cli, i) => {
+                            const date = cli.createdAt ? new Date(cli.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
+                            return (
+                              <motion.tr key={cli.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="hover:bg-white/5 transition-all">
+                                <td className="py-4 px-4 font-black text-white">{cli.displayName || "N/A"}</td>
+                                <td className="py-4 px-4 font-bold text-[var(--red)]">{cli.email}</td>
+                                <td className="py-4 px-4">
+                                  <span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>
+                                    {cli.role || "CLIENT"}
+                                  </span>
+                                </td>
+                                <td className="py-4 px-4 font-mono text-[9px] text-white/30">{cli.uid}</td>
+                                <td className="py-4 px-4 text-[10px] text-white/40">{date}</td>
+                              </motion.tr>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </tbody>
+                    </>
+                  )}
+
+                  {activeTab === "services" && (
+                    <>
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/10">
+                          {["Service ID", "Catégorie", "Titre", "Prix", "Action"].map(h => (
+                            <th key={h} className="py-4 px-4 md:px-8 text-[9px] font-black uppercase tracking-[0.2em] text-white/50">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        <AnimatePresence>
+                          {data.services.length === 0 ? (
+                            <tr><td colSpan={5} className="text-center py-10 text-white/40 font-bold">Aucun service personnalisé.</td></tr>
+                          ) : data.services.map((srv, i) => (
+                              <motion.tr key={srv.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="hover:bg-white/5 transition-all">
+                                <td className="py-4 px-4 font-mono text-[9px] text-[var(--red)]">{srv.id}</td>
+                                <td className="py-4 px-4 font-black text-white/50 uppercase tracking-widest text-[9px]">{srv.category || "General"}</td>
+                                <td className="py-4 px-4 font-bold text-white">{srv.title}</td>
+                                <td className="py-4 px-4 font-black text-emerald-400 italic font-serif serif-italic">{srv.priceCFA ? srv.priceCFA.toLocaleString() + " CFA" : "Sur devis"}</td>
+                                <td className="py-4 px-4">
+                                  <button className="text-white/40 hover:text-white border border-white/10 px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all">Voir JSON</button>
+                                </td>
+                              </motion.tr>
+                          ))}
+                        </AnimatePresence>
+                      </tbody>
+                    </>
+                  )}
+
                 </table>
               </div>
               
-              {/* Pagination footer */}
-              <div className="px-4 md:px-8 py-4 md:py-6 bg-white/5 flex flex-col sm:flex-row items-center justify-between text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/50 gap-4">
-                <span className="text-center sm:text-left">
-                 Affichage de 1 à 4 sur 12 dossiers
-                </span>
-                <div className="flex gap-4">
-                  <button className="p-2 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-white">
-                    <ChevronRight className="w-4 h-4 md:w-5 md:h-5 rotate-180" />
-                  </button>
-                  <button className="p-2 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-white">
-                    <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
-                  </button>
-                </div>
-              </div>
             </div>
           </FadeUp>
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation Bar (Glassmorphism 2026) */}
+      {/* Mobile Bottom Navigation Bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0A]/85 backdrop-blur-xl border-t border-white/10 pb-safe pb-4 pt-3 px-4 flex justify-around shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         {NAV.map(({ id, label, icon: Icon }) => {
           const isActive = activeTab === id;

@@ -1,16 +1,47 @@
 "use client";
 
-import { Mail, Phone, MapPin, Clock, Send, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Mail, Phone, MapPin, Clock, Send, ChevronRight, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
+import { createContactMessage } from "@/lib/firebase/db";
 
 export default function ContactPage() {
   const { t, language } = useI18n();
 
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "devis", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const set = (field: string, val: string) => setForm((f) => ({ ...f, [field]: val }));
+
+  const validate = () => {
+    if (!form.name.trim()) return language === "fr" ? "Nom requis." : "Name required.";
+    if (!form.email.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) return language === "fr" ? "Email invalide." : "Invalid email.";
+    if (!form.message.trim() || form.message.length < 10) return language === "fr" ? "Message trop court." : "Message too short.";
+    return null;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const err = validate();
+    if (err) { setError(err); return; }
+    setLoading(true);
+    try {
+      await createContactMessage(form);
+      setSuccess(true);
+    } catch {
+      setError(language === "fr" ? "Erreur d'envoi. Réessayez." : "Send failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const CONTACT_ITEMS = [
-    { icon: MapPin, label: t.contact.items.hq, val: t.contact.items.hq_val },
     { icon: Phone, label: t.contact.items.std, val: "+237 600 00 00 00" },
     { icon: Phone, label: t.contact.items.urgency, val: "+237 699 99 99 99", red: true },
     { icon: Mail, label: t.contact.items.email, val: "contact@ejarnalud.cm" },
