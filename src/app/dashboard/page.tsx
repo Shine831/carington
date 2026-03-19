@@ -35,6 +35,8 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Client";
+
   // Route protection
   useEffect(() => {
     if (!authLoading && !user) {
@@ -91,11 +93,11 @@ export default function DashboardPage() {
                 {t.dashboard.title}
               </span>
             </div>
-            <h1 className="text-4xl lg:text-6xl font-black text-white tracking-tighter mb-4">
-              Espace <span className="text-[var(--red)]">Client.</span>
+            <h1 className="text-4xl lg:text-6xl font-black text-white tracking-tighter mb-4 leading-tight">
+              Bonjour, <span className="text-[var(--red)]">{firstName}.</span>
             </h1>
             <p className="text-sm font-medium text-white/40 max-w-lg leading-relaxed">
-              Gérez vos services, suivez l'avancement de vos demandes de devis et interventions techniques en temps réel.
+              Ravi de vous revoir. Suivez l'avancement de vos projets et bénéficiez de notre expertise technique en temps réel.
             </p>
           </FadeUp>
           
@@ -240,9 +242,18 @@ export default function DashboardPage() {
                 <AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
-                <p className="text-sm text-white/40 font-medium leading-relaxed mb-8">Un problème urgent ? Notre équipe technique intervient en moins de 2H pour les contrats actifs. Protection 24/7 de vos actifs numériques.</p>
-                <Link href="/contact" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95">
+                <div className="flex items-center gap-3 mb-3">
+                  <h3 className="text-2xl font-black text-white tracking-tight">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
+                  <span className="px-2 py-0.5 rounded-lg bg-[var(--red)]/10 text-[var(--red)] text-[8px] font-black uppercase tracking-widest border border-[var(--red)]/20">Active SLA</span>
+                </div>
+                <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Expertise critique à votre service. Intervention garantie en moins de 2H pour tous vos actifs numériques.</p>
+                
+                <div className="flex items-center gap-6 mb-8 py-4 border-y border-white/5">
+                  <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Disponibilité</span><span className="text-xs font-bold text-emerald-400">24/7/365</span></div>
+                  <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Temps de réponse</span><span className="text-xs font-bold text-white"> &lt; 120min</span></div>
+                </div>
+
+                <Link href="/contact" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-inner">
                   Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)]" />
                 </Link>
               </div>
@@ -258,9 +269,15 @@ export default function DashboardPage() {
                <div className="relative z-10 flex-1">
                  <div className="flex items-center gap-3 mb-3">
                    <h3 className="text-2xl font-black text-white tracking-tight">Cloud & <span className="text-emerald-400">Infra.</span></h3>
-                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)] border border-emerald-400/50" />
+                   <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">Live Monitor</span>
                  </div>
-                 <p className="text-sm text-white/40 font-medium leading-relaxed mb-8">Tous vos services réseau et cloud fonctionnent de manière optimale sur notre infrastructure Tier-III. Supervision temps réel active.</p>
+                 <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Contrôle total sur votre infrastructure. Supervision proactive et maintenance automatisée 24/7.</p>
+                 
+                 <div className="flex items-center gap-6 mb-8 py-4 border-y border-white/5">
+                   <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Status</span><span className="text-xs font-bold text-emerald-400 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Opérationnel</span></div>
+                   <div className="flex flex-col"><span className="text-[9px] font-black text-white/20 uppercase">Uptime global</span><span className="text-xs font-bold text-white">99.99%</span></div>
+                 </div>
+
                  <Link href="/services" className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.2em] transition-all active:scale-95">
                    Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-400" />
                  </Link>
