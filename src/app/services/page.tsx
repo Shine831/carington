@@ -22,7 +22,7 @@ const getIconForCategory = (cat: string) => {
 };
 
 export default function ServicesPage() {
-  const { t, language } = useI18n();
+  const { t } = useI18n();
   const [query, setQuery] = useState("");
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,7 +157,7 @@ export default function ServicesPage() {
                 <Search className="w-10 h-10 text-slate-300" />
               </div>
               <h3 className="text-2xl font-black text-[var(--charcoal)] mb-3 uppercase tracking-tight">Expertise introuvable</h3>
-              <p className="text-base text-[var(--slate)] font-medium mb-10 max-w-xs mx-auto">Aucun service ne correspond à la recherche <strong className="text-[var(--red)]">"{query}"</strong>. Nos ingénieurs peuvent néanmoins réaliser du sur-mesure.</p>
+              <p className="text-base text-[var(--slate)] font-medium mb-10 max-w-xs mx-auto">Aucun service ne correspond à la recherche <strong className="text-[var(--red)]">&quot;{query}&quot;</strong>. Nos ingénieurs peuvent néanmoins réaliser du sur-mesure.</p>
               <button onClick={() => setQuery("")} className="btn btn-red px-10 py-5 font-black uppercase text-[10px] tracking-widest shadow-[var(--shadow-red)]">
                 {t.services_page.show_all}
               </button>
