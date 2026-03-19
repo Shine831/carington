@@ -56,11 +56,11 @@ export default function BookingPage() {
       });
       setSubmitted(true);
     } catch (err: any) {
-      setError(
-        language === "fr"
-          ? "Erreur lors de l'envoi. Vérifiez votre connexion et réessayez."
-          : "Submission failed. Check your connection and try again."
-      );
+      let errorMsg = language === "fr" ? "Erreur réseau. Impossible d'établir une connexion sécurisée." : "Network error. Unable to establish a secure connection.";
+      if (err?.code === "permission-denied") errorMsg = language === "fr" ? "Accès refusé. Veuillez vérifier votre session ou rafraîchir la page." : "Access denied. Please check your session or refresh.";
+      if (err?.code === "unavailable") errorMsg = language === "fr" ? "Le service est temporairement surchargé. Patientez quelques instants." : "Service is temporarily overloaded. Please wait a moment.";
+      if (err?.message?.includes("quota")) errorMsg = language === "fr" ? "Limite de requêtes atteinte. Veuillez patienter avant de réessayer." : "Request limit reached. Please wait before retrying.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

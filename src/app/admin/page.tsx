@@ -234,7 +234,7 @@ export default function AdminDashboard() {
                 <div className="card p-5 md:p-8 bg-gradient-to-br from-[#111111] to-[#0A0A0A] border border-white/10 relative h-full flex flex-col justify-between rounded-2xl shadow-xl hover:border-white/20 transition-all">
                   <div className="relative z-10 mb-4">
                     <p className="text-[9px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.1em]">{label}</p>
-                    <p className="text-3xl md:text-5xl font-black text-white tracking-tighter italic mt-2 drop-shadow-lg">{value}</p>
+                    <p className={`text-3xl md:text-5xl font-black ${color.replace("text-", "text-")} tracking-tighter italic mt-2 drop-shadow-lg`}>{value}</p>
                   </div>
                   <div className={`absolute bottom-5 right-5 w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/5 ${color} shadow-inner`}>
                     <Icon className="w-5 h-5 md:w-6 md:h-6" />
