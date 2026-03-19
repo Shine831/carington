@@ -111,7 +111,7 @@ export const getUsers = async () => {
 export const getUserById = async (uid: string) => {
   try {
     const snap = await getDoc(doc(db, "users", uid));
-    if (snap.exists()) return { id: snap.id, ...snap.data() };
+    if (snap.exists()) return { id: snap.id, ...snap.data() } as any;
     return null;
   } catch {
     return null;
