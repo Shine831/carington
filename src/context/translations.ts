@@ -484,32 +484,32 @@ export const translations = {
         quote_author: "Founder",
         commit_tag: "Our Commitments",
         commit_title: "The Pillars of our Expertise",
-        pillars: {
-            0: {
+        pillars: [
+            {
                 title: "Maximum Security",
                 desc: "Advanced protection protocols for your most valuable digital assets."
             },
-            1: {
+            {
                 title: "Certified Excellence",
                 desc: "A team of engineers graduated from the best international institutions."
             },
-            2: {
+            {
                 title: "Continuous Innovation",
                 desc: "Constant technological monitoring to anticipate tomorrow's threats."
             },
-            3: {
+            {
                 title: "24/7 support",
                 desc: "Total availability to guarantee the continuity of your critical operations."
             }
-        },
+        ],
         promise_tag: "Our Promise",
         promise_title: "A 360° view of your security.",
-        promises: {
-            0: "Comprehensive and transparent vulnerability audit",
-            1: "Agile deployment and meeting deadlines",
-            2: "Training your teams in best practices",
-            3: "Optimization of infrastructure costs"
-        },
+        promises: [
+            "Comprehensive and transparent vulnerability audit",
+            "Agile deployment and meeting deadlines",
+            "Training your teams in best practices",
+            "Optimization of infrastructure costs"
+        ],
         stats: {
             clients: "Institutional Clients",
             years: "Years of Experience",
@@ -636,20 +636,20 @@ export const translations = {
         process_title: "Validation Process",
         secure_data: "100% Secure Data",
         secure_desc: "AES-256 · Hosting Cameroon",
-        steps: {
-            0: {
+        steps: [
+            {
                 title: "Analysis",
                 desc: "Our engineers study your file in less than 12 hours."
             },
-            1: {
+            {
                 title: "Quote & SLA",
                 desc: "Technical proposal with deadlines, CFA prices and detailed specifications."
             },
-            2: {
+            {
                 title: "Execution",
                 desc: "Certified and secure on-site intervention or remote deployment."
             }
-        },
+        ],
         success_title: "Request sent!",
         success_desc: "Your quote request has been recorded. Our team will contact you within 24 working hours.",
         view_requests: "See my requests",
@@ -680,12 +680,12 @@ export const translations = {
         title_part2: "IT management.",
         desc: "Access your dashboard to follow your projects, contact our teams and manage your contracts.",
         secure_badge: "Secure access 24/7 Guaranteed data protection",
-        features: {
-            0: "Monitoring your requests in real time",
-            1: "Access to complete history",
-            2: "Certified service provider connection",
-            3: "Dedicated space for your opinions"
-        },
+        features: [
+            "Monitoring your requests in real time",
+            "Access to complete history",
+            "Certified service provider connection",
+            "Dedicated space for your opinions"
+        ],
         login: {
             title: "Connection",
             desc: "Enter your credentials to access your space.",
