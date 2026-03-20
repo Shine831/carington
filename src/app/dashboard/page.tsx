@@ -139,6 +139,14 @@ export default function DashboardPage() {
   const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || pinInput.length < 4) return;
+
+    // Brute-force protection
+    const { canAttemptPin, trackPinFailure, resetPinAttempts } = await import("@/lib/firebase/db");
+    if (!canAttemptPin(user.uid)) {
+      setPinError(true);
+      setPinInput("");
+      return;
+    }
     
     setPinError(false);
     const hashed = await hashPin(pinInput);
@@ -146,6 +154,7 @@ export default function DashboardPage() {
     if (!hasPinConfigured) {
       // Configuration
       await setUserPin(user.uid, hashed);
+      resetPinAttempts(user.uid);
       setHasPinConfigured(true);
       setIsPinVerified(true);
       sessionStorage.setItem("client_pin_verified", "true");
@@ -153,14 +162,23 @@ export default function DashboardPage() {
       // Verification
       const userData = await getUserById(user.uid);
       if (userData?.pin === hashed) {
+        resetPinAttempts(user.uid);
         setIsPinVerified(true);
         sessionStorage.setItem("client_pin_verified", "true");
       } else {
+        const remaining = trackPinFailure(user.uid);
         setPinError(true);
         setPinInput("");
+        if (remaining <= 0) {
+          setTimeout(() => {
+            sessionStorage.removeItem("client_pin_verified");
+            logoutUser().then(() => router.push("/account"));
+          }, 2000);
+        }
       }
     }
   };
+
 
   const handlePinChangeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

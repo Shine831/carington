@@ -79,6 +79,12 @@ async function main() {
   // 1. Extract FR translations object from the TS file via eval-safe regex
   const source = readFileSync(TRANSLATIONS_PATH, "utf8");
 
+  // Cleanup stale tmp files from previous runs
+  const { readdirSync, unlinkSync } = await import("fs");
+  readdirSync(__dirname)
+    .filter(f => f.startsWith(".tmp-translations-") && f.endsWith(".mjs"))
+    .forEach(f => { try { unlinkSync(join(__dirname, f)); } catch {} });
+
   // Extract the raw JS object between `fr: {` and its matching closing brace
   // For robustness we use dynamic import via a temp file trick
   const tmpFile = join(__dirname, ".tmp-translations-" + Date.now() + ".mjs");
@@ -90,6 +96,10 @@ async function main() {
 
   const { default: allTranslations } = await import(pathToFileURL(tmpFile).href);
   const fr = allTranslations.fr;
+
+  // Cleanup temp file immediately after import
+  try { unlinkSync(tmpFile); } catch {}
+
 
   // 2. Collect all FR strings
   const entries = collectStrings(fr);

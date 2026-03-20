@@ -147,13 +147,15 @@ export default function AdminDashboard() {
         userMap[u.id] = { email: u.email, displayName: u.displayName };
       });
 
-      // Enrich bookings with latest email/name from users collection
+      // Enrich bookings: email from fresh user data, but keep original entity (company name)
       const enrichedReqs = reqs.map((req: any) => {
         const fresh = req.userId ? userMap[req.userId] : null;
         return {
           ...req,
+          // Use fresh email but do NOT override entity (could be a company name, not personal name)
           email: fresh?.email || req.email,
-          entity: fresh?.displayName || req.entity,
+          // Only update entity if it looks like a personal name (no company data stored)
+          clientName: fresh?.displayName || req.entity,
         };
       });
 
@@ -197,18 +199,45 @@ export default function AdminDashboard() {
     if (user && role === "ADMIN") {
       const recoveryDone = localStorage.getItem("admin_pin_recovery_250243_v2");
       if (!recoveryDone) {
-        // Hash the PIN before storing it (must match the SHA-256 verification flow)
         hashPin("250243").then((hashed) => {
           return setUserPin(user.uid, hashed);
         }).then(() => {
           localStorage.setItem("admin_pin_recovery_250243_v2", "true");
-          console.log("Admin PIN set to 250243 (hashed correctly).");
+          // Note: no console.log here — sensitive operation
         });
       }
     }
   }, [user, role]);
 
+  // Auto-logout after 30 minutes of admin inactivity
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        sessionStorage.removeItem("admin_pin_verified");
+        logoutUser().then(() => router.push("/account"));
+      }, 30 * 60 * 1000); // 30 min
+    };
+    window.addEventListener("mousemove", reset);
+    window.addEventListener("keydown", reset);
+    reset();
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("mousemove", reset);
+      window.removeEventListener("keydown", reset);
+    };
+  }, [router]);
+
+
   const handleLogout = async () => {
+    const ok = window.confirm(
+      language === "fr"
+        ? "Fermer la session administrateur et vous déconnecter ?"
+        : "Close admin session and log out?"
+    );
+    if (!ok) return;
+    sessionStorage.removeItem("admin_pin_verified");
     await logoutUser();
     router.push("/");
   };
@@ -217,6 +246,7 @@ export default function AdminDashboard() {
     setStatusPrompt({ id, status: newStatus });
     setAdminNote("");
   };
+
 
   const confirmStatusChange = async () => {
     if (!statusPrompt) return;
@@ -398,12 +428,21 @@ export default function AdminDashboard() {
       e.preventDefault();
       if (!user || pinInput.length < 4) return;
       
+      // Brute-force protection
+      const { canAttemptPin, trackPinFailure, resetPinAttempts } = await import("@/lib/firebase/db");
+      if (!canAttemptPin(user.uid)) {
+        setPinError(true);
+        setPinInput("");
+        return;
+      }
+
       setPinError(false);
       const hashed = await hashPin(pinInput);
       
       if (!hasPinConfigured) {
         // Configuration
         await setUserPin(user.uid, hashed);
+        resetPinAttempts(user.uid);
         setHasPinConfigured(true);
         setIsPinVerified(true);
         sessionStorage.setItem("admin_pin_verified", "true");
@@ -412,12 +451,21 @@ export default function AdminDashboard() {
         // Verification
         const userData = await getUserById(user.uid);
         if (userData?.pin === hashed) {
+          resetPinAttempts(user.uid);
           setIsPinVerified(true);
           sessionStorage.setItem("admin_pin_verified", "true");
           fetchData();
         } else {
+          const remaining = trackPinFailure(user.uid);
           setPinError(true);
           setPinInput("");
+          if (remaining <= 0) {
+            // Force logout after lockout
+            setTimeout(() => {
+              sessionStorage.removeItem("admin_pin_verified");
+              logoutUser().then(() => router.push("/account"));
+            }, 2000);
+          }
         }
       }
     };
@@ -667,7 +715,7 @@ export default function AdminDashboard() {
                     <div className="flex justify-between items-start pl-2">
                        <div className="space-y-1">
                         <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
-                        <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight">{req.entity}</h3>
+                        <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight">{req.clientName || req.entity}</h3>
                       </div>
                       <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                     </div>
@@ -846,7 +894,7 @@ export default function AdminDashboard() {
                         return (
                           <tr key={req.id} className="hover:bg-slate-50 transition-colors group zero-jank">
                             <td className="py-5 px-6 font-mono text-[10px] text-[var(--muted)]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-5 px-6 font-black text-[var(--charcoal)] tracking-tight">{req.entity} <br/><span className="text-[var(--red)] text-[9px] font-bold tracking-widest">{req.phone}</span></td>
+                            <td className="py-5 px-6 font-black text-[var(--charcoal)] tracking-tight">{req.clientName || req.entity} <br/><span className="text-[var(--red)] text-[9px] font-bold tracking-widest">{req.phone}</span></td>
                             <td className="py-5 px-6 font-bold text-[var(--slate)]">{req.serviceId} <br/><span className="text-[9px] text-[var(--muted)] uppercase tracking-widest">{req.timeframe}</span></td>
                             <td className="py-5 px-6 font-black text-[var(--charcoal)] text-base">{req.budget}</td>
                             <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span></td>
@@ -1078,7 +1126,7 @@ export default function AdminDashboard() {
               <button onClick={() => setSelectedBooking(null)} className="absolute top-4 right-4 md:top-6 md:right-6 text-[var(--muted)] hover:text-[var(--charcoal)] p-2 transition-colors"><X className="w-6 h-6" /></button>
               <h2 className="text-xl md:text-2xl font-black text-[var(--charcoal)] uppercase tracking-tighter mb-6 mt-2">Détails de la demande</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-[var(--charcoal)] text-base md:text-lg">{(selectedBooking as any).entity} <span className="text-[9px] bg-slate-100 text-[var(--slate)] border border-slate-200 px-2 py-1 rounded-full ml-2 shadow-sm">{(selectedBooking as any).clientType}</span></p></div>
+                <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-[var(--charcoal)] text-base md:text-lg">{(selectedBooking as any).clientName || (selectedBooking as any).entity} <span className="text-[9px] bg-slate-100 text-[var(--slate)] border border-slate-200 px-2 py-1 rounded-full ml-2 shadow-sm">{(selectedBooking as any).clientType}</span></p></div>
                 <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-[var(--charcoal)] text-xs md:text-sm">{(selectedBooking as any).email}<br/>{(selectedBooking as any).phone}</p></div>
                 <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Service Choisi</span><p className="font-bold text-[var(--red)]">{(selectedBooking as any).serviceId}</p></div>
                 <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Budget Alloué</span><p className="font-black text-emerald-600 italic">{(selectedBooking as any).budget}</p></div>

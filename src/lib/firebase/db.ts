@@ -174,13 +174,62 @@ export const propagateProfileUpdate = async (
 
 export const deleteUserDoc = async (uid: string) => {
   try {
+    // 1. Delete the user document
     await deleteDoc(doc(db, "users", uid));
+
+    // 2. Cascade-delete all related data (bookings, reviews)
+    const [bookingsSnap, reviewsSnap] = await Promise.all([
+      getDocs(query(collection(db, "bookings"), where("userId", "==", uid))),
+      getDocs(query(collection(db, "reviews"), where("userId", "==", uid))),
+    ]);
+
+    const deletions: Promise<void>[] = [
+      ...bookingsSnap.docs.map(d => deleteDoc(doc(db, "bookings", d.id))),
+      ...reviewsSnap.docs.map(d => deleteDoc(doc(db, "reviews", d.id))),
+    ];
+
+    await Promise.all(deletions);
   } catch (error: unknown) {
     const err = error as Error;
-    console.error("deleteUserDoc:", err.message);
+    console.error("deleteUserDoc (cascade):", err.message);
     throw err;
   }
 };
+
+// ============================================================
+// PIN BRUTE-FORCE PROTECTION
+// ============================================================
+
+const PIN_MAX_ATTEMPTS = 5;
+const PIN_LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+
+/** Returns true if the user can attempt a PIN entry, false if locked out. */
+export const canAttemptPin = (uid: string): boolean => {
+  const raw = localStorage.getItem(`pin_attempts_${uid}`);
+  if (!raw) return true;
+  const { count, lastAttempt } = JSON.parse(raw);
+  if (count >= PIN_MAX_ATTEMPTS) {
+    if (Date.now() - lastAttempt < PIN_LOCKOUT_MS) return false;
+    // Lockout expired, reset
+    localStorage.removeItem(`pin_attempts_${uid}`);
+  }
+  return true;
+};
+
+/** Call after a failed PIN attempt. Returns remaining attempts. */
+export const trackPinFailure = (uid: string): number => {
+  const raw = localStorage.getItem(`pin_attempts_${uid}`);
+  const { count } = raw ? JSON.parse(raw) : { count: 0 };
+  const next = count + 1;
+  localStorage.setItem(`pin_attempts_${uid}`, JSON.stringify({ count: next, lastAttempt: Date.now() }));
+  return PIN_MAX_ATTEMPTS - next;
+};
+
+/** Call after a successful PIN entry to reset the counter. */
+export const resetPinAttempts = (uid: string): void => {
+  localStorage.removeItem(`pin_attempts_${uid}`);
+};
+
 
 // ============================================================
 // CONTACT MESSAGES (Admin only)
