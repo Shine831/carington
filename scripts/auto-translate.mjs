@@ -56,29 +56,19 @@ function setDeep(obj, path, value) {
   const keys = path.split(".");
   let cur = obj;
   for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    if (!cur[key]) {
-      // If next key is a number, initialize as array
-      cur[key] = !isNaN(Number(keys[i + 1])) ? [] : {};
-    }
-    cur = cur[key];
+    if (!cur[keys[i]]) cur[keys[i]] = {};
+    cur = cur[keys[i]];
   }
   cur[keys[keys.length - 1]] = value;
 }
 
 /** Clone the FR object structure with empty strings for EN */
 function cloneStructure(obj) {
-  if (Array.isArray(obj)) {
-    return obj.map(item => cloneStructure(item));
+  const result = {};
+  for (const [key, val] of Object.entries(obj)) {
+    result[key] = typeof val === "object" && val !== null ? cloneStructure(val) : "";
   }
-  if (typeof obj === "object" && obj !== null) {
-    const result = {};
-    for (const [key, val] of Object.entries(obj)) {
-      result[key] = cloneStructure(val);
-    }
-    return result;
-  }
-  return ""; // Leaf value
+  return result;
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
@@ -153,11 +143,9 @@ async function main() {
     .replace(/"([^"]+)":/g, "$1:")  // Remove quotes from keys
     .replace(/"/g, "\"");           // Keep string quotes
 
-
-
   // Replace the `en: { ... }` block in the TS source
   const newSource = source.replace(
-    /en:\s*\{[\s\S]*?\n\}\s*\n\};/,
+    /en:\s*\{[\s\S]*?\n  \}\n\};/,
     `en: ${enJson}\n};`
   );
 
