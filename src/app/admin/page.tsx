@@ -458,7 +458,7 @@ export default function AdminDashboard() {
     { id: "requests", label: t.admin.nav.requests, icon: Briefcase },
     { id: "clients", label: t.admin.nav.clients, icon: Users },
     { id: "messages", label: t.admin.nav.messages, icon: Mail },
-    { id: "reviews", label: t.admin.nav.testimonials, icon: Star, badge: data.reviews?.filter(r => !r.isRead).length },
+    { id: "reviews", label: t.admin.nav.testimonials, icon: Star, badge: (data.reviews || []).filter(r => r.isRead === false).length || 0 },
     { id: "services", label: t.admin.nav.catalog, icon: Search },
     { id: "profile", label: t.admin.nav.settings, icon: BarChart },
   ];

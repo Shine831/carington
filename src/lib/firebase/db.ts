@@ -244,11 +244,12 @@ export const getReviewsByUserId = async (userId: string) => {
   }
 };
 export const markAllReviewsAsRead = async () => {
-  const q = query(collection(db, "reviews"), where("isRead", "==", false));
-  const snap = await getDocs(q);
-  const batches = [];
-  for (const d of snap.docs) {
-    batches.push(updateDoc(doc(db, "reviews", d.id), { isRead: true }));
-  }
-  await Promise.all(batches);
+  // Fetch ALL reviews – Firestore where("isRead", "==", false) misses
+  // documents that were created before the isRead field existed.
+  // We update every document where isRead is not explicitly true.
+  const snap = await getDocs(collection(db, "reviews"));
+  const updates: Promise<void>[] = snap.docs
+    .filter(d => d.data().isRead !== true)
+    .map(d => updateDoc(doc(db, "reviews", d.id), { isRead: true }));
+  await Promise.all(updates);
 };
