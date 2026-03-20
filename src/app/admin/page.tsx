@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert, Activity } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, EyeOff, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
@@ -70,10 +70,32 @@ export default function AdminDashboard() {
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
   const [pinChangeForm, setPinChangeForm] = useState({ oldPin: "", newPin: "", error: "", success: "" });
   const [isChangingPin, setIsChangingPin] = useState(false);
+  const [showOldPin, setShowOldPin] = useState(false);
+  const [showNewPin, setShowNewPin] = useState(false);
 
   const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
   const [passwordChangeForm, setPasswordChangeForm] = useState({ oldPassword: "", newPassword: "", error: "", success: "" });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  // Helper: translate Firebase error codes to friendly messages
+  const friendlyFirebaseError = (code: string | undefined, fallback?: string): string => {
+    const map: Record<string, string> = {
+      "auth/wrong-password": "Mot de passe actuel incorrect.",
+      "auth/invalid-credential": "Identifiants incorrects. Veuillez réessayer.",
+      "auth/requires-recent-login": "Session expirée. Déconnectez-vous et reconnectez-vous pour effectuer cette action.",
+      "auth/email-already-in-use": "Cet email est déjà utilisé par un autre compte.",
+      "auth/invalid-email": "L'adresse email n'est pas valide.",
+      "auth/operation-not-allowed": "Cette opération n'est pas autorisée. Contactez le support.",
+      "auth/weak-password": "Le mot de passe est trop faible. Utilisez au moins 8 caractères.",
+      "auth/network-request-failed": "Pas de connexion réseau. Vérifiez votre connexion internet.",
+      "auth/too-many-requests": "Trop de tentatives. Veuillez patienter quelques minutes.",
+      "auth/user-not-found": "Aucun compte trouvé pour cet email.",
+      "auth/user-disabled": "Ce compte a été désactivé.",
+    };
+    return map[code || ""] || fallback || "Une erreur inattendue s'est produite. Veuillez réessayer.";
+  };
 
   // Profile State
   const [profileForm, setProfileForm] = useState({ name: "", email: "", currentPassword: "", error: "", success: "" });
@@ -130,7 +152,13 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (activeTab === "reviews") {
-      markAllReviewsAsRead().then(() => fetchData());
+      // Mark reviews as read and update local state immediately to clear badge
+      markAllReviewsAsRead().then(() => {
+        setData(prev => ({
+          ...prev,
+          reviews: prev.reviews.map(r => ({ ...r, isRead: true }))
+        }));
+      });
     }
   }, [activeTab, fetchData]);
 
@@ -246,13 +274,18 @@ export default function AdminDashboard() {
 
   const handlePasswordChangeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || (!user.email)) return;
+    if (!user || !user.email) return;
     setPasswordChangeForm(p => ({ ...p, error: "", success: "" }));
     setIsChangingPassword(true);
 
     try {
+      // Step 1: Re-authenticate with current password
+      const credential = EmailAuthProvider.credential(user.email, passwordChangeForm.oldPassword);
+      await reauthenticateWithCredential(user, credential);
+
+      // Step 2: Update password
       await updatePassword(user, passwordChangeForm.newPassword);
-      setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "Mot de passe modifié avec succès !" });
+      setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "✓ Mot de passe mis à jour avec succès !" });
       
       setTimeout(() => {
         setShowPasswordChangeModal(false);
@@ -260,11 +293,7 @@ export default function AdminDashboard() {
       }, 3000);
 
     } catch (err: any) {
-      if (err.code === "auth/requires-recent-login") {
-         setPasswordChangeForm(p => ({ ...p, error: "Pour changer votre mot de passe, veuillez vous déconnecter et vous reconnecter par sécurité." }));
-      } else {
-         setPasswordChangeForm(p => ({ ...p, error: "L'opération a échoué : " + err.message }));
-      }
+      setPasswordChangeForm(p => ({ ...p, error: friendlyFirebaseError(err.code, err.message) }));
     } finally {
       setIsChangingPassword(false);
     }
@@ -292,14 +321,11 @@ export default function AdminDashboard() {
           await fbUpdateEmail(user, profileForm.email);
           await updateUserDoc(user.uid, { email: profileForm.email });
         } catch (emailErr: any) {
-          if (emailErr.code === "auth/requires-recent-login") {
-            throw new Error("Pour changer l'email, veuillez vous déconnecter et vous reconnecter par sécurité.");
-          }
-          throw emailErr;
+          throw new Error(friendlyFirebaseError(emailErr.code, emailErr.message));
         }
       }
 
-      setProfileForm(p => ({ ...p, success: "Profil Administrateur mis à jour !" }));
+      setProfileForm(p => ({ ...p, success: "✓ Profil Administrateur mis à jour !" }));
     } catch (err: any) {
       setProfileForm(p => ({ ...p, error: err.message }));
     } finally {
@@ -756,10 +782,25 @@ export default function AdminDashboard() {
               </div>
             ))}
 
-            {data[activeTab as keyof typeof data].length === 0 && (
+            {["requests", "clients", "messages", "services", "reviews"].includes(activeTab) &&
+              (data[activeTab as keyof typeof data] as unknown[])?.length === 0 && (
               <div className="py-24 text-center rounded-[2.5rem] border border-dashed border-white/10 bg-[#0D0D0D]/50 backdrop-blur-xl">
                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6"><Search className="w-8 h-8 text-white/20" /></div>
                 <p className="text-white/40 font-black uppercase tracking-[0.2em] text-xs">Aucune donnée détectée</p>
+              </div>
+            )}
+
+            {/* Catalog & Settings Tabs - no table in mobile cards */}
+            {activeTab === "catalog" && (
+              <div className="py-20 text-center rounded-[2.5rem] border border-dashed border-white/10">
+                <Search className="w-8 h-8 text-white/20 mx-auto mb-4" />
+                <p className="text-white/30 font-black uppercase tracking-widest text-[10px]">Consultez le catalogue ci-dessous</p>
+              </div>
+            )}
+            {activeTab === "settings" && (
+              <div className="py-20 text-center rounded-[2.5rem] border border-dashed border-white/10">
+                <ShieldAlert className="w-8 h-8 text-amber-500/30 mx-auto mb-4" />
+                <p className="text-white/30 font-black uppercase tracking-widest text-[10px]">Paramètres dans le panneau ci-dessous</p>
               </div>
             )}
           </div>
@@ -1123,8 +1164,8 @@ export default function AdminDashboard() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
             >
-              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
-              <button disabled={isChangingPin} onClick={() => setShowPinChangeModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <AuraGradient color="emerald" className="top-0 right-0 w-64 h-64 opacity-[0.07]" />
+              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
               
@@ -1132,42 +1173,66 @@ export default function AdminDashboard() {
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
                   <Key className="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight mb-2">{t.admin.nav.settings}</h3>
-                <p className="text-xs font-medium text-white/40 leading-relaxed">
-                  Modifiez votre code d{"'"}accès maître. (6 chiffres)
-                </p>
+                <h3 className="text-xl font-black text-white tracking-tight mb-1">Code PIN Maître</h3>
+                <p className="text-[11px] font-medium text-white/40 leading-relaxed">Saisissez votre ancien PIN puis le nouveau (6 chiffres).</p>
               </div>
 
-              <form onSubmit={handlePinChangeSubmit} className="space-y-5">
+              <form onSubmit={handlePinChangeSubmit} className="space-y-4">
+                {/* Old PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau PIN</label>
-                  <input 
-                    type="password"
-                    value={pinChangeForm.newPin}
-                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
-                    placeholder="Nouveau PIN (6 chiffres)"
-                    maxLength={6}
-                    required
-                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
-                  />
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Code PIN</label>
+                  <div className="relative">
+                    <input 
+                      type={showOldPin ? "text" : "password"}
+                      value={pinChangeForm.oldPin}
+                      onChange={(e) => setPinChangeForm(prev => ({ ...prev, oldPin: e.target.value, error: "" }))}
+                      placeholder="••••••"
+                      maxLength={6}
+                      required
+                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                    />
+                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                      {showOldPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                {/* New PIN */}
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Code PIN (6 chiffres)</label>
+                  <div className="relative">
+                    <input 
+                      type={showNewPin ? "text" : "password"}
+                      value={pinChangeForm.newPin}
+                      onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
+                      placeholder="••••••"
+                      maxLength={6}
+                      required
+                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                    />
+                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                      {showNewPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 
                 <AnimatePresence>
                   {pinChangeForm.error && (
-                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center mt-2">
-                      {pinChangeForm.error}
-                    </motion.p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                      <p className="text-[11px] text-red-400 font-bold">{pinChangeForm.error}</p>
+                    </motion.div>
                   )}
                   {pinChangeForm.success && (
-                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
-                      {pinChangeForm.success}
-                    </motion.p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <p className="text-[11px] text-emerald-400 font-bold">{pinChangeForm.success}</p>
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 6 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center">
-                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Confirmer"}
+                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 6 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2">
+                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><Key className="w-4 h-4" /> Confirmer le changement</>}
                   </button>
                 </div>
               </form>
@@ -1183,8 +1248,8 @@ export default function AdminDashboard() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
             >
-              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
-              <button disabled={isChangingPassword} onClick={() => setShowPasswordChangeModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <AuraGradient color="amber" className="top-0 right-0 w-64 h-64 opacity-[0.07]" />
+              <button disabled={isChangingPassword} onClick={() => { setShowPasswordChangeModal(false); setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
               
@@ -1192,42 +1257,65 @@ export default function AdminDashboard() {
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
                   <ShieldAlert className="w-6 h-6 text-amber-500" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Mot de passe</h3>
-                <p className="text-xs font-medium text-white/40 leading-relaxed">
-                  Modifiez les identifiants de connexion du compte Administrateur Principal.
-                </p>
+                <h3 className="text-xl font-black text-white tracking-tight mb-1">Changer le Mot de Passe</h3>
+                <p className="text-[11px] font-medium text-white/40 leading-relaxed">Confirmez votre identité puis saisissez le nouveau mot de passe.</p>
               </div>
 
-              <form onSubmit={handlePasswordChangeSubmit} className="space-y-5">
+              <form onSubmit={handlePasswordChangeSubmit} className="space-y-4">
+                {/* Current Password */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau mot de passe</label>
-                  <input 
-                    type="password"
-                    value={passwordChangeForm.newPassword}
-                    onChange={(e) => setPasswordChangeForm(prev => ({ ...prev, newPassword: e.target.value, error: "" }))}
-                    placeholder="Min. 8 caractères"
-                    minLength={8}
-                    required
-                    className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-white/10"
-                  />
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Mot de passe actuel</label>
+                  <div className="relative">
+                    <input 
+                      type={showOldPassword ? "text" : "password"}
+                      value={passwordChangeForm.oldPassword}
+                      onChange={(e) => setPasswordChangeForm(prev => ({ ...prev, oldPassword: e.target.value, error: "" }))}
+                      placeholder="Votre mot de passe actuel"
+                      required
+                      className="w-full bg-[#050505] border border-white/10 text-white p-4 pr-12 rounded-2xl text-sm font-bold focus:border-amber-500 outline-none transition-all placeholder:text-white/10"
+                    />
+                    <button type="button" onClick={() => setShowOldPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                      {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                {/* New Password */}
+                <div>
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau mot de passe (min. 8 caractères)</label>
+                  <div className="relative">
+                    <input 
+                      type={showNewPassword ? "text" : "password"}
+                      value={passwordChangeForm.newPassword}
+                      onChange={(e) => setPasswordChangeForm(prev => ({ ...prev, newPassword: e.target.value, error: "" }))}
+                      placeholder="Nouveau mot de passe sécurisé"
+                      minLength={8}
+                      required
+                      className="w-full bg-[#050505] border border-white/10 text-white p-4 pr-12 rounded-2xl text-sm font-bold focus:border-amber-500 outline-none transition-all placeholder:text-white/10"
+                    />
+                    <button type="button" onClick={() => setShowNewPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                      {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 
                 <AnimatePresence>
                   {passwordChangeForm.error && (
-                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center mt-2">
-                      {passwordChangeForm.error}
-                    </motion.p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                      <p className="text-[11px] text-red-400 font-bold">{passwordChangeForm.error}</p>
+                    </motion.div>
                   )}
                   {passwordChangeForm.success && (
-                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
-                      {passwordChangeForm.success}
-                    </motion.p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <p className="text-[11px] text-emerald-400 font-bold">{passwordChangeForm.success}</p>
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={isChangingPassword || !passwordChangeForm.newPassword || !passwordChangeForm.oldPassword} className="w-full py-4 bg-amber-500 hover:bg-amber-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center">
-                    {isChangingPassword ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Mettre à jour"}
+                  <button type="submit" disabled={isChangingPassword || !passwordChangeForm.newPassword || !passwordChangeForm.oldPassword} className="w-full py-4 bg-amber-500 hover:bg-amber-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2">
+                    {isChangingPassword ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><ShieldAlert className="w-4 h-4" /> Confirmer le changement</>}
                   </button>
                 </div>
               </form>

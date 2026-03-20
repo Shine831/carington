@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key, Users } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key, Users, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,6 +64,25 @@ export default function DashboardPage() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [editingReview, setEditingReview] = useState<any>(null);
 
+  // PIN visibility toggles
+  const [showOldPin, setShowOldPin] = useState(false);
+  const [showNewPin, setShowNewPin] = useState(false);
+
+  // Helper: translate Firebase error codes
+  const friendlyFirebaseError = (code: string | undefined, fallback?: string): string => {
+    const map: Record<string, string> = {
+      "auth/wrong-password": "Mot de passe actuel incorrect.",
+      "auth/invalid-credential": "Identifiants incorrects. Veuillez réessayer.",
+      "auth/requires-recent-login": "Pour sécurité, déconnectez-vous et reconnectez-vous avant de changer l'email.",
+      "auth/email-already-in-use": "Cet email est déjà utilisé par un autre compte.",
+      "auth/invalid-email": "L'adresse email n'est pas valide.",
+      "auth/weak-password": "Le mot de passe est trop faible. Utilisez au moins 8 caractères.",
+      "auth/network-request-failed": "Pas de connexion réseau. Vérifiez votre connexion.",
+      "auth/too-many-requests": "Trop de tentatives. Veuillez patienter quelques minutes.",
+    };
+    return map[code || ""] || fallback || "Une erreur s'est produite. Veuillez réessayer.";
+  };
+
   // Route protection
   useEffect(() => {
     if (!authLoading && !user) {
@@ -80,12 +99,20 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchUserReviews = async () => {
+    if (user) {
+      const data = await getReviewsByUserId(user.uid);
+      setUserReviews(data);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       if (typeof window !== "undefined" && sessionStorage.getItem("client_pin_verified") === "true") {
         setIsPinVerified(true);
         setCheckingPin(false);
         fetchUserBookings();
+        fetchUserReviews();
         return;
       }
 
@@ -102,13 +129,6 @@ export default function DashboardPage() {
       fetchUserReviews();
     }
   }, [user]);
-
-  const fetchUserReviews = async () => {
-    if (user) {
-      const data = await getReviewsByUserId(user.uid);
-      setUserReviews(data);
-    }
-  };
 
   async function hashPin(pin: string) {
     const enc = new TextEncoder().encode(pin);
@@ -226,14 +246,11 @@ export default function DashboardPage() {
           await updateEmail(user, profileForm.email);
           await updateUserDoc(user.uid, { email: profileForm.email });
         } catch (emailErr: any) {
-          if (emailErr.code === "auth/requires-recent-login") {
-            throw new Error(language === "fr" ? "Pour changer d'email, veuillez vous déconnecter et vous reconnecter par sécurité." : "For security, please log out and back in to change your email.");
-          }
-          throw emailErr;
+          throw new Error(friendlyFirebaseError(emailErr.code, emailErr.message));
         }
       }
 
-      setProfileForm(p => ({ ...p, success: language === "fr" ? "Profil mis à jour !" : "Profile updated!" }));
+      setProfileForm(p => ({ ...p, success: language === "fr" ? "✓ Profil mis à jour avec succès !" : "✓ Profile updated successfully!" }));
     } catch (err: any) {
       setProfileForm(p => ({ ...p, error: err.message }));
     } finally {
@@ -861,7 +878,7 @@ export default function DashboardPage() {
               className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
             >
               <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
-              <button disabled={isChangingPin} onClick={() => setShowPinChangeModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
               
@@ -869,54 +886,66 @@ export default function DashboardPage() {
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
                   <Key className="w-6 h-6 text-emerald-400" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Modifier le PIN</h3>
-                <p className="text-xs font-medium text-white/40 leading-relaxed">
-                  Protégez vos données. Vous ne pouvez modifier ce code qu'une fois toutes les 24h.
-                </p>
+                <h3 className="text-xl font-black text-white tracking-tight mb-1">Modifier mon PIN</h3>
+                <p className="text-[11px] font-medium text-white/40 leading-relaxed">Saisissez votre ancien PIN puis le nouveau (4 chiffres). Limité à 1 changement par 24h.</p>
               </div>
 
-              <form onSubmit={handlePinChangeSubmit} className="space-y-5">
+              <form onSubmit={handlePinChangeSubmit} className="space-y-4">
+                {/* Old PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Code</label>
-                  <input 
-                    type="password"
-                    value={pinChangeForm.oldPin}
-                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, oldPin: e.target.value, error: "" }))}
-                    placeholder="••••"
-                    maxLength={4}
-                    required
-                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
-                  />
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Code PIN</label>
+                  <div className="relative">
+                    <input 
+                      type={showOldPin ? "text" : "password"}
+                      value={pinChangeForm.oldPin}
+                      onChange={(e) => setPinChangeForm(prev => ({ ...prev, oldPin: e.target.value, error: "" }))}
+                      placeholder="••••"
+                      maxLength={4}
+                      required
+                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                    />
+                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                      {showOldPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
+                {/* New PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Code</label>
-                  <input 
-                    type="password"
-                    value={pinChangeForm.newPin}
-                    onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
-                    placeholder="••••"
-                    maxLength={4}
-                    required
-                    className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[1em] p-4 focus:border-emerald-500 outline-none placeholder:text-white/10"
-                  />
+                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Code PIN (4 chiffres)</label>
+                  <div className="relative">
+                    <input 
+                      type={showNewPin ? "text" : "password"}
+                      value={pinChangeForm.newPin}
+                      onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
+                      placeholder="••••"
+                      maxLength={4}
+                      required
+                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                    />
+                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                      {showNewPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 
                 <AnimatePresence>
                   {pinChangeForm.error && (
-                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center mt-2">
-                      {pinChangeForm.error}
-                    </motion.p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                      <p className="text-[11px] text-red-400 font-bold">{pinChangeForm.error}</p>
+                    </motion.div>
                   )}
                   {pinChangeForm.success && (
-                    <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-center mt-2">
-                       {pinChangeForm.success}
-                    </motion.p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <p className="text-[11px] text-emerald-400 font-bold">{pinChangeForm.success}</p>
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 4 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center">
-                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Confirmer"}
+                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 4 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2">
+                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><Key className="w-4 h-4" />Confirmer</>}
                   </button>
                 </div>
               </form>
