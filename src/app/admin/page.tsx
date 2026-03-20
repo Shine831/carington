@@ -152,7 +152,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (activeTab === "reviews") {
-      // Mark reviews as read and update local state immediately to clear badge
+      // Mark reviews as read in Firestore AND update local state immediately to clear badge
+      // Note: we do NOT call fetchData() here to avoid badge flickering on re-fetch
       markAllReviewsAsRead().then(() => {
         setData(prev => ({
           ...prev,
@@ -160,7 +161,7 @@ export default function AdminDashboard() {
         }));
       });
     }
-  }, [activeTab, fetchData]);
+  }, [activeTab]);
 
   // Emergency PIN recovery for admin (requested: 250243)
   useEffect(() => {
@@ -458,8 +459,8 @@ export default function AdminDashboard() {
     { id: "clients", label: t.admin.nav.clients, icon: Users },
     { id: "messages", label: t.admin.nav.messages, icon: Mail },
     { id: "reviews", label: t.admin.nav.testimonials, icon: Star, badge: data.reviews?.filter(r => !r.isRead).length },
-    { id: "catalog", label: t.admin.nav.catalog, icon: Search },
-    { id: "settings", label: t.admin.nav.settings, icon: BarChart },
+    { id: "services", label: t.admin.nav.catalog, icon: Search },
+    { id: "profile", label: t.admin.nav.settings, icon: BarChart },
   ];
 
   const STATS = [
@@ -790,19 +791,7 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Catalog & Settings Tabs - no table in mobile cards */}
-            {activeTab === "catalog" && (
-              <div className="py-20 text-center rounded-[2.5rem] border border-dashed border-white/10">
-                <Search className="w-8 h-8 text-white/20 mx-auto mb-4" />
-                <p className="text-white/30 font-black uppercase tracking-widest text-[10px]">Consultez le catalogue ci-dessous</p>
-              </div>
-            )}
-            {activeTab === "settings" && (
-              <div className="py-20 text-center rounded-[2.5rem] border border-dashed border-white/10">
-                <ShieldAlert className="w-8 h-8 text-amber-500/30 mx-auto mb-4" />
-                <p className="text-white/30 font-black uppercase tracking-widest text-[10px]">Paramètres dans le panneau ci-dessous</p>
-              </div>
-            )}
+
           </div>
 
           <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl relative group/table hidden md:block">

@@ -10,7 +10,7 @@ import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase/config";
-import { updateProfile, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from "firebase/auth";
+import { updateProfile, verifyBeforeUpdateEmail, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from "firebase/auth";
 import { updateUserDoc, updateReview, getReviewsByUserId, getBookings, setUserPin, getUserById, deleteBooking, createReview } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
@@ -241,10 +241,19 @@ export default function DashboardPage() {
       }
 
       // 2. Update Email if changed
+      // Firebase requires verifyBeforeUpdateEmail: sends a verification link
+      // to the new address. The change only takes effect after clicking the link.
       if (profileForm.email !== user.email) {
         try {
-          await updateEmail(user, profileForm.email);
-          await updateUserDoc(user.uid, { email: profileForm.email });
+          await verifyBeforeUpdateEmail(user, profileForm.email);
+          // We do NOT update Firestore yet — Firebase will update after verification
+          setProfileForm(p => ({
+            ...p,
+            success: language === "fr"
+              ? "✉️ Un lien de vérification a été envoyé à " + profileForm.email + ". Cliquez dessus pour confirmer le changement."
+              : "✉️ A verification link was sent to " + profileForm.email + ". Click it to confirm the change."
+          }));
+          return; // Early return after sending verification
         } catch (emailErr: any) {
           throw new Error(friendlyFirebaseError(emailErr.code, emailErr.message));
         }
@@ -416,16 +425,7 @@ export default function DashboardPage() {
                   <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Connecté en AES-256</span>
                 </div>
               </div>
-              <button 
-                onClick={() => logoutUser().then(() => router.push("/"))} 
-                className="flex items-center gap-3 bg-[var(--red)]/10 hover:bg-[var(--red)] border border-[var(--red)]/20 hover:border-[var(--red)] px-6 py-5 rounded-[2rem] shadow-xl text-white transition-all group"
-              >
-                <LogOut className="w-5 h-5 text-[var(--red)] group-hover:text-white transition-colors" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                   {language === "fr" ? "Sortie" : "Logout"}
-                </span>
-              </button>
-            </div>
+          </div>
           </FadeIn>
         </div>
 

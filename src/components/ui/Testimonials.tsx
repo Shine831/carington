@@ -40,8 +40,9 @@ export function TestimonialsSection({ language }: { language: string }) {
   useEffect(() => {
     getReviews()
       .then((data) => {
-        const premiumReviews = data.filter((r: any) => r.rating >= 4);
-        setReviews(premiumReviews.length >= 3 ? premiumReviews : MOCK_REVIEWS);
+        // Show any real reviews (>=3 stars) if they exist, else show mocks
+        const realReviews = data.filter((r: any) => r.rating >= 3);
+        setReviews(realReviews.length > 0 ? realReviews : MOCK_REVIEWS);
       })
       .catch(() => setReviews(MOCK_REVIEWS))
       .finally(() => setLoading(false));
