@@ -6,7 +6,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import PageTransition from "@/components/layout/PageTransition";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
-import { SmoothScroll } from "@/components/ui/SmoothScroll";
+
 
 const APP_URL = "https://ejarnauld-soft.vercel.app";
 
@@ -68,7 +68,6 @@ export default function RootLayout({
         <LanguageProvider>
           <div className="noise-overlay" />
           <CustomCursor />
-          <SmoothScroll>
             <Navbar />
             <FloatingWhatsApp />
             <PageTransition>
@@ -77,7 +76,6 @@ export default function RootLayout({
               </main>
             </PageTransition>
             <Footer />
-          </SmoothScroll>
         </LanguageProvider>
       </body>
     </html>
