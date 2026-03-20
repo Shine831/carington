@@ -34,8 +34,8 @@ export default function TermsPage() {
                 <h2 className="text-xl font-black text-[var(--charcoal)] uppercase tracking-tight mb-4">{language === "fr" ? "1. Services IT" : "1. IT Services"}</h2>
                 <p className="text-slate-500 leading-relaxed">
                   {language === "fr" 
-                    ? "Les prestations de Carrington sont régies par des contrats de service spécifiques. Toute commande implique l'acceptation de nos protocoles de sécurité." 
-                    : "Carrington's services are governed by specific service contracts. Any order implies acceptance of our security protocols."}
+                    ? "Les prestations de Carington sont régies par des contrats de service spécifiques. Toute commande implique l'acceptation de nos protocoles de sécurité." 
+                    : "Carington's services are governed by specific service contracts. Any order implies acceptance of our security protocols."}
                 </p>
               </section>
 
@@ -43,8 +43,8 @@ export default function TermsPage() {
                 <h2 className="text-xl font-black text-[var(--charcoal)] uppercase tracking-tight mb-4">{language === "fr" ? "2. Responsabilité" : "2. Liability"}</h2>
                 <p className="text-slate-500 leading-relaxed">
                   {language === "fr" 
-                    ? "Carrington s'engage à une obligation de moyens renforcée. La sécurité de l'infrastructure client reste une co-responsabilité." 
-                    : "Carrington commits to an enhanced best-effort obligation. Client infrastructure security remains a shared responsibility."}
+                    ? "Carington s'engage à une obligation de moyens renforcée. La sécurité de l'infrastructure client reste une co-responsabilité." 
+                    : "Carington commits to an enhanced best-effort obligation. Client infrastructure security remains a shared responsibility."}
                 </p>
               </section>
 
