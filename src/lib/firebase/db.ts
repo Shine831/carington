@@ -141,6 +141,37 @@ export const updateUserDoc = async (uid: string, data: Partial<{ displayName: st
   await updateDoc(doc(db, "users", uid), { ...data, updatedAt: serverTimestamp() });
 };
 
+/**
+ * Propagates profile changes (name, email) to ALL related Firestore documents.
+ * Call this after updating Firebase Auth and the users/ doc.
+ */
+export const propagateProfileUpdate = async (
+  uid: string,
+  updates: { displayName?: string; email?: string }
+) => {
+  const promises: Promise<void>[] = [];
+
+  // Propagate displayName to reviews (authorName field)
+  if (updates.displayName) {
+    const reviewsQ = query(collection(db, "reviews"), where("userId", "==", uid));
+    const reviewsSnap = await getDocs(reviewsQ);
+    reviewsSnap.docs.forEach(d =>
+      promises.push(updateDoc(doc(db, "reviews", d.id), { authorName: updates.displayName }))
+    );
+  }
+
+  // Propagate email to bookings (email field)
+  if (updates.email) {
+    const bookingsQ = query(collection(db, "bookings"), where("userId", "==", uid));
+    const bookingsSnap = await getDocs(bookingsQ);
+    bookingsSnap.docs.forEach(d =>
+      promises.push(updateDoc(doc(db, "bookings", d.id), { email: updates.email }))
+    );
+  }
+
+  await Promise.all(promises);
+};
+
 export const deleteUserDoc = async (uid: string) => {
   try {
     await deleteDoc(doc(db, "users", uid));

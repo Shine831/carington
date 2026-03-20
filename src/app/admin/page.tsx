@@ -137,14 +137,43 @@ export default function AdminDashboard() {
     if (role !== "ADMIN") return;
     setLoading(true);
     try {
-      const [reqs, clis, srvs, msgs, revs] = await Promise.all([ getBookings(), getUsers(), getServices(), getMessages(), getReviews() ]);
-      setData({ requests: reqs, clients: clis, services: srvs, messages: msgs, reviews: revs });
+      const [reqs, clis, srvs, msgs, revs] = await Promise.all([
+        getBookings(), getUsers(), getServices(), getMessages(), getReviews()
+      ]);
+
+      // Build a quick lookup map: uid → fresh user data (email, name)
+      const userMap: Record<string, { email?: string; displayName?: string }> = {};
+      clis.forEach((u: any) => {
+        userMap[u.id] = { email: u.email, displayName: u.displayName };
+      });
+
+      // Enrich bookings with latest email/name from users collection
+      const enrichedReqs = reqs.map((req: any) => {
+        const fresh = req.userId ? userMap[req.userId] : null;
+        return {
+          ...req,
+          email: fresh?.email || req.email,
+          entity: fresh?.displayName || req.entity,
+        };
+      });
+
+      // Enrich reviews with latest authorName
+      const enrichedRevs = revs.map((rev: any) => {
+        const fresh = rev.userId ? userMap[rev.userId] : null;
+        return {
+          ...rev,
+          authorName: fresh?.displayName || rev.authorName,
+        };
+      });
+
+      setData({ requests: enrichedReqs, clients: clis, services: srvs, messages: msgs, reviews: enrichedRevs });
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   }, [role]);
+
 
   useEffect(() => {
     fetchData();

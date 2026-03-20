@@ -234,26 +234,32 @@ export default function DashboardPage() {
     setProfileForm(p => ({ ...p, error: "", success: "" }));
 
     try {
+      const profileUpdates: { displayName?: string; email?: string } = {};
+
       // 1. Update Display Name if changed
       if (profileForm.name !== user.displayName) {
         await updateProfile(user, { displayName: profileForm.name });
         await updateUserDoc(user.uid, { displayName: profileForm.name });
+        profileUpdates.displayName = profileForm.name;
       }
 
-      // 2. Update Email if changed
-      // Firebase requires verifyBeforeUpdateEmail: sends a verification link
-      // to the new address. The change only takes effect after clicking the link.
+      // 2. Propagate changes to all related Firestore documents (reviews, bookings)
+      if (Object.keys(profileUpdates).length > 0) {
+        const { propagateProfileUpdate } = await import("@/lib/firebase/db");
+        await propagateProfileUpdate(user.uid, profileUpdates);
+      }
+
+      // 3. Update Email if changed
       if (profileForm.email !== user.email) {
         try {
           await verifyBeforeUpdateEmail(user, profileForm.email);
-          // We do NOT update Firestore yet — Firebase will update after verification
           setProfileForm(p => ({
             ...p,
             success: language === "fr"
               ? "✉️ Un lien de vérification a été envoyé à " + profileForm.email + ". Cliquez dessus pour confirmer le changement."
               : "✉️ A verification link was sent to " + profileForm.email + ". Click it to confirm the change."
           }));
-          return; // Early return after sending verification
+          return;
         } catch (emailErr: any) {
           throw new Error(friendlyFirebaseError(emailErr.code, emailErr.message));
         }
@@ -266,6 +272,7 @@ export default function DashboardPage() {
       setIsUpdatingProfile(false);
     }
   };
+
 
   const handleDeleteUserReview = async (id: string) => {
     if (confirm(language === "fr" ? "Supprimer ce témoignage ?" : "Delete this review?")) {
