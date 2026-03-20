@@ -1,84 +1,88 @@
 <div align="center">
 
-# Carington — E-Jarnauld Soft
+# E-Jarnauld Soft — Plateforme B2B & Cybersécurité
 
-**Plateforme de gestion IT & Cybersécurité de pointe pour le marché camerounais**
+**Infrastructure web de pointe pour le marché IT, Infogérance et Cybersécurité au Cameroun.**
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![Firebase](https://img.shields.io/badge/Firebase-12-orange?logo=firebase)](https://firebase.google.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://vercel.com)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-success?logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
-[**→ Voir la démo en direct**](https://carington.vercel.app)
+[**→ Accéder à la plateforme**](https://ejarnauld-soft.vercel.app)
 
 </div>
 
 ---
 
-## À propos du projet
+## 🏢 À propos du projet
 
-**Carington** est l'interface web officielle d'**E-Jarnauld Soft**, entreprise spécialisée en infrastructures IT, cybersécurité et infogérance basée à Douala, Cameroun.
+La plateforme **E-Jarnauld Soft** a été architecturée de zéro pour répondre aux exigences drastiques de notre cabinet IT. Plus qu'une simple vitrine, c'est un véritable **portail client et CRM B2B** conçu pour la conversion, la gestion de projet et l'assistance technique continue.
 
-La plateforme se distingue par :
-- Un **site vitrine** bilingue (FR/EN) conçu pour la conversion.
-- Un **dashboard client** hyper-sécurisé par PIN pour le suivi de projet et le recueil de témoignages.
-- Un **panneau d'administration CRM** ultra-performant pour gérer en temps réel les requêtes, messages, KPI, catalogue et modération.
-
-Ce projet incarne les tendances **UI/UX 2026** (Mobile-first, zérolag/jank, fluidité absolue via Framer Motion & Lenis) encapsulées dans une architecture performante SSR sur Vercel Edge Networks.
+Développée en interne par notre équipe d’ingénierie, cette solution met l'accent sur trois piliers :
+1. **La Sécurité Absolue (ISO 27001 compliant)** : Chiffrement côté serveur, règles Firestore strictes, protections anti-bruteforce et hachage SHA-256.
+2. **La Performance Brute (Zéro-Jank)** : Optimisée pour les réseaux africains et mondiaux avec une architecture Server-Side Rendering (SSR) sur Vercel Edge.
+3. **L'Expérience Utilisateur (UI/UX Premium)** : Identité visuelle "Rouge & Blanc" corporative, animations fluides (Framer Motion) et parcours client sans friction.
 
 ---
 
-## 🛠 Stack Technique
+## 🛠 Architecture & Stack Technique
 
-- **Framework Core** : Next.js 16 (App Router)
-- **Langage Moteur** : TypeScript 5
-- **Design System** : Tailwind CSS v4 + Variables CSS (Thème Premium Rouge/Blanc)
-- **Motion & Fluency** : Framer Motion 12 + Lenis Smooth Scroll
+Notre stack a été sélectionnée pour sa résilience et son évolutivité à long terme :
+
+- **Core & Routing** : Next.js 16 (App Router)
+- **Typage Statique** : TypeScript 5 (Strict Mode)
+- **Design System** : Tailwind CSS v4 + Variables CSS natives
+- **Micro-Interactions** : Framer Motion 12
 - **Backend as a Service** : Firebase 12 (Authentication, Firestore, Security Rules)
-- **Internationalisation** : Module d'auto-traduction Node.js embarqué
-- **Déploiement** : Vercel
+- **Notification Transactionnelle** : Resend (Next.js Server Actions)
+- **PWA (Progressive Web App)** : Manifest natif pour installation desktop/mobile
+- **Internationalisation (i18n)** : Script interne Node.js de traduction automatique (FR/EN)
 
 ---
 
-## 🚀 Fonctionnalités Clés
+## 🚀 Fonctionnalités Principales
 
-### 🌟 Expérience Publique (Front-Office)
-- **Zéro-Jank UI** : Accélération matérielle, translations fluides et micro-interactions avancées.
-- **Thème Premium** : Identité visuelle percutante Rouge/Blanc inspirée des leaders de la tech mondiale.
-- **Réservation Stratégique** : Tunnel de devis sécurisé avec validation (Zod).
-- **Internationalisation Dynamique** : Traduction automatique maintenue en cache pour des performances optimales.
+### 🌟 Espace Public & Acquisition
+- **Design Mobile-First** : Expérience fluide garantie sur smartphone, tablette et bureau.
+- **Formulaires Hautes Performances** : Réservation de services (Audit, Cloud, VoIP) et contact avec validation en temps réel.
+- **PWA Ready** : Le site peut être installé directement sur l'écran d'accueil comme une application native iOS/Android.
 
-### 🔐 Architecture de Sécurité (Accès Dashboards)
-- **Double Authentification Métier** : Combo Firebase Auth + Code PIN interne (chiffrement robuste SHA-256).
-- **Contrôle Granulaire** : Limitation anti-bruteforce (1 modif PIN max / 24h).
-- **Règles Firestore Strictes** : Isolation absolue des données clients (ISO 27001 compliant).
+### 🔐 Architecture de Sécurité (Dashboards)
+- **Double Facteur de Validation** : Firebase Auth (Email/Mot de passe) couplé à un PIN d'accès métier haché.
+- **Sécurité Anti-Bruteforce** : Gel des comptes après 5 tentatives de PIN échouées (quarantaine de 15 minutes).
+- **Session Auto-Timeout** : Déconnexion automatique de l'espace administrateur après 30 minutes d'inactivité.
+- **Intégrité Référentielle** : Suppression en cascade stricte (lorsqu'un compte est fermé, 100% des données associées s'évaporent de nos serveurs, RGPD compliant).
 
-### 👥 Espace Client
-- Suivi en temps réel des avancées de services (Statuts : Pending, Active, Completed).
-- Soumission d'Avis & Expériences (Intégration instantanée).
-- Profil et paramètres sécurisés.
+### 👥 Espace Client (B2B)
+- Suivi en temps réel de l'état des missions (En attente, Actif, Terminé).
+- Soumission d'Avis & Témoignages (intégration instantanée après approbation).
+- Mise à jour cohérente du profil (Toute modification est répercutée dynamiquement chez l'administrateur).
 
-### ⚙️ Espace Administration
-- Métriques KPI en temps réel.
-- Vue synoptique de toutes les demandes et des messages entrants.
-- Mécanisme d'annotation interne pour collaborer sur le compte client.
-- Modération intégrale des services et des reviews.
+### ⚙️ CRM E-Jarnauld (Espace Administrateur)
+- Vues en temps réel des "Leads" et des "Tickets".
+- Modification dynamique du catalogue de services et validation des témoignages clients.
+- Modération intégrale de la base de données.
+- **Notifications Email (Resend)** : Chaque nouveau devis déclenche une Server Action sécurisée prévenant instantanément l'équipe IT.
 
 ---
 
-## 🏗 Installation Locale
+## 🏗 Déploiement & Installation Locale
+
+Le code source a été conteneurisé et structuré de manière rigoureuse. Voici la procédure d'initialisation pour tout ingénieur rejoignant le projet :
 
 ### Prérequis
 - **Node.js** ≥ 18
-- Projet **Firebase** configuré (Authentication par Email/Mot de passe & base de données Firestore activée).
+- Projet **Firebase** configuré (Authentication & Firestore)
+- Clé d'API **Resend** (pour les emails transactionnels)
 
-### 1. Cloner le Projet
+### 1. Cloner le Dépôt
 
 ```bash
-git clone https://github.com/votre-username/carington.git
-cd carington
+git clone https://github.com/votre-username/ejarnauld-soft.git
+cd ejarnauld-soft
 ```
 
 ### 2. Dépendances
@@ -88,28 +92,32 @@ npm install
 ```
 
 ### 3. Variables d'Environnement
-Créez un fichier `.env.local` à la racine :
+Créez un fichier `.env.local` à la racine pour lier le front-end au backend serverless :
 
 ```env
+# Firebase Configuration
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-NEXT_PUBLIC_ADMIN_EMAIL=admin@votredomaine.com
+
+# Emailing System (Resend API)
+RESEND_API_KEY=re_123456789_xxxxxxxxxxx
+ADMIN_EMAIL=admin@e-jarnauld.com
 ```
 
 ### 4. Élévation de Privilèges Administrateur
-Dans Firestore, dans la collection `users`, le document correspondant à l'e-mail administrateur doit spécifier :
+La première configuration admin se fait dans Firestore. Dans la collection `users`, le document correspondant à l'e-mail administrateur doit impérativement spécifier :
 ```json
 {
   "role": "ADMIN",
-  "pin": "<Hash SHA-256 de votre PIN à 6 chiffres>"
+  "pin": "<Hash SHA-256 du code PIN à 6 chiffres>"
 }
 ```
 
-### 5. Démarrer l'environnement
+### 5. Lancement Local
 ```bash
 npm run dev
 ```
@@ -117,17 +125,21 @@ Rendez-vous sur [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 📦 Scripts Disponibles
+## 📦 Pipeline & Scripts
 
-- `npm run dev` : Démarrage du serveur local.
-- `npm run build` : Construction optimisée (inclut la traduction auto).
-- `npm run lint` : Analyse de conformité du code ESLint.
-- `npm run translate` : Exécute le module interne pour générer l'anglais depuis les chaînes françaises via l'API Google Translate.
+Notre pipeline CI/CD intègre un moteur de traduction exclusif :
+
+- `npm run dev` : Environnement de développement chaud.
+- `npm run build` : Construction optimisée Vercel (déclenche la vérification et l'hybridation SSR/SSG).
+- `npm run lint` : Contrôle qualité ESLint/TypeScript.
+- `npm run translate` : Exécute le module interne pour générer la version anglaise (répertoire JSON) depuis les chaînes françaises.
 
 ---
 
-## 🛡 Focus Sécurité — Firestore Rules
-Un fichier `firestore.rules` est inclus dans le projet. Pour garantir l'intégrité des opérations (les clients ne lisent que leurs données, les reviews sont lisibles, tout le reste est côté admin), veillez à exécuter le déploiement exclusif :
+## 🛡 Régulation Firestore — Security Rules
+
+Le déploiement des règles d'accès à la base de données est la dernière étape critique. Un fichier `firestore.rules` est inclus dans le répertoire racine.
+Pour déployer la stratégie de sécurité sur le cloud :
 ```bash
 npx firebase deploy --only firestore:rules
 ```
@@ -135,5 +147,6 @@ npx firebase deploy --only firestore:rules
 ---
 
 <div align="center">
-  Développé et architecturé avec exigence par l'équipe <strong>E-Jarnauld Soft</strong>.
+  Conçu, développé et maintenu par <strong>l'Équipe d'Ingénierie E-Jarnauld Soft</strong>.<br>
+  <em>L'Excellence Numérique au service de votre croissance.</em>
 </div>
