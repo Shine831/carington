@@ -391,394 +391,439 @@ export const translations = {
   },
   en: {
     nav: {
-      home: "Home",
-      about: "About",
-      services: "Services",
-      contact: "Contact",
-      account: "My Account",
-      cta: "Get a Quote"
+        home: "Welcome",
+        about: "About",
+        services: "Services",
+        contact: "Contact",
+        account: "My Account",
+        cta: "Request a Quote"
     },
     hero: {
-      tag: "IT Operations · Douala",
-      badge: "Secured Systems",
-      location: "Douala, Cameroon",
-      title_part1: "Architecture of",
-      title_part2: "Trust.",
-      title_v2: "Trusted IT Architecture.",
-      desc: "E-JARNALUD SOFT merges technical expertise with strategic vision to build Cameroon's most resilient digital infrastructures.",
-      search_placeholder: "Ex: IT Cabling, Management...",
-      btn_discover: "Discover",
-      btn_audit: "Start Audit",
-      btn_audit_main: "Audit & Free Quote",
-      btn_audit_sub: "Guaranteed response < 2h",
-      btn_explore: "Explore Expertise",
-      stats: "Rated 4.9/5 by our partners"
+        tag: "IT Operations · Douala",
+        badge: "Secure Systems",
+        location: "Douala, Cameroon",
+        title_part1: "Architecture of",
+        title_part2: "Trust.",
+        title_v2: "Trusted Computing Architecture.",
+        desc: "E-JARNALUD SOFT merges technical expertise and strategic vision to build Cameroon's most resilient digital infrastructures.",
+        search_placeholder: "Ex: IT cabling, Maintenance...",
+        btn_discover: "Discover",
+        btn_audit: "Launch an Audit",
+        btn_audit_main: "Free Audit & Quote",
+        btn_audit_sub: "Guaranteed response in < 2 hours",
+        btn_explore: "Explore Expertise",
+        stats: "Rated 4.9/5 by our partners"
     },
     services: {
-      tag: "Expertise",
-      explore: "Explore",
-      title: "Leading Solutions",
-      cyber: {
-        tag: "Security",
-        title: "Cybersecurity Audit",
-        desc: "Complete verification of your digital defenses and critical penetration tests."
-      },
-      infra: {
-        tag: "Infrastructure",
-        title: "Network & Cabling",
-        desc: "Structured cabling and VPN."
-      },
-      it: {
-        tag: "Management",
-        title: "IT Outsourcing",
-        desc: "Server park management."
-      },
-      cloud: {
-        tag: "Cloud",
-        title: "Cloud Solutions",
-        desc: "Azure/AWS Migration."
-      }
+        tag: "Expertise",
+        explore: "Explore",
+        title: "Cutting-Edge Solutions",
+        cyber: {
+            tag: "Security",
+            title: "Cybersecurity Audit",
+            desc: "Complete verification of your digital defenses and critical penetration tests."
+        },
+        infra: {
+            tag: "Infrastructure",
+            title: "Network & Cabling",
+            desc: "Structured cabling and VPN."
+        },
+        it: {
+            tag: "Maintenance",
+            title: "IT outsourcing",
+            desc: "Management of server parks."
+        },
+        cloud: {
+            tag: "Cloud",
+            title: "Cloud Solutions",
+            desc: "Azure/AWS migration."
+        }
     },
     why: {
-      tag: "Engagement 2026",
-      title_part1: "Expertise without",
-      title_part2: "compromise.",
-      title: "Elite Solutions.",
-      desc: "Because technology should not be a brake, but a growth engine. We are committed to propelling your activities with incomparable standards.",
-      items: {
-        certs: "ISO 27001 Certifications.",
-        certs_desc: "Certified engineers and reliable deployments, complying with international IT best practices.",
-        speed: "Intervention < 2 hours.",
-        speed_desc: "Dedicated client support and fast technical intervention under 2h to ensure service continuity.",
-        sov: "Transparent Pricing.",
-        sov_desc: "No financial surprises. Our offers are clear, custom-studied, and justified from the audit.",
-        int: "End-to-end solutions."
-      },
-      support_title: "Support 2026",
-      support_desc: "An expert technical team available at any time to optimize your information systems.",
-      team: "Douala Core Team",
-      card_title: "Certified Trust",
-      card_desc: "Every architecture undergoes a multi-layer resilience audit."
+        tag: "Commitment 2026",
+        title_part1: "Expertise without",
+        title_part2: "compromise.",
+        title: "Solutions of excellence.",
+        desc: "Because technology should not be a brake, but an engine of growth. We are committed to propelling your activities with incomparable standards.",
+        items: {
+            certs: "ISO 27001 certifications.",
+            certs_desc: "Certified engineers and reliable deployments, consistent with international IT best practices.",
+            speed: "Intervention < 2 hours.",
+            speed_desc: "Dedicated customer support and rapid technical intervention within 2 hours to ensure continuity of service.",
+            sov: "Data in Cameroon.",
+            sov_desc: "No bad financial surprises. Our offers are clear, tailor-made and justified during the audit.",
+            int: "End-to-end solutions."
+        },
+        support_title: "Bracket 2026",
+        support_desc: "An expert technical team available at any time to optimize your information systems.",
+        team: "Douala Core Team",
+        card_title: "Trust Certified",
+        card_desc: "Each architecture is subject to a multi-layer resilience audit."
     },
     faq: {
-      tag: "Expertise & Clarity",
-      title: "FAQ.",
-      desc: "We clarify technical challenges to help you make decisions with complete peace of mind.",
-      question_placeholder: "Need a specific answer?",
-      contact_eng: "Contact an engineer"
+        tag: "Expertise & Clarity",
+        title: "Frequently Asked Questions.",
+        desc: "We lift the veil on the technical issues to allow you to decide with complete peace of mind.",
+        question_placeholder: "Need a specific answer?",
+        contact_eng: "Contact an engineer"
     },
     cta: {
-      tag: "Free Audit",
-      title: "Ready to secure your digital future?",
-      desc: "Our engineers respond within 2 hours. Free IT audit with no obligation.",
-      btn_audit: "Request a Quote",
-      btn_contact: "Contact Us"
+        tag: "Audit Offered",
+        title: "Ready to secure your digital future?",
+        desc: "Our engineers respond within 2 hours. Free, no-obligation IT audit.",
+        btn_audit: "Request a Quote",
+        btn_contact: "Contact us"
     },
     about: {
-      tag: "Precision Engineering",
-      since: "Since 2014",
-      title_part1: "Technical excellence",
-      title_part2: "at the service of your infrastructure.",
-      desc: "Carington is a pan-African leader specializing in critical IT infrastructure solutions, cybersecurity, and smart networks. We transform complex challenges into technological opportunities.",
-      quote: "Innovation is not just technological, it's a matter of vision and integrity.",
-      quote_author: "Founder",
-      commit_tag: "Our Commitments",
-      commit_title: "Pillars of Our Expertise",
-      pillars: [
-        { title: "Maximum Security", desc: "Advanced protection protocols for your most valuable digital assets." },
-        { title: "Certified Excellence", desc: "A team of engineers graduated from the best international institutions." },
-        { title: "Continuous Innovation", desc: "Constant tech watch to anticipate tomorrow's threats." },
-        { title: "24/7 Support", desc: "Total availability to ensure the continuity of your critical operations." }
-      ],
-      promise_tag: "Our Promise",
-      promise_title: "A 360° vision of your security.",
-      promises: [
-        "Complete and transparent vulnerability audit",
-        "Agile deployment and deadline compliance",
-        "Training your teams in best practices",
-        "Optimization of infrastructure costs"
-      ],
-      stats: {
-        clients: "Institutional Clients",
-        years: "Years of Experience",
-        sat: "Satisfaction Rate"
-      },
-      view_services: "View Services",
-      talk_expert: "Talk to an expert"
+        tag: "Precision Engineering",
+        since: "Since 2014",
+        title_part1: "Technical excellence",
+        title_part2: "serving your infrastructure.",
+        desc: "Carington is a pan-African leader specializing in critical IT infrastructure, cybersecurity and smart grid solutions. We transform complex challenges into technological opportunities.",
+        quote: "Innovation is not just technological, it is a question of vision and integrity.",
+        quote_author: "Founder",
+        commit_tag: "Our Commitments",
+        commit_title: "The Pillars of our Expertise",
+        pillars: {
+            0: {
+                title: "Maximum Security",
+                desc: "Advanced protection protocols for your most valuable digital assets."
+            },
+            1: {
+                title: "Certified Excellence",
+                desc: "A team of engineers graduated from the best international institutions."
+            },
+            2: {
+                title: "Continuous Innovation",
+                desc: "Constant technological monitoring to anticipate tomorrow's threats."
+            },
+            3: {
+                title: "24/7 support",
+                desc: "Total availability to guarantee the continuity of your critical operations."
+            }
+        },
+        promise_tag: "Our Promise",
+        promise_title: "A 360° view of your security.",
+        promises: {
+            0: "Comprehensive and transparent vulnerability audit",
+            1: "Agile deployment and meeting deadlines",
+            2: "Training your teams in best practices",
+            3: "Optimization of infrastructure costs"
+        },
+        stats: {
+            clients: "Institutional Clients",
+            years: "Years of Experience",
+            sat: "Satisfaction Rate"
+        },
+        view_services: "See Services",
+        talk_expert: "Talk to an expert"
     },
     services_page: {
-      tag: "Solution Catalog",
-      title: "Services designed for performance.",
-      desc: "Discover our full range of technical interventions, from advanced cybersecurity to telecom network deployment.",
-      search_placeholder: "Search for an expertise...",
-      solutions_available: "solutions available",
-      cta_card: "Request Quote",
-      not_found: "Expertise not found",
-      not_found_desc: "No service matches your search. However, our engineers can provide custom solutions.",
-      show_all: "Show all catalog",
-      updating: "The catalog is currently being updated.",
-      items: {
-        it: { title: "IT Management", desc: "Preventive maintenance, helpdesk, critical updates and software licenses." },
-        network_cable: { title: "Structured Cabling", desc: "Cat6A cabling, fiber optics, server racks, and link certification." },
-        voip: { title: "Enterprise Telephony", desc: "IP PBX, queues, recordings and CRM integration." },
-        network: { title: "IT Networks", desc: "Router deployment, switches, enterprise Wi-Fi, and secure VPNs." },
-        cyber: { title: "IT Security", desc: "Pen-Testing, cloud/hybrid security, and industrial firewalls." },
-        video: { title: "Video Surveillance & Access Control", desc: "Smart HD cameras, biometric access, and cloud backup." },
-        web: { title: "Web Services", desc: "Custom platforms (Next.js, React), hosting, and domain names." },
-        maintenance: { title: "Maintenance & Training", desc: "Urgent curative interventions and specialized IT / cybersecurity training." }
-      }
+        tag: "Solutions Catalog",
+        title: "Services designed for performance.",
+        desc: "Discover our full range of technical interventions, from advanced cybersecurity to the deployment of telecom networks.",
+        search_placeholder: "Seek expertise...",
+        solutions_available: "solutions available",
+        cta_card: "Request Quote",
+        not_found: "Expertise not found",
+        not_found_desc: "No services match your search. Our engineers can nevertheless produce tailor-made products.",
+        show_all: "Show entire catalog",
+        updating: "The catalog is currently being updated.",
+        items: {
+            it: {
+                title: "Outsourcing",
+                desc: "Preventive maintenance, helpdesk, critical updates and software licenses."
+            },
+            network_cable: {
+                title: "Computer Cabling",
+                desc: "Cat6A cabling, fiber optics, patch bays and link certification."
+            },
+            voip: {
+                title: "Business telephony",
+                desc: "IP standards, queues, registrations and CRM integration."
+            },
+            network: {
+                title: "Computer Networks",
+                desc: "Deployment of routers, switches, corporate Wi-Fi and secure VPN."
+            },
+            cyber: {
+                title: "Computer Security",
+                desc: "Pen-Testing, cloud/hybrid security and industrial firewalls."
+            },
+            video: {
+                title: "Video surveillance & Access control",
+                desc: "Smart HD cameras, biometric access and cloud backup."
+            },
+            web: {
+                title: "Web Services",
+                desc: "Creation of tailor-made platforms (Next.js, React), hosting and domain names."
+            },
+            maintenance: {
+                title: "Maintenance & Training",
+                desc: "Urgent curative interventions and specialized IT training for or against the cyber threat."
+            }
+        }
     },
     contact: {
-      tag: "Support & Partnership",
-      badge: "Dedicated Team",
-      title_part1: "Let's talk about your",
-      title_part2: "Future.",
-      desc: "Our experts are based in Akwa, Douala. Average response: 1h45min.",
-      info_title: "Contact Info",
-      form_title: "Send a message",
-      items: {
-        hq: "Headquarters",
-        hq_val: "TechHub Building, Akwa\nDouala, Cameroon",
-        std: "Standard",
-        urgency: "24/7 Urgency",
-        email: "Email",
-        hours: "Working Hours",
-        hours_val: "Mon-Fri 08:00 – 18:00\nSaturday 09:00 – 13:00"
-      },
-      form: {
-        name: "Name / Company",
-        email: "Professional Email",
-        subject: "Subject of your request",
-        subjects: {
-          quote: "Request a Quote",
-          support: "Technical Support",
-          audit: "IT/Cyber Audit Request",
-          other: "Other"
+        tag: "Support & Partnership",
+        badge: "Dedicated Team",
+        title_part1: "Let's talk about your",
+        title_part2: "Future.",
+        desc: "Our experts are based in Akwa, Douala. Average response: 1h45min.",
+        info_title: "Contact details",
+        form_title: "Send a message",
+        items: {
+            hq: "Head Office",
+            hq_val: "TechHub Building, Akwa \nDouala, Cameroon",
+            std: "Standard",
+            urgency: "Emergency 24/7",
+            email: "E-mail",
+            hours: "Schedules",
+            hours_val: "Mon-Fri 8:00 a.m. – 6:00 p.m. \nSaturday 9:00 a.m. – 1:00 p.m."
         },
-        message: "Message (Describe your need...)",
-        send: "Send message",
-        secure: "Confidential data · AES-256",
-        sending: "Sending...",
-        success_title: "Message sent successfully!",
-        success_desc: "Our team will get back to you shortly.",
-        new_msg: "New message",
-        errors: {
-          name_req: "Name required.",
-          email_inv: "Invalid email.",
-          msg_short: "Message too short.",
-          network: "Network error. Unable to establish a secure connection.",
-          denied: "Access denied. Please check your session or refresh.",
-          overload: "Service is temporarily overloaded. Please wait a moment.",
-          quota: "Request limit reached. Please wait before retrying."
-        }
-      },
-      hq_val: "NDOPASSI Market, Douala",
-      phone_val: "+237 654 74 93 57",
-      tech_val: "+237 697 16 72 59",
-      email_val: "cust_care@ejs-cm.com"
+        form: {
+            name: "Name / Company",
+            email: "Professional Email",
+            subject: "Subject of your request",
+            subjects: {
+                quote: "Quote Request",
+                support: "Technical Support",
+                audit: "IT/Cyber ​​Audit Request",
+                other: "Other"
+            },
+            message: "Message (Describe your need...)",
+            send: "Send message",
+            secure: "Confidential data · AES-256",
+            sending: "Sending...",
+            success_title: "Message sent successfully!",
+            success_desc: "Our team will respond to you as soon as possible.",
+            new_msg: "New message",
+            errors: {
+                name_req: "Name required.",
+                email_inv: "Invalid email.",
+                msg_short: "Message too short.",
+                network: "Network error. Unable to establish a secure connection.",
+                denied: "Access denied. Please check your session or refresh the page.",
+                overload: "The service is temporarily overloaded. Wait a few moments.",
+                quota: "Limit reached. Please wait before trying again."
+            }
+        },
+        hq_val: "NDOPASSI Market, Douala",
+        phone_val: "+237 654 74 93 57",
+        tech_val: "+237 697 16 72 59",
+        email_val: "cust_care@ejs-cm.com"
     },
     booking: {
-      tag: "AES-256 Encrypted Portal",
-      title_part1: "Plan your",
-      title_part2: "Resilience.",
-      desc: "Our engineers analyze your infrastructure and propose a strategy within 12h.",
-      whatsapp: "Direct WhatsApp",
-      new_request: "New Request",
-      ssl: "SSL Active",
-      step1_title: "Client Profile",
-      step1_type: "Structure Type",
-      step1_entity: "Entity / Requester",
-      step1_email: "Professional Email",
-      step1_phone: "Contact Phone",
-      step2_title: "Technical Specifications",
-      step2_service: "Main Service",
-      step2_budget: "Estimated Budget",
-      step2_time: "Desired Timeline",
-      step2_desc: "Detailed description of your need",
-      submit: "Submit Request",
-      terms: "By submitting, you accept our General Conditions.",
-      process_title: "Validation Process",
-      secure_data: "100% Secure Data",
-      secure_desc: "AES-256 · Cameroon Hosting",
-      steps: [
-        { title: "Analysis", desc: "Our engineers study your case in less than 12 hours." },
-        { title: "Quote & SLA", desc: "Technical proposal with deadlines, CFA rates and detailed specs." },
-        { title: "Execution", desc: "On-site intervention or certified secure remote deployment." }
-      ],
-      success_title: "Request Sent!",
-      success_desc: "Your quote request has been recorded. Our team will contact you within 24 business hours.",
-      view_requests: "View my requests",
-      create_account: "Create account to track",
-      new_booking: "New request",
-      errors: {
-        entity_req: "Entity name required.",
-        email_inv: "Invalid email.",
-        phone_req: "Phone number required.",
-        desc_short: "Description too short (min. 20 chars).",
-        network: "Network error. Unable to establish a secure connection.",
-        denied: "Access denied. Please check your session or refresh.",
-        overload: "Service is temporarily overloaded. Please wait a moment.",
-        quota: "Request limit reached. Please wait before retrying."
-      },
-      loading_services: "Loading services...",
-      b2b: "Business (B2B)",
-      b2c: "Individual (B2C)",
-      ong: "Gov / NGO",
-      budget_undef: "Undefined",
-      time_urgent: "Urgent (< 24h)",
-      time_normal: "Standard (1–2 weeks)",
-      time_plan: "Planned (1 month+)"
+        tag: "AES-256 Encrypted Portal",
+        title_part1: "Plan your",
+        title_part2: "Resilience.",
+        desc: "Our engineers analyze your infrastructure and propose a strategy within 12 hours.",
+        whatsapp: "WhatsApp Direct",
+        new_request: "New Request",
+        ssl: "Active SSL",
+        step1_title: "Customer Profile",
+        step1_type: "Structure Type",
+        step1_entity: "Entity/Applicant",
+        step1_email: "Professional Email",
+        step1_phone: "Contact phone",
+        step2_title: "Technical Specifications",
+        step2_service: "Main Service",
+        step2_budget: "Estimated Budget",
+        step2_time: "Desired Deadline",
+        step2_desc: "Detailed description of your need",
+        submit: "Submit the Request",
+        terms: "By submitting, you agree to our Terms and Conditions.",
+        process_title: "Validation Process",
+        secure_data: "100% Secure Data",
+        secure_desc: "AES-256 · Hosting Cameroon",
+        steps: {
+            0: {
+                title: "Analysis",
+                desc: "Our engineers study your file in less than 12 hours."
+            },
+            1: {
+                title: "Quote & SLA",
+                desc: "Technical proposal with deadlines, CFA prices and detailed specifications."
+            },
+            2: {
+                title: "Execution",
+                desc: "Certified and secure on-site intervention or remote deployment."
+            }
+        },
+        success_title: "Request sent!",
+        success_desc: "Your quote request has been recorded. Our team will contact you within 24 working hours.",
+        view_requests: "See my requests",
+        create_account: "Create an account to follow",
+        new_booking: "New request",
+        errors: {
+            entity_req: "Entity name required.",
+            email_inv: "Invalid email.",
+            phone_req: "Telephone number required.",
+            desc_short: "Description too short (min. 20 characters).",
+            network: "Network error. Unable to establish a secure connection.",
+            denied: "Access denied. Please check your session or refresh the page.",
+            overload: "The service is temporarily overloaded. Wait a few moments.",
+            quota: "Request limit reached. Please wait before trying again."
+        },
+        loading_services: "Loading services...",
+        b2b: "Business (B2B)",
+        b2c: "Individual (B2C)",
+        ong: "Administration / NGO",
+        budget_undef: "Undefined",
+        time_urgent: "Emergency (< 24h)",
+        time_normal: "Standard (1–2 weeks)",
+        time_plan: "Planned (1 month+)"
     },
     account: {
-      tag: "Client Portal",
-      title_part1: "Your IT management",
-      title_part2: "interface.",
-      desc: "Access your dashboard to track projects, contact our teams and manage contracts.",
-      secure_badge: "Secure access 24/7 · Data protection guaranteed",
-      features: [
-        "Real-time request tracking",
-        "Full service history access",
-        "Connect with certified providers",
-        "Dedicated space for reviews"
-      ],
-      login: {
-        title: "Login",
-        desc: "Enter your credentials to access your space.",
-        email: "Email Address",
-        password: "Password",
-        forgot: "Forgot?",
-        submit: "Access my space",
-        footer: "First visit? Create your client account.",
-        create_btn: "Create an account"
-      }
+        tag: "Customer Area",
+        title_part1: "Your interface",
+        title_part2: "IT management.",
+        desc: "Access your dashboard to follow your projects, contact our teams and manage your contracts.",
+        secure_badge: "Secure access 24/7 Guaranteed data protection",
+        features: {
+            0: "Monitoring your requests in real time",
+            1: "Access to complete history",
+            2: "Certified service provider connection",
+            3: "Dedicated space for your opinions"
+        },
+        login: {
+            title: "Connection",
+            desc: "Enter your credentials to access your space.",
+            email: "E-mail address",
+            password: "Password",
+            forgot: "Forget ?",
+            submit: "Access my space",
+            footer: "First visit? Create your customer account.",
+            create_btn: "Create an account"
+        }
     },
     admin: {
-      tag: "Administration Panel",
-      nav: {
-        overview: "Overview",
-        requests: "Requests",
-        clients: "Clients",
-        catalog: "Catalog",
-        messages: "Messages",
-        testimonials: "Testimonials",
-        settings: "Settings",
-        logout: "Logout"
-      },
-      stats: {
-        pending: "Pending",
-        active: "Active",
-        completed: "Completed",
-        revenue: "Revenue",
-        users: "Users",
-        services: "Services"
-      },
-      table: {
-        title: "Incoming Requests",
-        new: "New Case",
-        id: "ID",
-        client: "Client",
-        service: "Service",
-        value: "Value",
-        status: "Status",
-        open: "Open",
-        pagination: "Showing {start}–{end} of {total} requests",
-        actions: "Actions",
-        date: "Date"
-      },
-      modals: {
-        status_update: "Update Status",
-        admin_note: "Administrator Note",
-        save: "Save",
-        cancel: "Cancel",
-        delete_confirm: "Are you sure you want to delete this item?",
-        new_service: "Add Service",
-        edit_service: "Edit Service",
-        title: "Title",
-        desc: "Description",
-        price: "Price (CFA)",
-        category: "Category"
-      },
-      security: {
-        pin_title: "Access PIN Code",
-        pin_desc: "Enter your 4-digit code to unlock the panel.",
-        pin_error: "Incorrect PIN code.",
-        pin_unlock: "Unlock",
-        pin_setup: "Setup PIN"
-      }
+        tag: "Administration panel",
+        nav: {
+            overview: "Overview",
+            requests: "Queries",
+            clients: "Customers",
+            catalog: "Catalog",
+            messages: "Messages",
+            testimonials: "Testimonials",
+            settings: "Settings",
+            logout: "Disconnect"
+        },
+        stats: {
+            pending: "On hold",
+            active: "In progress",
+            completed: "Completed",
+            revenue: "Income",
+            users: "Users",
+            services: "Services"
+        },
+        table: {
+            title: "Incoming Requests",
+            new: "New File",
+            id: "ID",
+            client: "Customer",
+            service: "Service",
+            value: "Value",
+            status: "Status",
+            open: "Open",
+            pagination: "Showing {start}–{end} on {total} queries",
+            actions: "Actions",
+            date: "Date"
+        },
+        modals: {
+            status_update: "Update status",
+            admin_note: "Administrator's note",
+            save: "Save",
+            cancel: "Cancel",
+            delete_confirm: "Are you sure you want to delete this item?",
+            new_service: "Add a service",
+            edit_service: "Edit service",
+            title: "Title",
+            desc: "Description",
+            price: "Price (CFA)",
+            category: "Category"
+        },
+        security: {
+            pin_title: "Access PIN",
+            pin_desc: "Enter your 4-digit code to unlock the panel.",
+            pin_error: "Incorrect PIN code.",
+            pin_unlock: "Unlock",
+            pin_setup: "Configure PIN"
+        }
     },
     dashboard: {
-      title: "Operations Dashboard",
-      welcome: "Welcome,",
-      secure: "SYSTEM SECURE",
-      stats: {
-        nodes: "Active Nodes",
-        threats: "Threats Blocked",
-        maintenance: "Next Maintenance",
-        uptime: "100% Uptime (30d)",
-        zero_breach: "Zero Breaches",
-        scheduled: "Scheduled Maintenance"
-      },
-      tabs: {
-        projects: "Projects",
-        reviews: "Reviews",
-        profile: "Account"
-      },
-      projects: {
-        title: "My Requests & Quotes",
-        new: "New Quote",
-        empty: "No active requests.",
-        id: "Case #",
-        date: "Date",
-        budget: "Budget",
-        admin_note: "Admin Note",
-        cancel: "Cancel Request"
-      },
-      reviews: {
-        title: "My Reviews",
-        new: "New Review",
-        empty: "You haven't left any reviews yet.",
-        edit: "Edit",
-        delete: "Delete",
-        modal_title: "Your feedback matters",
-        modal_desc: "Help us refine our excellence by sharing your experience.",
-        rating: "Rating (1 to 5 stars)",
-        comment: "Comment",
-        submit: "Publish",
-        thanks: "Thank you for your review!"
-      },
-      profile: {
-        title: "Account Management",
-        full_name: "Full Name",
-        email: "Email Address",
-        save: "Save Changes",
-        updating: "Updating...",
-        success: "Profile updated!",
-        security: "Security & Access",
-        change_pin: "Change PIN",
-        reset_password: "Reset Password"
-      },
-      security: {
-        pin_setup_title: "Security Configuration",
-        pin_setup_desc: "To protect your data, please configure a 4-digit PIN Code.",
-        pin_verify_title: "Secure Access",
-        pin_verify_desc: "Please enter your 4-digit PIN Code to access your quotes.",
-        pin_placeholder: "••••",
-        pin_error: "Incorrect Code",
-        pin_submit_setup: "Save my PIN",
-        pin_submit_verify: "Unlock",
-        logout: "Logout"
-      }
+        title: "Operations Dashboard",
+        welcome: "Welcome,",
+        secure: "SECURE SYSTEM",
+        stats: {
+            nodes: "Active Nodes",
+            threats: "Threats Blocked",
+            maintenance: "Next Maintenance",
+            uptime: "100% Uptime (30 days)",
+            zero_breach: "Zero Intrusion",
+            scheduled: "Scheduled Maintenance"
+        },
+        tabs: {
+            projects: "Projects",
+            reviews: "Notice",
+            profile: "Account"
+        },
+        projects: {
+            title: "My Requests & Quotes",
+            new: "New Quote",
+            empty: "No requests in progress.",
+            id: "Case #",
+            date: "Date",
+            budget: "Budget",
+            admin_note: "Admin Note",
+            cancel: "Cancel Request"
+        },
+        reviews: {
+            title: "My Testimonials",
+            new: "New Notice",
+            empty: "You haven't left a review yet.",
+            edit: "To modify",
+            delete: "DELETE",
+            modal_title: "Your opinion counts",
+            modal_desc: "Help us refine our excellence by sharing your experience.",
+            rating: "Rating (1 to 5 stars)",
+            comment: "Comment",
+            submit: "Publish",
+            thanks: "Thank you for your testimony!"
+        },
+        profile: {
+            title: "Account Management",
+            full_name: "Full Name",
+            email: "E-mail address",
+            save: "To safeguard",
+            updating: "In progress...",
+            success: "Profile updated!",
+            security: "Security & Access",
+            change_pin: "Change PIN",
+            reset_password: "Reset Password"
+        },
+        security: {
+            pin_setup_title: "Security Configuration",
+            pin_setup_desc: "To protect your data, please configure a 4-digit PIN Code.",
+            pin_verify_title: "Secure Access",
+            pin_verify_desc: "Please enter your 4-digit PIN to access your quotes.",
+            pin_placeholder: "••••",
+            pin_error: "Incorrect code",
+            pin_submit_setup: "Save my PIN",
+            pin_submit_verify: "Unlock",
+            logout: "Disconnect"
+        }
     },
     footer: {
-      desc: "Elite IT infrastructure and cybersecurity firm based in Douala. We architect sovereignty.",
-      cols: {
-        solutions: "Solutions",
-        agency: "Agency",
-        legal: "Legal"
-      },
-      copyright: "All rights reserved."
+        desc: "Elite IT and cybersecurity engineering firm based in Douala. We architect sovereignty.",
+        cols: {
+            solutions: "Solutions",
+            agency: "Agency",
+            legal: "Legal"
+        },
+        copyright: "All rights reserved."
     }
-  }
+}
 };
 
 export type Language = "fr" | "en";

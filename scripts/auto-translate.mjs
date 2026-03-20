@@ -84,6 +84,7 @@ async function main() {
   const tmpFile = join(__dirname, ".tmp-translations-" + Date.now() + ".mjs");
   const cleaned = source
     .replace(/^export const translations = /, "export default ")
+    .replace(/export type.*$/gm, "")
     .replace(/; *$/, "");
   writeFileSync(tmpFile, cleaned);
 
