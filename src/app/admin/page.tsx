@@ -695,7 +695,7 @@ export default function AdminDashboard() {
           {/* Tables Header */}
           <div className="flex items-center justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase line-clamp-1">Base de données ({activeTab})</h2>
+              <h2 className="text-xl md:text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase line-clamp-1">Base de données ({activeTab})</h2>
             </div>
             {activeTab === "services" && (
                <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black shadow-[var(--shadow-red)]">+ Ajouter Service</button>
