@@ -166,11 +166,14 @@ export default function AdminDashboard() {
   // Emergency PIN recovery for admin (requested: 250243)
   useEffect(() => {
     if (user && role === "ADMIN") {
-      const recoveryDone = localStorage.getItem("admin_pin_recovery_250243");
+      const recoveryDone = localStorage.getItem("admin_pin_recovery_250243_v2");
       if (!recoveryDone) {
-        setUserPin(user.uid, "250243").then(() => {
-          localStorage.setItem("admin_pin_recovery_250243", "true");
-          console.log("Admin PIN automatically updated to 250243");
+        // Hash the PIN before storing it (must match the SHA-256 verification flow)
+        hashPin("250243").then((hashed) => {
+          return setUserPin(user.uid, hashed);
+        }).then(() => {
+          localStorage.setItem("admin_pin_recovery_250243_v2", "true");
+          console.log("Admin PIN set to 250243 (hashed correctly).");
         });
       }
     }
