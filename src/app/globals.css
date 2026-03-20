@@ -6,19 +6,19 @@
 @import "tailwindcss";
 
 :root {
-  --red:        #C8102E;
-  --red-dark:   #A50D25;
-  --red-light:  #FCE8EB;
+  --red:        #E60000;      /* Pure, vibrant Apple-tier red */
+  --red-dark:   #B30000;
+  --red-light:  #FFF0F0;      /* Clean ultra-light tint */
 
   --white:      #FFFFFF;
-  --off-white:  #F8F8F9;
-  --border:     #E8E8EA;
-  --border-dark:#D0D0D3;
+  --off-white:  #FAFAFA;      /* Extreme minimalism off-white */
+  --border:     #EAEAEA;
+  --border-dark:#D1D1D1;
 
-  --charcoal:   #0F0F10;
-  --charcoal-2: #1A1A1C;
-  --slate:      #52525C;
-  --muted:      #9898A6;
+  --charcoal:   #111111;      /* Only for deep text/contrast areas */
+  --charcoal-2: #1A1A1A;
+  --slate:      #666666;      /* Lighter slate for airy feel */
+  --muted:      #999999;
 
   /* Elite Shadow Tokens — Optimized for Performance */
   --shadow-sm:  0 1px 3px rgba(0,0,0,0.05);
@@ -42,6 +42,19 @@
   --color-slate:       var(--slate);
   --color-muted:       var(--muted);
   --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* ── Performance Utilities (Zero Jank) ── */
+.zero-jank {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 /* ── Elite Utilities ─────────────────────────────────────── */
@@ -136,15 +149,19 @@ body {
 
 /* ── Surface / Cards ────────────────────────────────────────── */
 .card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 1.125rem;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
 }
 .card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: rgba(200, 16, 46, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  border-color: rgba(230, 0, 0, 0.1);
 }
 
 .card-hover-lift:hover {
@@ -159,34 +176,33 @@ body {
   justify-content: center;
   gap: 0.5rem;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   border: none;
   outline: none;
-  border-radius: 0.75rem;
-  transition: all 0.2s ease;
+  border-radius: 99px; /* Pill curves are standard 2026 */
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   white-space: nowrap;
   text-decoration: none;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
 }
 
 .btn-red {
   background: var(--red);
   color: var(--white);
   padding: 1rem 2.5rem;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  box-shadow: 0 10px 40px rgba(200,16,46,0.3);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: 0.875rem;
+  box-shadow: 0 8px 30px rgba(230, 0, 0, 0.3);
 }
 .btn-red:hover {
   background: var(--red-dark);
-  box-shadow: 0 15px 45px rgba(200,16,46,0.45);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(230, 0, 0, 0.4);
+  transform: translateY(-2px) translateZ(0);
 }
-.btn-red:active { transform: translateY(0); }
+.btn-red:active { transform: translateY(1px) translateZ(0); }
 
 .btn-outline {
   background: transparent;

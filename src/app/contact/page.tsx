@@ -92,10 +92,11 @@ export default function ContactPage() {
                   <StaggerItem key={label}>
                     <motion.div
                       whileHover={{ x: 6, borderColor: "var(--red)" }}
-                      className="card p-6 flex items-start gap-5 border-2 transition-all duration-300 rounded-2xl"
+                      transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.5 }}
+                      className="card p-6 flex items-start gap-5 border-2 transition-all duration-300 rounded-2xl zero-jank shadow-sm hover:shadow-[0_10px_30px_rgba(230,0,0,0.06)] bg-white"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-colors">
-                        <Icon className={`w-5 h-5 ${red ? "text-[var(--red)]" : "text-[var(--charcoal)]"}`} />
+                      <div className="w-12 h-12 rounded-xl bg-[var(--off-white)] border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-[var(--red-light)] group-hover:border-red-100 transition-colors">
+                        <Icon className={`w-5 h-5 ${red ? "text-[var(--red)]" : "text-[var(--charcoal)] group-hover:text-[var(--red)]"}`} />
                       </div>
                       <div>
                         <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-1.5">{label}</p>
@@ -136,7 +137,7 @@ export default function ContactPage() {
                   ) : (
                     <motion.form 
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="space-y-6 relative z-10"
+                      className="space-y-6 relative z-10 zero-jank"
                       onSubmit={handleSubmit}
                     >
                       {error && (
@@ -177,10 +178,11 @@ export default function ContactPage() {
                       <div className="pt-4">
                         <motion.button
                           type="submit"
-                          whileHover={{ scale: 1.02, y: -2 }}
+                          whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
+                          transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.4 }}
                           disabled={loading}
-                          className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)] disabled:opacity-60"
+                          className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(230,0,0,0.2)] rounded-full zero-jank disabled:opacity-60"
                         >
                            {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" />{t.contact.form.sending}</> : <>{t.contact.form.send} <Send className="w-4 h-4 ml-2" /></>}
                         </motion.button>

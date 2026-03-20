@@ -67,7 +67,7 @@ service cloud.firestore {
     // Any signed-in user can create a review (must use their own UID).
     // Only admins can delete reviews.
     match /reviews/{reviewId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create: if isSignedIn() &&
         request.resource.data.userId == request.auth.uid;
       allow update, delete: if isSignedIn() && (

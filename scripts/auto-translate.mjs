@@ -15,7 +15,7 @@
 
 import { translate } from "google-translate-api-x";
 import { readFileSync, writeFileSync, existsSync } from "fs";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { dirname, join } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -81,13 +81,13 @@ async function main() {
 
   // Extract the raw JS object between `fr: {` and its matching closing brace
   // For robustness we use dynamic import via a temp file trick
-  const tmpFile = join(__dirname, ".tmp-translations.mjs");
+  const tmpFile = join(__dirname, ".tmp-translations-" + Date.now() + ".mjs");
   const cleaned = source
     .replace(/^export const translations = /, "export default ")
     .replace(/; *$/, "");
   writeFileSync(tmpFile, cleaned);
 
-  const { default: allTranslations } = await import(tmpFile + `?t=${Date.now()}`);
+  const { default: allTranslations } = await import(pathToFileURL(tmpFile).href);
   const fr = allTranslations.fr;
 
   // 2. Collect all FR strings

@@ -355,8 +355,8 @@ export default function AdminDashboard() {
   // Keep Loading screen minimalist
   if (authLoading || role !== "ADMIN" || checkingPin) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-[var(--red)]/20 bg-white/5 mb-6"><Shield className="w-6 h-6 text-[var(--red)] animate-pulse" /></div>
+      <div className="min-h-screen bg-[var(--off-white)] flex flex-col items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center border border-red-100 bg-[var(--red-light)] mb-6 shadow-sm"><Shield className="w-6 h-6 text-[var(--red)] animate-pulse" /></div>
       </div>
     );
   }
@@ -391,18 +391,18 @@ export default function AdminDashboard() {
     };
 
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.05]" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10">
-          <div className="bg-[#111111]/80 backdrop-blur-xl border border-[var(--red)]/20 p-8 md:p-10 rounded-[2.5rem] shadow-[0_0_80px_rgba(200,16,46,0.1)] flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 text-[var(--red)] flex items-center justify-center mb-6 border border-[var(--red)]/20 shadow-inner">
+      <div className="min-h-[100svh] bg-[var(--off-white)] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.03]" />
+        
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10 zero-jank">
+          <div className="bg-white/80 backdrop-blur-3xl border border-[var(--border)] p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.05)] flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] text-[var(--red)] flex items-center justify-center mb-6 border border-red-100 shadow-sm">
               <Lock className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight mb-2">
+            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">
               {hasPinConfigured ? "Accès Restreint" : "Initier Code Admin"}
             </h1>
-            <p className="text-white/40 text-[11px] mb-8 leading-relaxed">
+            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed">
               {hasPinConfigured 
                 ? "Veuillez entrer le Code PIN Maître pour débloquer l'interface d'administration."
                 : "Afin de protéger l'accès principal, veuillez configurer votre Code PIN."}
@@ -417,27 +417,29 @@ export default function AdminDashboard() {
                   placeholder="••••"
                   maxLength={6}
                   autoFocus
-                  className={`w-full bg-[#050505] border ${pinError ? "border-red-500 text-red-500" : "border-white/10 text-white focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-white/10`}
+                  className={`w-full bg-[var(--off-white)] border ${pinError ? "border-red-500 text-red-500" : "border-[var(--border)] text-[var(--charcoal)] focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-[var(--muted)]/50 zero-jank`}
                 />
                 <AnimatePresence>
                   {pinError && (
-                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest">
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest zero-jank">
                       Code Incorrect
                     </motion.p>
                   )}
                 </AnimatePresence>
               </div>
 
-              <button 
+              <motion.button 
                 type="submit" 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 disabled={pinInput.length < 4}
-                className="w-full py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
+                className="w-full py-4 bg-[var(--red)] rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(230,0,0,0.2)] disabled:opacity-50 zero-jank"
               >
                 {hasPinConfigured ? "Déverrouiller" : "Enregistrer mon PIN"}
-              </button>
+              </motion.button>
             </form>
 
-            <button onClick={handleLogout} className="mt-8 text-[10px] text-white/30 hover:text-red-500 font-black uppercase tracking-widest transition-colors">
+            <button onClick={handleLogout} className="mt-8 text-[10px] text-[var(--muted)] hover:text-red-500 font-black uppercase tracking-widest transition-colors">
               Fermer la session
             </button>
           </div>
@@ -473,64 +475,63 @@ export default function AdminDashboard() {
   const langKey = language as "fr" | "en";
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex pt-0 relative overflow-x-hidden text-slate-100 font-sans pb-20 md:pb-0">
-      <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.05]" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
+    <div className="min-h-[100svh] bg-[var(--off-white)] flex pt-0 relative overflow-x-hidden text-[var(--charcoal)] font-sans pb-20 md:pb-0">
+      <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.03]" />
 
       {/* Sidebar (Desktop) */}
-      <motion.aside className="w-64 xl:w-72 bg-[#050505] flex flex-col fixed top-0 bottom-0 left-0 z-40 hidden md:flex border-r border-white/10">
-        <div className="p-8 border-b border-white/5">
+      <motion.aside className="w-64 xl:w-72 bg-white flex flex-col fixed top-0 bottom-0 left-0 z-40 hidden md:flex border-r border-slate-200 zero-jank shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <div className="p-8 border-b border-slate-100">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[var(--red)] flex items-center justify-center shadow-[var(--shadow-red)] shadow-red-900/50"><Shield className="w-5 h-5 text-white" /></div>
+            <div className="w-10 h-10 rounded-2xl bg-[var(--red-light)] border border-red-100 flex items-center justify-center shadow-sm"><Shield className="w-5 h-5 text-[var(--red)]" /></div>
             <div>
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{t.admin.tag}</p>
-              <p className="font-black text-white text-sm tracking-tight text-emerald-400">ACTIVE SESSION</p>
+              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{t.admin.tag}</p>
+              <p className="font-black text-[var(--charcoal)] text-sm tracking-tight"><span className="text-emerald-500">ACTIVE</span> SESSION</p>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2 mt-4">
+        <nav className="flex-1 p-4 space-y-2 mt-4 custom-scrollbar overflow-y-auto">
           {NAV.map(({ id, label, icon: Icon, badge }) => (
-            <button key={id} onClick={() => setActiveTab(id)} className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${activeTab === id ? "bg-white/10 text-white shadow-xl border border-white/10" : "text-white/40 hover:text-white hover:bg-white/5"}`}>
+            <button key={id} onClick={() => setActiveTab(id)} className={`w-full flex items-center justify-between px-5 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 zero-jank ${activeTab === id ? "bg-[var(--off-white)] text-[var(--red)] shadow-sm border border-[var(--border)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"}`}>
               <span className="flex items-center gap-4"><Icon className="w-4 h-4" />{label}</span>
-              {badge && <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black ${activeTab === id ? "bg-[var(--red)] text-white" : "bg-white/10 text-white/40"}`}>{badge}</span>}
+              {badge && <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${activeTab === id ? "bg-[var(--red)] text-white shadow-sm" : "bg-[var(--off-white)] border border-slate-200 text-[var(--muted)]"}`}>{badge}</span>}
             </button>
           ))}
         </nav>
         
-        <div className="p-6 border-t border-white/5">
-          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-5 py-4 text-[10px] font-black uppercase tracking-widest text-[#ff2a33] hover:bg-[#ff2a33]/10 rounded-2xl transition-all">
+        <div className="p-6 border-t border-slate-100">
+          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-5 py-4 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 hover:text-[var(--red)] hover:shadow-sm border border-transparent hover:border-red-100 rounded-xl transition-all zero-jank">
             <LogOut className="w-4 h-4" /> Déconnexion
           </button>
         </div>
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md border-t border-white/10 z-50 flex items-center justify-between px-4 py-3 pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.8)] overflow-x-auto no-scrollbar">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-50 flex items-center justify-between px-4 py-3 pb-safe md:hidden shadow-[0_-10px_40px_rgba(0,0,0,0.05)] overflow-x-auto custom-scrollbar zero-jank">
         <div className="flex items-center gap-6 min-w-max mx-auto">
         {NAV.map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex flex-col items-center gap-1.5 p-2 transition-all relative ${
-              activeTab === id ? "text-[var(--red)] scale-110" : "text-white/40"
+            className={`flex flex-col items-center gap-1.5 p-2 transition-all relative zero-jank ${
+              activeTab === id ? "text-[var(--red)] scale-110" : "text-[var(--muted)]"
             }`}
           >
             <Icon className="w-4 h-4" />
             <span className="text-[7px] font-black uppercase tracking-widest">{label}</span>
             {badge && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[var(--red)] text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-[#050505] shadow-lg">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[var(--red)] text-white text-[8px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-sm">
                 {badge}
               </span>
             )}
             {activeTab === id && (
-              <motion.div layoutId="activeTabMobile" className="absolute -bottom-1 w-6 h-0.5 bg-[var(--red)] rounded-full" />
+              <motion.div layoutId="activeTabMobile" className="absolute -bottom-1 w-6 h-0.5 bg-[var(--red)] rounded-full shadow-[0_2px_8px_rgba(230,0,0,0.4)]" />
             )}
           </button>
         ))}
           <button
             onClick={handleLogout}
-            className="flex flex-col items-center gap-1.5 p-2 text-white/40 active:text-red-500 transition-colors"
+            className="flex flex-col items-center gap-1.5 p-2 text-[var(--muted)] hover:text-red-500 transition-colors zero-jank"
           >
             <LogOut className="w-5 h-5 text-red-500/80" />
             <span className="text-[7.5px] font-black uppercase tracking-widest">Sortie</span>
@@ -542,42 +543,42 @@ export default function AdminDashboard() {
       <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-20">
         
         {/* Top Header */}
-        <header className="bg-[#0A0A0A]/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-white/5">
+        <header className="bg-white/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-slate-200 shadow-[0_5px_30px_rgba(0,0,0,0.02)] zero-jank">
           <div className="flex items-center gap-4 md:gap-6 relative">
-            <button onClick={() => fetchData()} title="Actualiser les données" className="px-4 md:px-5 py-2.5 rounded-xl bg-[var(--red)]/10 border border-[var(--red)]/30 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-red-950/20 active:scale-95">
+            <button onClick={() => fetchData()} title="Actualiser les données" className="px-4 md:px-5 py-2.5 rounded-full bg-[var(--red-light)] border border-red-100 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-all duration-300 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm focus:ring-4 ring-red-100 outline-none zero-jank">
                <Clock className="w-4 h-4" />
                <span className="hidden sm:inline">Actualiser</span>
             </button>
 
-            <button onClick={() => setShowPinChangeModal(true)} title="Modifier PIN Maître" className="relative text-emerald-400 hover:text-white p-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl transition-all">
+            <button onClick={() => setShowPinChangeModal(true)} title="Modifier PIN Maître" className="relative text-emerald-600 hover:text-emerald-700 p-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-full transition-all zero-jank">
               <Key className="w-5 h-5" />
             </button>
 
-            <button onClick={() => setShowPasswordChangeModal(true)} title="Modifier Mot de Passe" className="relative text-amber-500 hover:text-white p-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 rounded-xl transition-all">
+            <button onClick={() => setShowPasswordChangeModal(true)} title="Modifier Mot de Passe" className="relative text-amber-500 hover:text-amber-600 p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-full transition-all zero-jank">
               <ShieldAlert className="w-5 h-5" />
             </button>
 
-            <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-white/40 hover:text-white p-2.5 bg-white/5 border border-white/10 rounded-xl">
+            <button onClick={() => setShowNotifications(!showNotifications)} className="relative text-[var(--slate)] hover:text-[var(--charcoal)] p-2.5 bg-[var(--off-white)] border border-slate-200 hover:border-slate-300 rounded-full transition-all zero-jank">
               <Bell className="w-5 h-5" />
-              {totalNotifications > 0 && <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-[#0A0A0A]" />}
+              {totalNotifications > 0 && <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-white shadow-sm" />}
             </button>
 
             <AnimatePresence>
               {showNotifications && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="absolute top-full right-0 sm:right-24 mt-2 w-[calc(100vw-2rem)] max-w-[360px] bg-[#111111] border border-white/10 shadow-2xl rounded-2xl p-4 z-50">
-                  <h4 className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Centre de Notifications</h4>
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="absolute top-full right-0 sm:right-24 mt-2 w-[calc(100vw-2rem)] max-w-[360px] bg-white border border-[var(--border)] shadow-[0_20px_60px_rgba(0,0,0,0.08)] rounded-3xl p-4 z-50 zero-jank">
+                  <h4 className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Centre de Notifications</h4>
                   {totalNotifications === 0 ? (
-                    <p className="text-xs text-center text-white/40 py-4">Aucune nouvelle notification.</p>
+                    <p className="text-xs text-center text-[var(--muted)] py-4 font-bold">Aucune nouvelle notification.</p>
                   ) : (
                     <ul className="space-y-3">
                       {pendingReqsCount > 0 && (
-                        <li onClick={() => { setActiveTab("requests"); setShowNotifications(false); }} className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs text-yellow-500 cursor-pointer hover:bg-yellow-500/20 transition-all flex items-center gap-3"><AlertTriangle className="w-4 h-4" /> <strong>{pendingReqsCount}</strong> requêtes en attente</li>
+                        <li onClick={() => { setActiveTab("requests"); setShowNotifications(false); }} className="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs font-bold text-amber-600 cursor-pointer hover:bg-amber-100 transition-all flex items-center gap-3 zero-jank"><AlertTriangle className="w-4 h-4" /> <strong>{pendingReqsCount}</strong> requêtes en attente</li>
                       )}
                       {unreadMsgsCount > 0 && (
-                        <li onClick={() => { setActiveTab("messages"); setShowNotifications(false); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-[var(--red)] cursor-pointer hover:bg-red-500/20 transition-all flex items-center gap-3"><Mail className="w-4 h-4" /> <strong>{unreadMsgsCount}</strong> messages non lus</li>
+                        <li onClick={() => { setActiveTab("messages"); setShowNotifications(false); }} className="p-3 bg-[var(--red-light)] border border-red-200 rounded-2xl text-xs font-bold text-[var(--red)] cursor-pointer hover:bg-red-100 transition-all flex items-center gap-3 zero-jank"><Mail className="w-4 h-4" /> <strong>{unreadMsgsCount}</strong> messages non lus</li>
                       )}
                       {unreadReviewsCount > 0 && (
-                        <li onClick={() => { setActiveTab("reviews"); setShowNotifications(false); }} className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-500 cursor-pointer hover:bg-emerald-500/20 transition-all flex items-center gap-3"><Star className="w-4 h-4" /> <strong>{unreadReviewsCount}</strong> nouveaux témoignages</li>
+                        <li onClick={() => { setActiveTab("reviews"); setShowNotifications(false); }} className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs font-bold text-emerald-600 cursor-pointer hover:bg-emerald-100 transition-all flex items-center gap-3 zero-jank"><Star className="w-4 h-4" /> <strong>{unreadReviewsCount}</strong> nouveaux témoignages</li>
                       )}
                     </ul>
                   )}
@@ -585,9 +586,9 @@ export default function AdminDashboard() {
               )}
             </AnimatePresence>
 
-            <div className="flex items-center gap-3 md:gap-4 pl-4 md:pl-6 border-l border-white/10">
-              <div className="text-right hidden sm:block"><p className="text-[10px] font-black text-white uppercase tracking-wider">Super Admin</p></div>
-              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-[var(--red)] text-white flex items-center justify-center font-black text-xs md:text-sm ring-2 ring-white/10 shadow-[var(--shadow-red)]">SA</div>
+            <div className="flex items-center gap-3 md:gap-4 pl-4 md:pl-6 border-l border-slate-200">
+              <div className="text-right hidden sm:block"><p className="text-[10px] font-black text-[var(--charcoal)] uppercase tracking-wider">Super Admin</p></div>
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[var(--red)] text-white flex items-center justify-center font-black text-xs md:text-sm border-2 border-white shadow-[0_5px_15px_rgba(230,0,0,0.3)]">SA</div>
             </div>
           </div>
         </header>
@@ -598,13 +599,13 @@ export default function AdminDashboard() {
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
             {STATS.map(({ label, val, icon: Icon, color }) => (
               <StaggerItem key={label}>
-                <div className="card p-5 md:p-8 bg-gradient-to-br from-[#111111] to-[#0A0A0A] border border-white/10 relative h-full flex flex-col justify-between rounded-2xl shadow-xl hover:border-white/20 transition-all">
+                <div className="card p-5 md:p-8 bg-white border border-[var(--border)] relative h-full flex flex-col justify-between rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(230,0,0,0.05)] transition-all duration-300 zero-jank group">
                   <div className="relative z-10 mb-4">
-                    <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.1em]">{label}</p>
-                    <p className={`text-4xl md:text-5xl font-black ${color.replace("text-", "text-")} tracking-tighter italic mt-1 drop-shadow-lg`}>{val}</p>
+                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.1em]">{label}</p>
+                    <p className={`text-4xl md:text-5xl font-black ${color} tracking-tighter italic mt-1 drop-shadow-sm`}>{val}</p>
                   </div>
-                  <div className={`absolute bottom-4 right-4 md:bottom-5 md:right-5 w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center border border-white/5 ${color} shadow-inner`}>
-                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
+                  <div className={`absolute bottom-4 right-4 md:bottom-5 md:right-5 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border ${color.replace("text-", "bg-").replace("-500", "-50")} ${color.replace("text-", "border-").replace("-500", "-100")} shadow-sm group-hover:scale-110 transition-transform duration-300 zero-jank`}>
+                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
                   </div>
                 </div>
               </StaggerItem>
@@ -623,49 +624,49 @@ export default function AdminDashboard() {
                    <div className="md:hidden space-y-6 mb-12">
             {activeTab === "requests" && data.requests.map((req) => {
               const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-              const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
+              const accentColor = req.status === "PENDING" ? "bg-amber-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-[var(--red)]";
               
               return (
-                <div key={req.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md shadow-xl">
+                <div key={req.id} className="relative group overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md shadow-sm zero-jank">
                   {/* Status Indicator Bar */}
-                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor} shadow-[0_0_20px_rgba(0,0,0,0.5)]`} />
+                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor} shadow-[0_0_15px_rgba(0,0,0,0.05)]`} />
                   
                   <div className="p-6 space-y-5">
                     <div className="flex justify-between items-start pl-2">
-                      <div className="space-y-1">
-                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
-                        <h3 className="text-white font-black text-xl tracking-tight leading-tight">{req.entity}</h3>
+                       <div className="space-y-1">
+                        <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
+                        <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight">{req.entity}</h3>
                       </div>
-                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls}`}>{mapObj.label}</span>
+                      <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 ml-2">
+                    <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100 ml-2">
                       <div>
-                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Service</p>
-                        <p className="text-xs font-bold text-white leading-tight">{req.serviceId}</p>
+                        <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Service</p>
+                        <p className="text-xs font-bold text-[var(--charcoal)] leading-tight">{req.serviceId}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Budget</p>
-                        <p className="text-sm font-black text-emerald-400 italic">{req.budget}</p>
+                        <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Budget</p>
+                        <p className="text-sm font-black text-[var(--red)] italic">{req.budget}</p>
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-3 pl-2">
                       <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10"><Phone className="w-3.5 h-3.5 text-[var(--red)]" /></div>
-                         <span className="text-sm font-bold text-white/70">{req.phone}</span>
+                         <div className="w-8 h-8 rounded-full bg-[var(--red-light)] flex items-center justify-center border border-red-100"><Phone className="w-3.5 h-3.5 text-[var(--red)]" /></div>
+                         <span className="text-sm font-bold text-[var(--slate)]">{req.phone}</span>
                       </div>
                     </div>
 
                     <div className="flex gap-3 pt-2 pl-2">
-                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] hover:from-red-600 hover:to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all">
-                        <Eye className="w-5 h-5" /> Ouvrir
+                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-4 bg-[var(--charcoal)] hover:bg-[#222] rounded-full text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(0,0,0,0.1)] active:scale-95 transition-all zero-jank">
+                        <Eye className="w-4 h-4" /> Ouvrir
                       </button>
                       <div className="flex-1 relative">
                         <select 
                           value={req.status} 
                           onChange={(e) => attemptStatusChange(req.id, e.target.value)} 
-                          className="w-full h-full py-4 bg-[#1A1A1A] border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest px-4 focus:border-[var(--red)] outline-none appearance-none text-center"
+                          className="w-full h-full py-4 bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[10px] font-black uppercase tracking-widest px-4 focus:border-[var(--red)] outline-none appearance-none text-center shadow-sm zero-jank"
                         >
                           <option value="PENDING">Statut</option>
                           <option value="ACTIVE">Actif</option>
@@ -681,30 +682,30 @@ export default function AdminDashboard() {
 
             {activeTab === "messages" && data.messages.map((msg) => {
               const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
-              const accentColor = msg.status === "UNREAD" ? "bg-red-500" : msg.status === "READ" ? "bg-slate-500" : "bg-emerald-500";
+              const accentColor = msg.status === "UNREAD" ? "bg-[var(--red)]" : msg.status === "READ" ? "bg-[var(--slate)]" : "bg-emerald-500";
 
               return (
-                <div key={msg.id} className="relative group overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md shadow-xl">
+                <div key={msg.id} className="relative group overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md shadow-sm zero-jank">
                   <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
                   <div className="p-6 space-y-5">
                     <div className="flex justify-between items-start pl-2">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
-                        <h3 className="text-white font-black text-lg tracking-tight">{msg.name}</h3>
+                        <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
+                        <h3 className="text-[var(--charcoal)] font-black text-lg tracking-tight">{msg.name}</h3>
                       </div>
-                      <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls}`}>{mapObj.label}</span>
+                      <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                     </div>
 
-                    <p className="text-xs text-white/60 font-bold px-4 py-3 bg-white/5 rounded-2xl border border-white/5 ml-2 leading-relaxed">
+                    <p className="text-xs text-[var(--slate)] font-bold px-4 py-3 bg-[var(--off-white)] rounded-2xl border border-slate-100 ml-2 leading-relaxed">
                       <span className="text-[var(--red)] block text-[10px] uppercase font-black mb-1">Sujet: {msg.subject}</span>
                       {msg.message}
                     </p>
 
                     <div className="flex gap-3 pt-2 pl-2">
-                      <button onClick={() => setSelectedMessage(msg)} className="flex-[1.5] py-4 bg-gradient-to-r from-[var(--red)] to-[#ff2a33] rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all">
-                        <Mail className="w-5 h-5" /> Lire Message
+                      <button onClick={() => setSelectedMessage(msg)} className="flex-[1.5] py-4 bg-[var(--red)] rounded-full text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(230,0,0,0.15)] active:scale-95 transition-all zero-jank">
+                        <Mail className="w-4 h-4" /> Lire Message
                       </button>
-                      <button onClick={() => handleUpdateMessage(msg.id, "READ")} className="flex-1 py-4 bg-[#1A1A1A] border border-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl active:bg-white/5">
+                      <button onClick={() => handleUpdateMessage(msg.id, "READ")} className="flex-1 py-4 bg-white border border-slate-200 text-[var(--charcoal)] hover:border-slate-300 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm active:bg-slate-50 zero-jank">
                         Marquer Lu
                       </button>
                     </div>
@@ -714,23 +715,23 @@ export default function AdminDashboard() {
             })}
 
             {activeTab === "clients" && data.clients.map((cli) => (
-              <div key={cli.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 space-y-4 shadow-xl">
+              <div key={cli.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 space-y-4 shadow-sm zero-jank">
                 <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${cli.role === 'ADMIN' ? 'bg-[var(--red)]' : 'bg-blue-500'}`} />
                 <div className="flex justify-between items-center pl-2">
-                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
-                  <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>{cli.role || "CLIENT"}</span>
+                  <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
+                  <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase border shadow-sm ${cli.role === 'ADMIN' ? 'bg-[var(--red-light)] text-[var(--red)] border-red-100' : 'bg-[var(--off-white)] text-[var(--slate)] border-[var(--border)]'}`}>{cli.role || "CLIENT"}</span>
                 </div>
                 <div className="pl-2">
-                  <h3 className="text-white font-black text-xl tracking-tight mb-1">{cli.displayName || "Client Sans Nom"}</h3>
+                  <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight mb-1">{cli.displayName || "Client Sans Nom"}</h3>
                   <p className="text-[var(--red)] text-xs font-bold tracking-widest">{cli.email}</p>
                 </div>
-                <div className="pl-2 pt-3 border-t border-white/5 flex items-center justify-between">
-                   <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">UID: {cli.uid.substring(0, 10)}...</p>
+                <div className="pl-2 pt-3 border-t border-slate-100 flex items-center justify-between">
+                   <p className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">UID: {cli.uid.substring(0, 10)}...</p>
                    <div className="flex gap-2">
-                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><Users className="w-4 h-4 text-white/20" /></div>
+                     <div className="w-8 h-8 rounded-full bg-[var(--off-white)] border border-[var(--border)] flex items-center justify-center shadow-sm"><Users className="w-4 h-4 text-[var(--slate)]" /></div>
                      {cli.role !== 'ADMIN' && (
-                       <button onClick={() => handleDeleteClient(cli.uid)} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center hover:bg-red-500 text-red-500 hover:text-white transition-colors" title="Supprimer Client">
-                         <Trash2 className="w-4 h-4" />
+                       <button onClick={() => handleDeleteClient(cli.uid)} className="w-8 h-8 rounded-full bg-red-50 border border-red-100 flex items-center justify-center hover:bg-[var(--red)] text-[var(--red)] hover:text-white transition-colors shadow-sm zero-jank" title="Supprimer Client">
+                         <Trash2 className="w-3.5 h-3.5" />
                        </button>
                      )}
                    </div>
@@ -739,21 +740,21 @@ export default function AdminDashboard() {
             ))}
 
             {activeTab === "services" && data.services.map((srv) => (
-              <div key={srv.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 space-y-5 shadow-xl">
+              <div key={srv.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 space-y-5 shadow-sm zero-jank">
                 <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-emerald-500" />
                 <div className="flex justify-between items-start pl-2">
-                   <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/50 text-[10px] font-black uppercase tracking-widest border border-white/5">{srv.category || "General"}</span>
-                   <span className="text-lg font-black text-emerald-400 italic tracking-tighter shadow-emerald-500/20">{srv.priceCFA} CFA</span>
+                   <span className="px-3 py-1.5 rounded-full bg-[var(--off-white)] text-[var(--slate)] text-[10px] font-black uppercase tracking-widest border border-slate-200 shadow-sm">{srv.category || "General"}</span>
+                   <span className="text-lg font-black text-emerald-600 italic tracking-tighter drop-shadow-sm">{srv.priceCFA} CFA</span>
                 </div>
                 <div className="pl-2">
-                  <h3 className="text-white font-black text-xl tracking-tight mb-2 uppercase leading-tight group-hover:text-[var(--red)] transition-colors">{srv.title}</h3>
-                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3 font-medium bg-white/5 p-4 rounded-2xl border border-white/5">{srv.description}</p>
+                  <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight mb-2 uppercase leading-tight group-hover:text-[var(--red)] transition-colors">{srv.title}</h3>
+                  <p className="text-[var(--slate)] text-xs leading-relaxed line-clamp-3 font-medium bg-[var(--off-white)] p-4 rounded-2xl border border-slate-100">{srv.description}</p>
                 </div>
                 <div className="flex gap-3 pl-2">
-                  <button onClick={() => setEditServiceModal(srv)} className="flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
+                  <button onClick={() => setEditServiceModal(srv)} className="flex-1 py-4 bg-[var(--charcoal)] rounded-full text-white text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] active:scale-95 transition-all zero-jank">
                     <Edit3 className="w-4 h-4" /> Editer
                   </button>
-                  <button onClick={() => handleDeleteService(srv.id)} className="flex-1 py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20 active:scale-95 transition-all">
+                  <button onClick={() => handleDeleteService(srv.id)} className="flex-1 py-4 bg-red-50 hover:bg-red-100 text-[var(--red)] rounded-full text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-100 active:scale-95 transition-all shadow-sm zero-jank">
                     <Trash2 className="w-4 h-4" /> Suppr
                   </button>
                 </div>
@@ -761,23 +762,23 @@ export default function AdminDashboard() {
             ))}
 
             {activeTab === "reviews" && data.reviews.map((rev) => (
-              <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 space-y-4 shadow-xl">
-                <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-yellow-500" />
+              <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 space-y-4 shadow-sm zero-jank">
+                <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-yellow-400" />
                 <div className="flex justify-between items-start pl-2">
                   <div className="flex gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-yellow-400 text-yellow-400" : "fill-white/5 text-white/10"}`} />
+                      <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-amber-400 text-amber-400" : "fill-slate-100 text-slate-100"}`} />
                     ))}
                   </div>
-                  <span className="text-[9px] font-black text-white/40 uppercase">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
+                  <span className="text-[9px] font-black text-[var(--muted)] uppercase">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div className="pl-2">
-                  <p className="text-white/80 text-sm italic line-clamp-3">"{rev.comment}"</p>
-                  <p className="text-[10px] font-black uppercase text-yellow-500 mt-2">{rev.authorName || "Client"} • {rev.serviceId || "Général"}</p>
+                  <p className="text-[var(--slate)] text-sm italic line-clamp-3">"{rev.comment}"</p>
+                  <p className="text-[10px] font-black uppercase text-amber-500 mt-2">{rev.authorName || "Client"} • {rev.serviceId || "Général"}</p>
                 </div>
-                <div className="flex gap-3 pl-2 pt-2 border-t border-white/5">
-                  <button onClick={() => handleDeleteReview(rev.id)} className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-500/20 active:scale-95 transition-all">
-                    <Trash2 className="w-4 h-4" /> Supprimer
+                <div className="flex gap-3 pl-2 pt-2 border-t border-slate-100">
+                  <button onClick={() => handleDeleteReview(rev.id)} className="flex-1 py-3 bg-red-50 hover:bg-red-100 text-[var(--red)] rounded-full text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-red-100 active:scale-95 transition-all zero-jank">
+                    <Trash2 className="w-3.5 h-3.5" /> Supprimer
                   </button>
                 </div>
               </div>
@@ -785,17 +786,17 @@ export default function AdminDashboard() {
 
             {["requests", "clients", "messages", "services", "reviews"].includes(activeTab) &&
               (data[activeTab as keyof typeof data] as unknown[])?.length === 0 && (
-              <div className="py-24 text-center rounded-[2.5rem] border border-dashed border-white/10 bg-[#0D0D0D]/50 backdrop-blur-xl">
-                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6"><Search className="w-8 h-8 text-white/20" /></div>
-                <p className="text-white/40 font-black uppercase tracking-[0.2em] text-xs">Aucune donnée détectée</p>
+              <div className="py-24 text-center rounded-[2.5rem] border border-dashed border-[var(--border)] bg-white backdrop-blur-xl shadow-sm zero-jank">
+                <div className="w-16 h-16 rounded-full bg-[var(--off-white)] flex items-center justify-center mx-auto mb-6"><Search className="w-8 h-8 text-[var(--slate)]" /></div>
+                <p className="text-[var(--muted)] font-black uppercase tracking-[0.2em] text-xs">Aucune donnée détectée</p>
               </div>
             )}
 
 
           </div>
 
-          <div className="bg-[#111111] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl relative group/table hidden md:block">
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-white/20 md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
+          <div className="bg-white rounded-[2rem] overflow-hidden border border-[var(--border)] shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative group/table hidden md:block zero-jank">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-[var(--muted)] md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
               <span className="text-[8px] font-black uppercase tracking-[0.2em] vertical-text">Scroll</span>
               <ArrowRight className="w-3 h-3 rotate-0" />
             </div>
@@ -805,27 +806,27 @@ export default function AdminDashboard() {
                 {activeTab === "requests" && (
                   <>
                     <thead>
-                      <tr className="bg-[#1A1A1A] border-b border-white/10">{["Date", "Client", "Service / Délai", "Devis", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr>
+                      <tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Client", "Service / Délai", "Devis", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {data.requests.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-white/40 font-bold">Aucune requête.</td></tr>) : data.requests.map((req) => {
+                    <tbody className="divide-y divide-slate-100">
+                      {data.requests.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-[var(--muted)] font-bold">Aucune requête.</td></tr>) : data.requests.map((req) => {
                         const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                         return (
-                          <tr key={req.id} className="hover:bg-white/5 transition-colors group">
-                            <td className="py-5 px-6 font-mono text-[10px] text-white/40">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-5 px-6 font-black text-white tracking-tight">{req.entity} <br/><span className="text-[var(--red)] text-[9px] font-bold tracking-widest">{req.phone}</span></td>
-                            <td className="py-5 px-6 font-bold text-white/80">{req.serviceId} <br/><span className="text-[9px] text-white/40 uppercase tracking-widest">{req.timeframe}</span></td>
-                            <td className="py-5 px-6 font-black text-emerald-400 italic text-base">{req.budget}</td>
-                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span></td>
+                          <tr key={req.id} className="hover:bg-slate-50 transition-colors group zero-jank">
+                            <td className="py-5 px-6 font-mono text-[10px] text-[var(--muted)]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                            <td className="py-5 px-6 font-black text-[var(--charcoal)] tracking-tight">{req.entity} <br/><span className="text-[var(--red)] text-[9px] font-bold tracking-widest">{req.phone}</span></td>
+                            <td className="py-5 px-6 font-bold text-[var(--slate)]">{req.serviceId} <br/><span className="text-[9px] text-[var(--muted)] uppercase tracking-widest">{req.timeframe}</span></td>
+                            <td className="py-5 px-6 font-black text-[var(--charcoal)] text-base">{req.budget}</td>
+                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span></td>
                             <td className="py-5 px-6 flex items-center gap-2">
-                              <select value={req.status} onChange={(e) => attemptStatusChange(req.id, e.target.value)} className="bg-[#222222] border border-white/10 text-white rounded-lg text-[10px] p-2.5 font-bold uppercase cursor-pointer hover:border-white/30 focus:border-[var(--red)] focus:outline-none transition-all">
-                                <option value="PENDING" className="bg-[#1A1A1A] text-white">PENDING</option>
-                                <option value="ACTIVE" className="bg-[#1A1A1A] text-white">ACTIVE</option>
-                                <option value="COMPLETED" className="bg-[#1A1A1A] text-white">COMPLETED</option>
-                                <option value="REJECTED" className="bg-[#1A1A1A] text-white">REJECTED</option>
+                              <select value={req.status} onChange={(e) => attemptStatusChange(req.id, e.target.value)} className="bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[10px] p-2.5 px-4 font-bold uppercase cursor-pointer hover:border-slate-300 focus:border-[var(--red)] focus:outline-none focus:ring-2 ring-red-100 transition-all shadow-sm zero-jank">
+                                <option value="PENDING" className="bg-white text-[var(--charcoal)]">PENDING</option>
+                                <option value="ACTIVE" className="bg-white text-[var(--charcoal)]">ACTIVE</option>
+                                <option value="COMPLETED" className="bg-white text-[var(--charcoal)]">COMPLETED</option>
+                                <option value="REJECTED" className="bg-white text-[var(--charcoal)]">REJECTED</option>
                               </select>
-                              <button onClick={() => setSelectedBooking(req)} className="p-2.5 bg-white/10 rounded-lg hover:bg-white/20 text-white transition-colors" title="Voir détails"><Eye className="w-4 h-4" /></button>
-                              <button onClick={() => handleDeleteBooking(req.id)} className="p-2.5 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors" title="Supprimer définitivement"><Trash2 className="w-4 h-4" /></button>
+                              <button onClick={() => setSelectedBooking(req)} className="p-2.5 bg-slate-100 rounded-full hover:bg-slate-200 text-[var(--charcoal)] transition-colors zero-jank" title="Voir détails"><Eye className="w-4 h-4" /></button>
+                              <button onClick={() => handleDeleteBooking(req.id)} className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors zero-jank" title="Supprimer définitivement"><Trash2 className="w-4 h-4" /></button>
                             </td>
                           </tr>
                         );
@@ -836,24 +837,24 @@ export default function AdminDashboard() {
 
                 {activeTab === "messages" && (
                   <>
-                    <thead><tr className="bg-[#1A1A1A] border-b border-white/10">{["Date", "Nom", "Email", "Sujet", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-white/5">
-                      {data.messages.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-white/40 font-bold">Aucun message.</td></tr>) : data.messages.map((msg) => {
+                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Nom", "Email", "Sujet", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {data.messages.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-[var(--muted)] font-bold">Aucun message.</td></tr>) : data.messages.map((msg) => {
                          const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
                          return (
-                          <tr key={msg.id} className="hover:bg-white/5 transition-colors group">
-                            <td className="py-5 px-6 font-mono text-[10px] text-white/40">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-5 px-6 font-black text-white">{msg.name}</td>
+                          <tr key={msg.id} className="hover:bg-slate-50 transition-colors group zero-jank">
+                            <td className="py-5 px-6 font-mono text-[10px] text-[var(--muted)]">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                            <td className="py-5 px-6 font-black text-[var(--charcoal)]">{msg.name}</td>
                             <td className="py-5 px-6 font-bold text-[var(--red)]">{msg.email}</td>
-                            <td className="py-5 px-6 font-medium text-white/70 max-w-[200px] truncate" title={msg.message}>{msg.subject}: {msg.message}</td>
-                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border shadow-inner ${mapObj.cls}`}>{mapObj.label}</span></td>
+                            <td className="py-5 px-6 font-medium text-[var(--slate)] max-w-[200px] truncate" title={msg.message}>{msg.subject}: {msg.message}</td>
+                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span></td>
                             <td className="py-5 px-6 flex items-center gap-2">
-                              <select value={msg.status} onChange={(e) => handleUpdateMessage(msg.id, e.target.value)} className="bg-[#222222] border border-white/10 text-white rounded-lg text-[10px] p-2.5 font-bold uppercase cursor-pointer hover:border-white/30 focus:border-[var(--red)] focus:outline-none transition-all">
-                                <option value="UNREAD" className="bg-[#1A1A1A] text-white">UNREAD</option>
-                                <option value="READ" className="bg-[#1A1A1A] text-white">READ</option>
-                                <option value="REPLIED" className="bg-[#1A1A1A] text-white">REPLIED</option>
+                              <select value={msg.status} onChange={(e) => handleUpdateMessage(msg.id, e.target.value)} className="bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[10px] p-2.5 px-4 font-bold uppercase cursor-pointer hover:border-slate-300 focus:border-[var(--red)] focus:outline-none focus:ring-2 ring-red-100 transition-all shadow-sm zero-jank">
+                                <option value="UNREAD" className="bg-white text-[var(--charcoal)]">UNREAD</option>
+                                <option value="READ" className="bg-white text-[var(--charcoal)]">READ</option>
+                                <option value="REPLIED" className="bg-white text-[var(--charcoal)]">REPLIED</option>
                               </select>
-                              <button onClick={() => setSelectedMessage(msg)} className="p-2.5 bg-white/10 rounded-lg hover:bg-white/20 text-white transition-colors" title="Voir détails"><Eye className="w-4 h-4" /></button>
+                              <button onClick={() => setSelectedMessage(msg)} className="p-2.5 bg-slate-100 rounded-full hover:bg-slate-200 text-[var(--charcoal)] transition-colors zero-jank" title="Voir détails"><Eye className="w-4 h-4" /></button>
                             </td>
                           </tr>
                          )
@@ -864,21 +865,21 @@ export default function AdminDashboard() {
 
                 {activeTab === "clients" && (
                   <>
-                    <thead><tr className="bg-white/5 border-b border-white/10">{["Date", "Nom", "Email", "Rôle", "ID", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-white/5">
-                      {data.clients.length === 0 ? (<tr><td colSpan={6} className="text-center py-10 text-white/40 font-bold">Aucun client.</td></tr>) : data.clients.map((cli) => (
-                        <tr key={cli.id} className="hover:bg-white/5">
-                          <td className="py-4 px-6 font-mono text-[9px] text-white/40">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                          <td className="py-4 px-6 font-black text-white">{cli.displayName || "N/A"}</td>
-                          <td className="py-4 px-6 font-bold text-slate-300">{cli.email}</td>
-                          <td className="py-4 px-6"><span className={`inline-flex px-3 py-1 rounded-lg text-[9px] font-black uppercase border ${cli.role === 'ADMIN' ? 'bg-[var(--red)]/20 text-[var(--red)] border-[var(--red)]/50' : 'bg-white/5 text-white/60 border-white/10'}`}>{cli.role || "CLIENT"}</span></td>
-                          <td className="py-4 px-6 font-mono text-[9px] text-white/30">{cli.uid}</td>
-                          <td className="py-4 px-6 text-[10px] font-black text-white/30">
+                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Nom", "Email", "Rôle", "ID", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {data.clients.length === 0 ? (<tr><td colSpan={6} className="text-center py-10 text-[var(--muted)] font-bold">Aucun client.</td></tr>) : data.clients.map((cli) => (
+                        <tr key={cli.id} className="hover:bg-slate-50 transition-colors zero-jank">
+                          <td className="py-4 px-6 font-mono text-[9px] text-[var(--muted)]">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                          <td className="py-4 px-6 font-black text-[var(--charcoal)]">{cli.displayName || "N/A"}</td>
+                          <td className="py-4 px-6 font-bold text-[var(--slate)]">{cli.email}</td>
+                          <td className="py-4 px-6"><span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase border shadow-sm ${cli.role === 'ADMIN' ? 'bg-[var(--red-light)] text-[var(--red)] border-red-100' : 'bg-white text-[var(--slate)] border-slate-200'}`}>{cli.role || "CLIENT"}</span></td>
+                          <td className="py-4 px-6 font-mono text-[9px] text-[var(--muted)]">{cli.uid}</td>
+                          <td className="py-4 px-6 text-[10px] font-black text-slate-400">
                             {cli.role === 'ADMIN' ? (
-                              <span className="text-white/20">Auth Firebase</span>
+                              <span className="text-[var(--muted)]">Auth Firebase</span>
                             ) : (
-                              <button onClick={() => handleDeleteClient(cli.uid)} className="flex items-center gap-2 p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors">
-                                <Trash2 className="w-3 h-3" /> Supprimer
+                              <button onClick={() => handleDeleteClient(cli.uid)} className="flex items-center gap-2 p-2 bg-red-50 text-red-500 rounded-full hover:bg-[var(--red)] hover:text-white transition-colors zero-jank border border-red-100 shadow-sm">
+                                <Trash2 className="w-3.5 h-3.5" /> Supprimer
                               </button>
                             )}
                           </td>
@@ -890,17 +891,17 @@ export default function AdminDashboard() {
 
                 {activeTab === "services" && (
                   <>
-                    <thead><tr className="bg-white/5 border-b border-white/10">{["Titre", "Catégorie", "Prix CFA", "Description", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-white/5">
-                      {data.services.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-white/40 font-bold">Catalogue vide.</td></tr>) : data.services.map((srv) => (
-                        <tr key={srv.id} className="hover:bg-white/5">
-                          <td className="py-4 px-6 font-black text-white">{srv.title}</td>
-                          <td className="py-4 px-6 font-bold text-white/40 text-[10px] uppercase">{srv.category || "IT"}</td>
-                          <td className="py-4 px-6 font-black text-emerald-400 italic">{srv.priceCFA}</td>
-                          <td className="py-4 px-6 font-medium text-white/60 text-xs max-w-xs">{srv.description}</td>
+                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Titre", "Catégorie", "Prix CFA", "Description", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {data.services.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-[var(--muted)] font-bold">Catalogue vide.</td></tr>) : data.services.map((srv) => (
+                        <tr key={srv.id} className="hover:bg-slate-50 transition-colors zero-jank">
+                          <td className="py-4 px-6 font-black text-[var(--charcoal)]">{srv.title}</td>
+                          <td className="py-4 px-6 font-bold text-[var(--muted)] text-[10px] uppercase">{srv.category || "IT"}</td>
+                          <td className="py-4 px-6 font-black text-[var(--charcoal)]">{srv.priceCFA}</td>
+                          <td className="py-4 px-6 font-medium text-[var(--slate)] text-xs max-w-xs">{srv.description}</td>
                           <td className="py-4 px-6 flex items-center gap-2">
-                            <button onClick={() => setEditServiceModal(srv)} className="p-2 bg-blue-500/20 text-blue-500 rounded hover:bg-blue-500/40"><Edit3 className="w-4 h-4" /></button>
-                            <button onClick={() => handleDeleteService(srv.id)} className="p-2 bg-red-500/20 text-red-500 rounded hover:bg-red-500/40"><Trash2 className="w-4 h-4" /></button>
+                            <button onClick={() => setEditServiceModal(srv)} className="p-2.5 bg-slate-100 text-[var(--charcoal)] rounded-full hover:bg-slate-200 transition-colors zero-jank shadow-sm"><Edit3 className="w-4 h-4" /></button>
+                            <button onClick={() => handleDeleteService(srv.id)} className="p-2.5 bg-red-50 border border-red-100 text-red-500 rounded-full hover:bg-[var(--red)] hover:text-white transition-colors zero-jank shadow-sm"><Trash2 className="w-4 h-4" /></button>
                           </td>
                         </tr>
                       ))}
@@ -909,22 +910,22 @@ export default function AdminDashboard() {
                 )}
                 {activeTab === "reviews" && (
                   <>
-                    <thead><tr className="bg-white/5 border-b border-white/10">{["Date", "Client & Service", "Note", "Commentaire", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-white/50">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-white/5">
-                      {data.reviews.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-white/40 font-bold">Aucun témoignage.</td></tr>) : data.reviews.map((rev) => (
-                        <tr key={rev.id} className="hover:bg-white/5">
-                          <td className="py-4 px-6 font-mono text-[9px] text-white/40">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                          <td className="py-4 px-6"><p className="font-black text-white">{rev.authorName || "Client"}</p><p className="text-[9px] text-white/40 uppercase tracking-widest">{rev.serviceId || "Général"}</p></td>
+                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Client & Service", "Note", "Commentaire", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {data.reviews.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-[var(--muted)] font-bold">Aucun témoignage.</td></tr>) : data.reviews.map((rev) => (
+                        <tr key={rev.id} className="hover:bg-slate-50 transition-colors zero-jank">
+                          <td className="py-4 px-6 font-mono text-[9px] text-[var(--muted)]">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
+                          <td className="py-4 px-6"><p className="font-black text-[var(--charcoal)]">{rev.authorName || "Client"}</p><p className="text-[9px] text-[var(--muted)] uppercase tracking-widest">{rev.serviceId || "Général"}</p></td>
                           <td className="py-4 px-6">
                             <div className="flex gap-1">
                               {Array.from({ length: 5 }).map((_, i) => (
-                                <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-yellow-400 text-yellow-400" : "fill-white/5 text-white/10"}`} />
+                                <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-amber-400 text-amber-400" : "fill-slate-100 text-slate-100"}`} />
                               ))}
                             </div>
                           </td>
-                          <td className="py-4 px-6 font-medium text-white/60 text-xs italic max-w-xs truncate">"{rev.comment}"</td>
+                          <td className="py-4 px-6 font-medium text-[var(--slate)] text-xs italic max-w-xs truncate">"{rev.comment}"</td>
                           <td className="py-4 px-6">
-                            <button onClick={() => handleDeleteReview(rev.id)} className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors" title="Supprimer">
+                            <button onClick={() => handleDeleteReview(rev.id)} className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-[var(--red)] hover:text-white transition-colors border border-red-100 shadow-sm zero-jank" title="Supprimer">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </td>
@@ -939,89 +940,90 @@ export default function AdminDashboard() {
 
           {/* Profile Tab */}
           {activeTab === "profile" && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 zero-jank">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 {/* Meta Side */}
                 <div className="space-y-6">
-                  <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex flex-col items-center text-center relative overflow-hidden">
-                    <AuraGradient color="var(--red)" className="top-0 left-0 w-32 h-32 opacity-10" />
-                    <div className="w-24 h-24 rounded-full bg-[var(--red)] flex items-center justify-center text-3xl font-black text-white mb-6 shadow-[var(--shadow-red)]">
+                  <div className="p-8 bg-white border border-[var(--border)] rounded-[2.5rem] flex flex-col items-center text-center relative overflow-hidden shadow-sm zero-jank">
+                    <AuraGradient color="var(--red)" className="top-0 left-0 w-32 h-32 opacity-[0.05]" />
+                    <div className="w-24 h-24 rounded-full bg-[var(--red-light)] flex items-center justify-center text-3xl font-black text-[var(--red)] mb-6 shadow-sm border border-red-100 relative group cursor-pointer">
+                      <div className="absolute inset-0 bg-[var(--red)] rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
                       {(user?.displayName || "A")[0]}
                     </div>
-                    <h3 className="text-2xl font-black text-white tracking-tight">{user?.displayName || "Administrateur"}</h3>
-                    <p className="text-[10px] font-black uppercase text-emerald-400 tracking-[0.2em] mt-2">Accès Super-Privilégié</p>
-                    <div className="mt-8 pt-8 border-t border-white/5 w-full space-y-4">
+                    <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tight">{user?.displayName || "Administrateur"}</h3>
+                    <p className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.2em] mt-2">Accès Super-Privilégié</p>
+                    <div className="mt-8 pt-8 border-t border-slate-100 w-full space-y-4">
                       <div className="flex items-center justify-between">
-                         <span className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em]">SÉCURISÉ</span>
-                         <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Opérations AES-256</span>
+                         <span className="text-[10px] text-emerald-600 font-black uppercase tracking-[0.2em]">SÉCURISÉ</span>
+                         <span className="text-[9px] text-[var(--muted)] font-bold uppercase tracking-widest">Opérations AES-256</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black text-white/20 uppercase">Version Système</span>
-                        <span className="text-[10px] font-bold text-white/60">V2.4.0-STABLE</span>
+                        <span className="text-[10px] font-black text-[var(--muted)] uppercase">Version Système</span>
+                        <span className="text-[10px] font-bold text-[var(--slate)]">V2.4.0-STABLE</span>
                       </div>
                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-black text-white/20 uppercase">Dernier Login</span>
-                          <span className="text-[10px] font-bold text-white/60">Aujourd{"'"}hui</span>
+                          <span className="text-[10px] font-black text-[var(--muted)] uppercase">Dernier Login</span>
+                          <span className="text-[10px] font-bold text-[var(--slate)]">Aujourd{"'"}hui</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-6 bg-[#111] border border-white/10 rounded-[2rem] space-y-3">
-                    <button onClick={() => setShowPinChangeModal(true)} className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 group">
-                      <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white"><Key className="w-4 h-4 text-emerald-400" /> Code PIN Maître</span>
-                      <ArrowRight className="w-4 h-4 text-white/20" />
+                  <div className="p-6 bg-white border border-[var(--border)] rounded-[2rem] space-y-3 shadow-sm zero-jank">
+                    <button onClick={() => setShowPinChangeModal(true)} className="w-full flex items-center justify-between p-4 bg-[var(--off-white)] hover:bg-slate-100 rounded-xl transition-all border border-slate-200 group zero-jank">
+                      <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-[var(--muted)] group-hover:text-[var(--charcoal)]"><Key className="w-4 h-4 text-emerald-600" /> Code PIN Maître</span>
+                      <ArrowRight className="w-4 h-4 text-[var(--muted)]" />
                     </button>
-                    <button onClick={() => setShowPasswordChangeModal(true)} className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/5 group">
-                      <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white"><ShieldAlert className="w-4 h-4 text-amber-500" /> Mot de Passe</span>
-                      <ArrowRight className="w-4 h-4 text-white/20" />
+                    <button onClick={() => setShowPasswordChangeModal(true)} className="w-full flex items-center justify-between p-4 bg-[var(--off-white)] hover:bg-slate-100 rounded-xl transition-all border border-slate-200 group zero-jank">
+                      <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-[var(--muted)] group-hover:text-[var(--charcoal)]"><ShieldAlert className="w-4 h-4 text-amber-500" /> Mot de Passe</span>
+                      <ArrowRight className="w-4 h-4 text-[var(--muted)]" />
                     </button>
                   </div>
                 </div>
 
                 {/* Form Main */}
                 <div className="lg:col-span-2">
-                   <div className="p-8 md:p-10 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden h-full">
-                     <AuraGradient color="var(--red)" className="bottom-[-10%] right-[-10%] w-64 h-64 opacity-[0.05]" />
-                     <h3 className="text-2xl font-black text-white tracking-tighter mb-8 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><Edit3 className="w-5 h-5 text-emerald-400" /></div>
+                   <div className="p-8 md:p-10 bg-white border border-[var(--border)] rounded-[3rem] relative overflow-hidden h-full shadow-[0_10px_30px_rgba(0,0,0,0.02)] zero-jank">
+                     <AuraGradient color="var(--red)" className="bottom-[-10%] right-[-10%] w-64 h-64 opacity-[0.03]" />
+                     <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tighter mb-8 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center border border-emerald-100"><Edit3 className="w-5 h-5 text-emerald-600" /></div>
                         Informations Administrateur
                      </h3>
 
                      <form onSubmit={handleProfileUpdate} className="space-y-8 relative z-10">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                            <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] pl-1">Nom d{"'"}affichage</label>
+                             <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">Nom d{"'"}affichage</label>
                              <input 
                                type="text" 
                                value={profileForm.name} 
                                onChange={e => setProfileForm({...profileForm, name: e.target.value})}
-                               className="w-full bg-[#050505] border border-white/10 text-white p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-white/5"
+                               className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none transition-all placeholder:text-[var(--muted)]/50 zero-jank shadow-sm"
                              />
                            </div>
                            <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase text-white/30 tracking-[0.2em] pl-1">Email Principal</label>
+                             <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">Email Principal</label>
                              <input 
                                type="email" 
                                value={profileForm.email} 
                                onChange={e => setProfileForm({...profileForm, email: e.target.value})}
-                               className="w-full bg-[#050505] border border-white/10 text-white p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-white/5"
+                               className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none transition-all placeholder:text-[var(--muted)]/50 zero-jank shadow-sm"
                              />
                            </div>
                         </div>
 
                         <AnimatePresence>
-                          {profileForm.error && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-[10px] font-black text-red-500 uppercase tracking-widest">{profileForm.error}</motion.p>}
-                          {profileForm.success && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{profileForm.success}</motion.p>}
+                          {profileForm.error && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-[10px] font-black text-red-500 uppercase tracking-widest zero-jank">{profileForm.error}</motion.p>}
+                          {profileForm.success && <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="text-[10px] font-black text-emerald-600 uppercase tracking-widest zero-jank">{profileForm.success}</motion.p>}
                         </AnimatePresence>
 
                         <div className="pt-6">
                            <button 
                              type="submit" 
                              disabled={isUpdatingProfile}
-                             className="px-10 py-5 bg-white text-black rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center gap-3"
+                             className="px-10 py-5 bg-[var(--charcoal)] text-white rounded-full font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center gap-3 zero-jank"
                            >
-                             {isUpdatingProfile ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : "Sauvegarder Configuration"}
+                             {isUpdatingProfile ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Sauvegarder Configuration"}
                            </button>
                         </div>
                      </form>
@@ -1039,17 +1041,17 @@ export default function AdminDashboard() {
         
         {/* Booking Details Modal */}
         {selectedBooking && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
-            <div className="bg-[#111] p-6 md:p-8 rounded-[2rem] border border-white/10 w-full max-w-2xl relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
-              <button onClick={() => setSelectedBooking(null)} className="absolute top-4 right-4 md:top-6 md:right-6 text-white/50 hover:text-white p-2"><X className="w-6 h-6" /></button>
-              <h2 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter mb-6 mt-2">Détails de la demande</h2>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl zero-jank">
+            <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-[var(--border)] w-full max-w-2xl relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+              <button onClick={() => setSelectedBooking(null)} className="absolute top-4 right-4 md:top-6 md:right-6 text-[var(--muted)] hover:text-[var(--charcoal)] p-2 transition-colors"><X className="w-6 h-6" /></button>
+              <h2 className="text-xl md:text-2xl font-black text-[var(--charcoal)] uppercase tracking-tighter mb-6 mt-2">Détails de la demande</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-white text-base md:text-lg">{(selectedBooking as any).entity} <span className="text-[9px] bg-white/10 px-2 py-1 rounded ml-2">{(selectedBooking as any).clientType}</span></p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-white text-xs md:text-sm">{(selectedBooking as any).email}<br/>{(selectedBooking as any).phone}</p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Service Choisi</span><p className="font-bold text-[var(--red)]">{(selectedBooking as any).serviceId}</p></div>
-                <div><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Budget Alloué</span><p className="font-bold text-emerald-400 italic">{(selectedBooking as any).budget}</p></div>
-                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Délai d{"'"}intervention</span><p className="font-bold text-white/80">{(selectedBooking as any).timeframe}</p></div>
-                <div className="md:col-span-2"><span className="text-white/40 font-black text-[10px] uppercase tracking-widest block mb-1">Description Technique</span><p className="p-4 bg-white/5 rounded-2xl text-white/80 whitespace-pre-line text-xs md:text-sm leading-relaxed">{(selectedBooking as any).description}</p></div>
+                <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Entité / Client</span><p className="font-bold text-[var(--charcoal)] text-base md:text-lg">{(selectedBooking as any).entity} <span className="text-[9px] bg-slate-100 text-[var(--slate)] border border-slate-200 px-2 py-1 rounded-full ml-2 shadow-sm">{(selectedBooking as any).clientType}</span></p></div>
+                <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Email & Téléphone</span><p className="font-bold text-[var(--charcoal)] text-xs md:text-sm">{(selectedBooking as any).email}<br/>{(selectedBooking as any).phone}</p></div>
+                <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Service Choisi</span><p className="font-bold text-[var(--red)]">{(selectedBooking as any).serviceId}</p></div>
+                <div><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Budget Alloué</span><p className="font-black text-emerald-600 italic">{(selectedBooking as any).budget}</p></div>
+                <div className="md:col-span-2"><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Délai d{"'"}intervention</span><p className="font-bold text-[var(--charcoal)]">{(selectedBooking as any).timeframe}</p></div>
+                <div className="md:col-span-2"><span className="text-[var(--muted)] font-black text-[10px] uppercase tracking-widest block mb-1">Description Technique</span><p className="p-5 bg-[var(--off-white)] border border-slate-100 rounded-2xl text-[var(--slate)] whitespace-pre-line text-xs md:text-sm leading-relaxed shadow-sm">{(selectedBooking as any).description}</p></div>
               </div>
             </div>
           </motion.div>
@@ -1057,32 +1059,32 @@ export default function AdminDashboard() {
 
         {/* Message Details Modal */}
         {selectedMessage && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="bg-[#111] p-8 rounded-3xl border border-[var(--red)]/20 w-full max-w-2xl relative shadow-[0_0_50px_rgba(200,16,46,0.1)]">
-              <button onClick={() => setSelectedMessage(null)} className="absolute top-6 right-6 text-white/50 hover:text-white"><X className="w-6 h-6" /></button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl zero-jank">
+            <div className="bg-white p-8 rounded-[2.5rem] border border-[var(--border)] w-full max-w-2xl relative shadow-2xl">
+              <button onClick={() => setSelectedMessage(null)} className="absolute top-6 right-6 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors"><X className="w-6 h-6" /></button>
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-[var(--red)]/10 text-[var(--red)] flex items-center justify-center"><Mail className="w-6 h-6" /></div>
+                <div className="w-12 h-12 rounded-2xl bg-[var(--red-light)] text-[var(--red)] border border-red-100 flex items-center justify-center shadow-sm"><Mail className="w-6 h-6" /></div>
                 <div>
-                  <h2 className="text-xl font-black text-white tracking-tight">{selectedMessage.subject}</h2>
-                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">{selectedMessage.createdAt ? new Date(selectedMessage.createdAt.seconds*1000).toLocaleString() : 'Date inconnue'}</p>
+                  <h2 className="text-xl font-black text-[var(--charcoal)] tracking-tight">{selectedMessage.subject}</h2>
+                  <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{selectedMessage.createdAt ? new Date(selectedMessage.createdAt.seconds*1000).toLocaleString() : 'Date inconnue'}</p>
                 </div>
               </div>
               
-              <div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/5">
+              <div className="bg-[var(--off-white)] border border-slate-200 shadow-sm rounded-3xl p-6 mb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-200">
                   <div>
-                    <span className="text-[10px] text-white/40 uppercase tracking-widest font-black block mb-1">Expéditeur</span>
-                    <strong className="text-white block text-sm">{selectedMessage.name} <span className="font-normal text-[var(--red)] ml-2">{selectedMessage.email}</span></strong>
+                    <span className="text-[10px] text-[var(--muted)] uppercase tracking-widest font-black block mb-1">Expéditeur</span>
+                    <strong className="text-[var(--charcoal)] block text-sm">{selectedMessage.name} <span className="font-normal text-[var(--red)] ml-2">{selectedMessage.email}</span></strong>
                   </div>
                 </div>
                 <div>
-                  <span className="text-[10px] text-white/40 uppercase tracking-widest font-black block mb-3">Corps du message</span>
-                  <p className="text-white/80 leading-relaxed whitespace-pre-wrap text-sm">{selectedMessage.message}</p>
+                  <span className="text-[10px] text-[var(--muted)] uppercase tracking-widest font-black block mb-3">Corps du message</span>
+                  <p className="text-[var(--slate)] leading-relaxed whitespace-pre-wrap text-sm">{selectedMessage.message}</p>
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <button onClick={() => setSelectedMessage(null)} className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black uppercase text-[10px] tracking-widest transition-colors">Fermer</button>
+                <button onClick={() => setSelectedMessage(null)} className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-[var(--charcoal)] font-black uppercase text-[10px] tracking-widest transition-colors zero-jank">Fermer</button>
               </div>
             </div>
           </motion.div>
@@ -1090,38 +1092,19 @@ export default function AdminDashboard() {
 
         {/* Change Status & Admin Note Modal */}
         {statusPrompt && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="bg-[#111] p-8 rounded-3xl border border-[var(--red)]/40 w-full max-w-md relative shadow-2xl">
-              <h2 className="text-xl font-black text-white uppercase tracking-tighter mb-4">{t.admin.modals.status_update}</h2>
-              <p className="text-xs text-white/60 mb-6">Vous passez le statut à <strong className="text-[var(--red)]">{statusPrompt.status}</strong>. Laissez un commentaire visible par le client.</p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl zero-jank">
+            <div className="bg-white p-8 rounded-[2rem] border border-[var(--border)] w-full max-w-md relative shadow-2xl">
+              <h2 className="text-xl font-black text-[var(--charcoal)] uppercase tracking-tighter mb-4">{t.admin.modals.status_update}</h2>
+              <p className="text-xs text-[var(--slate)] mb-6">Vous passez le statut à <strong className="text-[var(--red)]">{statusPrompt.status}</strong>. Laissez un commentaire visible par le client.</p>
               <textarea 
                 value={adminNote} 
                 onChange={(e) => setAdminNote(e.target.value)} 
                 placeholder={t.admin.modals.admin_note + "..."} 
-                className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm text-white focus:border-[var(--red)] outline-none mb-6 h-32 resize-none" />
+                className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm text-[var(--charcoal)] focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none mb-6 h-32 resize-none transition-all shadow-sm" />
               <div className="flex justify-end gap-3">
-                <button onClick={() => setStatusPrompt(null)} className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-white/10 hover:bg-white/20 text-white transition-all">{t.admin.modals.cancel}</button>
-                <button onClick={confirmStatusChange} className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-[var(--red)] text-white hover:bg-red-600 transition-all shadow-[var(--shadow-red)]">{t.admin.modals.save}</button>
+                <button onClick={() => setStatusPrompt(null)} className="px-5 py-3 rounded-full font-bold text-[10px] uppercase tracking-widest bg-slate-100 hover:bg-slate-200 text-[var(--charcoal)] transition-all zero-jank">{t.admin.modals.cancel}</button>
+                <button onClick={confirmStatusChange} className="px-5 py-3 rounded-full font-bold text-[10px] uppercase tracking-widest bg-[var(--red)] text-white hover:bg-red-600 transition-all shadow-[0_5px_15px_rgba(230,0,0,0.3)] zero-jank">{t.admin.modals.save}</button>
               </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Add Service Modal */}
-        {newServiceModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div className="bg-[#111] p-8 rounded-3xl border border-white/10 w-full max-w-md relative shadow-2xl">
-              <h2 className="text-xl font-black text-white uppercase tracking-tighter mb-6">Ajouter au Catalogue</h2>
-              <form onSubmit={handleCreateService} className="space-y-4">
-                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Titre du service</label><input required type="text" value={newServiceForm.title} onChange={e => setNewServiceForm({...newServiceForm, title: e.target.value})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white" /></div>
-                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Catégorie</label><input required type="text" value={newServiceForm.category} onChange={e => setNewServiceForm({...newServiceForm, category: e.target.value})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white" /></div>
-                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Prix CFA (Mettre 0 pour devis)</label><input required type="number" value={newServiceForm.priceCFA} onChange={e => setNewServiceForm({...newServiceForm, priceCFA: Number(e.target.value)})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white" /></div>
-                <div><label className="text-[10px] font-black uppercase text-white/50 block mb-1">Description Courte</label><textarea required value={newServiceForm.description} onChange={e => setNewServiceForm({...newServiceForm, description: e.target.value})} className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-sm text-white h-24 resize-none" /></div>
-                <div className="flex justify-end gap-3 mt-6">
-                  <button type="button" onClick={() => setNewServiceModal(false)} className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-white/10 hover:bg-white/20 text-white">Annuler</button>
-                  <button type="submit" className="px-5 py-3 rounded-xl font-bold text-xs uppercase bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]">Créer Service</button>
-                </div>
-              </form>
             </div>
           </motion.div>
         )}
@@ -1146,30 +1129,31 @@ export default function AdminDashboard() {
         )}
 
         {/* PIN Change Modal */}
+        {/* PIN Change Modal */}
         {showPinChangeModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md zero-jank" />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+              className="relative w-full max-w-sm bg-white border border-[var(--border)] shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden zero-jank"
             >
-              <AuraGradient color="emerald" className="top-0 right-0 w-64 h-64 opacity-[0.07]" />
-              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <AuraGradient color="emerald" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
+              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[var(--off-white)] border border-slate-200 flex items-center justify-center text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-slate-100 transition-colors">
                 <X className="w-5 h-5" />
               </button>
               
               <div className="mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
-                  <Key className="w-6 h-6 text-emerald-400" />
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
+                  <Key className="w-6 h-6 text-emerald-600" />
                 </div>
-                <h3 className="text-xl font-black text-white tracking-tight mb-1">Code PIN Maître</h3>
-                <p className="text-[11px] font-medium text-white/40 leading-relaxed">Saisissez votre ancien PIN puis le nouveau (6 chiffres).</p>
+                <h3 className="text-xl font-black text-[var(--charcoal)] tracking-tight mb-1">Code PIN Maître</h3>
+                <p className="text-[11px] font-medium text-[var(--slate)] leading-relaxed">Saisissez votre ancien PIN puis le nouveau (6 chiffres).</p>
               </div>
 
-              <form onSubmit={handlePinChangeSubmit} className="space-y-4">
+              <form onSubmit={handlePinChangeSubmit} className="space-y-4 relative z-10">
                 {/* Old PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Code PIN</label>
+                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Ancien Code PIN</label>
                   <div className="relative">
                     <input 
                       type={showOldPin ? "text" : "password"}
@@ -1178,16 +1162,16 @@ export default function AdminDashboard() {
                       placeholder="••••••"
                       maxLength={6}
                       required
-                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none placeholder:text-[var(--muted)]/50 transition-all shadow-sm zero-jank"
                     />
-                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
                       {showOldPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
                 {/* New PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Code PIN (6 chiffres)</label>
+                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Nouveau Code PIN (6 chiffres)</label>
                   <div className="relative">
                     <input 
                       type={showNewPin ? "text" : "password"}
@@ -1196,9 +1180,9 @@ export default function AdminDashboard() {
                       placeholder="••••••"
                       maxLength={6}
                       required
-                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none placeholder:text-[var(--muted)]/50 transition-all shadow-sm zero-jank"
                     />
-                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
                       {showNewPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -1206,22 +1190,22 @@ export default function AdminDashboard() {
                 
                 <AnimatePresence>
                   {pinChangeForm.error && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl zero-jank">
                       <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-                      <p className="text-[11px] text-red-400 font-bold">{pinChangeForm.error}</p>
+                      <p className="text-[11px] text-red-500 font-bold">{pinChangeForm.error}</p>
                     </motion.div>
                   )}
                   {pinChangeForm.success && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <p className="text-[11px] text-emerald-400 font-bold">{pinChangeForm.success}</p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl zero-jank">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <p className="text-[11px] text-emerald-600 font-bold">{pinChangeForm.success}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 6 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2">
-                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><Key className="w-4 h-4" /> Confirmer le changement</>}
+                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 6 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(16,185,129,0.3)] active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2 zero-jank">
+                    {isChangingPin ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Key className="w-4 h-4" /> Confirmer le changement</>}
                   </button>
                 </div>
               </form>
@@ -1230,30 +1214,31 @@ export default function AdminDashboard() {
         )}
 
         {/* Password Change Modal */}
+        {/* Password Change Modal */}
         {showPasswordChangeModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPassword && setShowPasswordChangeModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPassword && setShowPasswordChangeModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md zero-jank" />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+              className="relative w-full max-w-sm bg-white border border-[var(--border)] shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden zero-jank"
             >
-              <AuraGradient color="amber" className="top-0 right-0 w-64 h-64 opacity-[0.07]" />
-              <button disabled={isChangingPassword} onClick={() => { setShowPasswordChangeModal(false); setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <AuraGradient color="amber" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
+              <button disabled={isChangingPassword} onClick={() => { setShowPasswordChangeModal(false); setPasswordChangeForm({ oldPassword: "", newPassword: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[var(--off-white)] border border-slate-200 flex items-center justify-center text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-slate-100 transition-colors">
                 <X className="w-5 h-5" />
               </button>
               
               <div className="mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center mb-4">
                   <ShieldAlert className="w-6 h-6 text-amber-500" />
                 </div>
-                <h3 className="text-xl font-black text-white tracking-tight mb-1">Changer le Mot de Passe</h3>
-                <p className="text-[11px] font-medium text-white/40 leading-relaxed">Confirmez votre identité puis saisissez le nouveau mot de passe.</p>
+                <h3 className="text-xl font-black text-[var(--charcoal)] tracking-tight mb-1">Changer le Mot de Passe</h3>
+                <p className="text-[11px] font-medium text-[var(--slate)] leading-relaxed">Confirmez votre identité puis saisissez le nouveau mot de passe.</p>
               </div>
 
-              <form onSubmit={handlePasswordChangeSubmit} className="space-y-4">
+              <form onSubmit={handlePasswordChangeSubmit} className="space-y-4 relative z-10">
                 {/* Current Password */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Mot de passe actuel</label>
+                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Mot de passe actuel</label>
                   <div className="relative">
                     <input 
                       type={showOldPassword ? "text" : "password"}
@@ -1261,16 +1246,16 @@ export default function AdminDashboard() {
                       onChange={(e) => setPasswordChangeForm(prev => ({ ...prev, oldPassword: e.target.value, error: "" }))}
                       placeholder="Votre mot de passe actuel"
                       required
-                      className="w-full bg-[#050505] border border-white/10 text-white p-4 pr-12 rounded-2xl text-sm font-bold focus:border-amber-500 outline-none transition-all placeholder:text-white/10"
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-4 pr-12 rounded-2xl text-sm font-bold focus:border-amber-500 focus:ring-4 ring-amber-100 outline-none transition-all placeholder:text-[var(--muted)]/50 shadow-sm zero-jank"
                     />
-                    <button type="button" onClick={() => setShowOldPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                    <button type="button" onClick={() => setShowOldPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
                       {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
                 {/* New Password */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau mot de passe (min. 8 caractères)</label>
+                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Nouveau mot de passe (min. 8 caractères)</label>
                   <div className="relative">
                     <input 
                       type={showNewPassword ? "text" : "password"}
@@ -1279,9 +1264,9 @@ export default function AdminDashboard() {
                       placeholder="Nouveau mot de passe sécurisé"
                       minLength={8}
                       required
-                      className="w-full bg-[#050505] border border-white/10 text-white p-4 pr-12 rounded-2xl text-sm font-bold focus:border-amber-500 outline-none transition-all placeholder:text-white/10"
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-4 pr-12 rounded-2xl text-sm font-bold focus:border-amber-500 focus:ring-4 ring-amber-100 outline-none transition-all placeholder:text-[var(--muted)]/50 shadow-sm zero-jank"
                     />
-                    <button type="button" onClick={() => setShowNewPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                    <button type="button" onClick={() => setShowNewPassword(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
                       {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -1289,22 +1274,22 @@ export default function AdminDashboard() {
                 
                 <AnimatePresence>
                   {passwordChangeForm.error && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl zero-jank">
                       <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-                      <p className="text-[11px] text-red-400 font-bold">{passwordChangeForm.error}</p>
+                      <p className="text-[11px] text-red-500 font-bold">{passwordChangeForm.error}</p>
                     </motion.div>
                   )}
                   {passwordChangeForm.success && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <p className="text-[11px] text-emerald-400 font-bold">{passwordChangeForm.success}</p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl zero-jank">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <p className="text-[11px] text-emerald-600 font-bold">{passwordChangeForm.success}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={isChangingPassword || !passwordChangeForm.newPassword || !passwordChangeForm.oldPassword} className="w-full py-4 bg-amber-500 hover:bg-amber-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2">
-                    {isChangingPassword ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><ShieldAlert className="w-4 h-4" /> Confirmer le changement</>}
+                  <button type="submit" disabled={isChangingPassword || !passwordChangeForm.newPassword || !passwordChangeForm.oldPassword} className="w-full py-4 bg-amber-500 hover:bg-amber-400 rounded-xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(245,158,11,0.3)] active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2 zero-jank">
+                    {isChangingPassword ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><ShieldAlert className="w-4 h-4" /> Confirmer le changement</>}
                   </button>
                 </div>
               </form>

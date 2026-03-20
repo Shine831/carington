@@ -10,8 +10,8 @@
     "lint": "eslint",
     "translate": "node scripts/auto-translate.mjs"
   },
-
   "dependencies": {
+    "@studio-freight/lenis": "^1.0.42",
     "firebase": "^12.10.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.577.0",

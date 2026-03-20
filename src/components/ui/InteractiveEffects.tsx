@@ -42,7 +42,7 @@ export function TiltCard({ children, className = "", intensity = 10 }: TiltCardP
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={className}
+      className={`zero-jank ${className}`}
     >
       {children}
     </motion.div>
@@ -59,8 +59,9 @@ interface MagneticButtonProps {
 export function MagneticButton({ children, className = "", onClick, type = "button" }: MagneticButtonProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 400, damping: 20 });
-  const springY = useSpring(y, { stiffness: 400, damping: 20 });
+  // Ultra-smooth Apple-like spring physics
+  const springX = useSpring(x, { stiffness: 300, damping: 30, mass: 0.8 });
+  const springY = useSpring(y, { stiffness: 300, damping: 30, mass: 0.8 });
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -87,6 +88,7 @@ export function MagneticButton({ children, className = "", onClick, type = "butt
       <motion.div
         style={{ x: springX, y: springY }}
         onClick={onClick}
+        className="zero-jank"
       >
         {children}
       </motion.div>
@@ -116,9 +118,9 @@ export function SpatialLayer({ children, speed = 0.5, direction = 1, className =
     <motion.div
       ref={ref}
       style={{ y, zIndex }}
-      className={`absolute pointer-events-none ${className}`}
+      className={`absolute pointer-events-none zero-jank ${className}`}
     >
-      <motion.div style={{ opacity }}>
+      <motion.div style={{ opacity }} className="zero-jank">
         {children}
       </motion.div>
     </motion.div>
@@ -135,19 +137,19 @@ interface BentoCardProps {
 export function BentoCard({ children, className = "", delay = 0, highlight = false }: BentoCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      initial={{ opacity: 0, scale: 0.98, y: 15 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ 
         duration: 0.8, 
         delay, 
-        ease: [0.22, 1, 0.36, 1] 
+        ease: [0.16, 1, 0.3, 1] 
       }}
-      viewport={{ once: true }}
-      whileHover={{ y: -5 }}
-      className={`relative group overflow-hidden rounded-[2.5rem] p-8 border backdrop-blur-md transition-all duration-500 ${
+      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+      whileHover={{ y: -4 }}
+      className={`relative group overflow-hidden rounded-[2.5rem] p-8 backdrop-blur-3xl transition-all duration-700 zero-jank ${
         highlight 
-          ? "bg-white/90 border-white/40 shadow-2xl" 
-          : "bg-white/60 border-white/20 hover:bg-white/80"
+          ? "bg-white border-white/80 shadow-[0_20px_60px_rgba(230,0,0,0.08)]" 
+          : "bg-white/70 border-white/50 hover:bg-white/90 shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
       } ${className}`}
     >
       <div className="relative z-10 h-full flex flex-col">

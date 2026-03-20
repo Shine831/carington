@@ -60,17 +60,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--off-white)] overflow-hidden">
 
-      {/* ── ELITE HERO (Pure Tech Refactor) ───────────────────── */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center pt-24 md:pt-32 overflow-hidden">
-        <ParticleBackground />
+      {/* ── ELITE HERO (White/Red 2026 Premium) ───────────────────── */}
+      <section ref={heroRef} className="relative min-h-[90svh] flex items-center pt-24 md:pt-32 overflow-hidden bg-white">
         
-        {/* Aura Gradients (Image Replacement) */}
-        <AuraGradient color="var(--red)" className="top-[-10%] right-[-5%] w-[600px] h-[600px] opacity-[0.12]" delay={0} />
-        <AuraGradient color="var(--charcoal)" className="bottom-[10%] left-[5%] w-[500px] h-[500px] opacity-[0.05]" delay={2} />
+        {/* Aura Gradients (Bright clean style) */}
+        <AuraGradient color="var(--red)" className="top-[-10%] right-[-5%] w-[800px] h-[800px] opacity-[0.06]" delay={0} />
+        <AuraGradient color="var(--slate)" className="bottom-[10%] left-[5%] w-[600px] h-[600px] opacity-[0.03]" delay={2} />
 
-        {/* Neural Grid Overlay */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(#E8E8EA_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.2] pointer-events-none" />
+        {/* Minimal Grid Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(#EAEAEA_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.4] pointer-events-none" />
 
         {/* Spatial Depth Layers */}
         <SpatialLayer speed={0.4} className="top-1/4 left-[10%] opacity-20">
@@ -127,7 +125,7 @@ export default function Home() {
             </FadeUp>
 
             <FadeUp delay={0.4}>
-              <div className="w-full max-w-md bg-white border-2 border-slate-100 rounded-2xl p-2 mb-10 flex items-center shadow-sm relative group overflow-hidden focus-within:border-[var(--red)]/50 focus-within:shadow-[var(--shadow-red)] transition-all">
+              <div className="w-full max-w-md bg-white border border-[var(--border)] rounded-2xl p-2 mb-10 flex items-center shadow-sm relative group overflow-hidden focus-within:border-[var(--red)] focus-within:shadow-[0_4px_20px_rgba(230,0,0,0.1)] transition-all duration-300 zero-jank">
                 <div className="pl-4 pr-2 text-[var(--muted)] group-focus-within:text-[var(--red)] transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
@@ -139,7 +137,7 @@ export default function Home() {
                   className="w-full py-3 px-2 bg-transparent outline-none text-sm font-bold text-[var(--charcoal)] placeholder:text-slate-400 placeholder:font-medium"
                 />
                 <Link href="/services">
-                  <button className="bg-[var(--charcoal)] text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--red)] transition-colors shadow-md">
+                  <button className="bg-[var(--red)] text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[var(--red-dark)] transition-colors shadow-sm">
                     {t.hero.btn_discover}
                   </button>
                 </Link>
@@ -410,28 +408,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CTA BAND ────────────────────────────────────────────── */}
-      <section className="bg-[var(--charcoal)] py-28 mt-32 relative overflow-hidden">
-        <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.1]" />
+      {/* ── CTA BAND (Bright premium style) ────────────────────── */}
+      <section className="bg-white py-28 mt-24 relative overflow-hidden border-t border-[var(--border)]">
+        <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.05]" />
         
-        <div className="container-xl relative z-10">
+        <div className="container-xl relative z-10 flex flex-col items-center">
           <FadeUp>
             <div className="text-center max-w-2xl mx-auto">
-              <span className="inline-flex items-center gap-2 bg-white/5 text-white/60 border border-white/10 rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] mb-8">
+              <span className="inline-flex items-center gap-2 bg-[var(--red-light)] text-[var(--red)] border border-red-100 rounded-full px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] mb-8 shadow-sm">
                 {t.cta.tag}
               </span>
-              <h2 className="display-lg text-white mb-6">
+              <h2 className="display-lg text-[var(--charcoal)] mb-6">
                 {t.cta.title}
               </h2>
-              <p className="text-slate-400 text-lg mb-12 leading-relaxed">
+              <p className="text-[var(--slate)] text-lg mb-12 leading-relaxed font-medium">
                 {t.cta.desc}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <Link href="/booking">
                   <MagneticButton>
                     <motion.span
-                      whileHover={{ scale: 1.05 }}
-                      className="btn btn-red px-12 py-5 text-lg font-black"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.8 }}
+                      className="btn btn-red px-12 py-5 text-lg font-black shadow-[0_10px_40px_rgba(230,0,0,0.2)] rounded-full zero-jank"
                     >
                       {t.nav.cta}
                     </motion.span>
@@ -439,7 +438,10 @@ export default function Home() {
                 </Link>
                 <Link href="/contact">
                   <MagneticButton>
-                    <motion.span className="btn btn-outline-white px-12 py-5 text-lg font-black">
+                    <motion.span 
+                      whileHover={{ scale: 1.03 }}
+                      className="btn px-12 py-5 text-lg font-black bg-white text-[var(--charcoal)] border-2 border-[var(--border)] shadow-sm hover:border-[var(--charcoal)] rounded-full zero-jank transition-all"
+                    >
                       {t.cta.btn_contact}
                     </motion.span>
                   </MagneticButton>

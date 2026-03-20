@@ -110,13 +110,14 @@ export default function ServicesPage() {
                       <Link href="/booking" className="block h-full">
                         <motion.div
                           whileHover={{ y: -8, borderColor: "var(--red)" }}
-                          className="card h-full p-8 flex flex-col group relative overflow-hidden backdrop-blur-xl bg-white/80 border-2 transition-all duration-500 rounded-[2.5rem]"
+                          transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.6 }}
+                          className="card h-full p-8 flex flex-col group relative overflow-hidden backdrop-blur-xl bg-white/90 border-2 transition-all duration-500 rounded-[2.5rem] zero-jank shadow-sm hover:shadow-[0_20px_40px_rgba(230,0,0,0.06)]"
                         >
-                          <AuraGradient color="var(--red)" className="bottom-[-30%] right-[-20%] w-48 h-48 opacity-[0.03] group-hover:opacity-[0.1] transition-opacity" />
+                          <AuraGradient color="var(--red)" className="bottom-[-30%] right-[-20%] w-48 h-48 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity" />
                           
                           <div className="flex items-start justify-between mb-10 relative z-10">
-                            <div className="w-14 h-14 bg-slate-50 shadow-sm rounded-2xl flex items-center justify-center group-hover:bg-[var(--red)] group-hover:shadow-[0_10px_30px_rgba(200,16,46,0.2)] transition-all duration-500 shrink-0">
-                              <Icon className="w-7 h-7 text-[var(--red)] group-hover:text-white transition-colors duration-500" />
+                            <div className="w-14 h-14 bg-[var(--off-white)] shadow-sm rounded-2xl flex items-center justify-center group-hover:bg-[var(--red-light)] group-hover:shadow-[0_10px_30px_rgba(230,0,0,0.1)] group-hover:border-red-100 transition-all duration-500 shrink-0 border border-slate-100">
+                              <Icon className="w-7 h-7 text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500" />
                             </div>
                             <span className="text-[9px] font-black tracking-widest text-[var(--muted)] border border-slate-200 px-4 py-1.5 rounded-full uppercase bg-white/50 group-hover:border-[var(--red)]/20 transition-colors">
                               {service.category || "Service"}

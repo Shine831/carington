@@ -18,7 +18,7 @@ export function ParticleBackground() {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let particles: Particle[] = [];
+    let particles: ReturnType<typeof createParticle>[] = [];
 
     const handleResize = () => {
       canvas.width = window.innerWidth;
@@ -26,59 +26,49 @@ export function ParticleBackground() {
       init();
     };
 
-    class Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
+    const createParticle = () => {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = Math.random() * 2 + 0.5;
+      const speedX = (Math.random() - 0.5) * 0.5;
+      const speedY = (Math.random() - 0.5) * 0.5;
+      const opacity = Math.random() * 0.5 + 0.2;
 
-      constructor() {
-        this.x = Math.random() * canvas!.width;
-        this.y = Math.random() * canvas!.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
-        this.opacity = Math.random() * 0.5 + 0.2;
-      }
+      return {
+        x, y, size, speedX, speedY, opacity,
+        update: function(mx: number, my: number) {
+          this.x += this.speedX;
+          this.y += this.speedY;
 
-      update(mx: number, my: number) {
-        // Subtle drift
-        this.x += this.speedX;
-        this.y += this.speedY;
+          const dx = this.x - mx;
+          const dy = this.y - my;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 150) {
+            const force = (150 - distance) / 150;
+            this.x += dx * force * 0.02;
+            this.y += dy * force * 0.02;
+          }
 
-        // Interaction with mouse
-        const dx = this.x - mx;
-        const dy = this.y - my;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 150) {
-          const force = (150 - distance) / 150;
-          this.x += dx * force * 0.02;
-          this.y += dy * force * 0.02;
+          if (this.x > canvas.width) this.x = 0;
+          else if (this.x < 0) this.x = canvas.width;
+          if (this.y > canvas.height) this.y = 0;
+          else if (this.y < 0) this.y = canvas.height;
+        },
+        draw: function() {
+          if (!ctx) return;
+          ctx.fillStyle = `rgba(200, 16, 46, ${this.opacity})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
         }
-
-        // Wrap around
-        if (this.x > canvas!.width) this.x = 0;
-        else if (this.x < 0) this.x = canvas!.width;
-        if (this.y > canvas!.height) this.y = 0;
-        else if (this.y < 0) this.y = canvas!.height;
-      }
-
-      draw() {
-        if (!ctx) return;
-        ctx.fillStyle = `rgba(200, 16, 46, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
+      };
+    };
 
     const init = () => {
       particles = [];
       const count = Math.min(Math.floor(window.innerWidth / 10), 100);
       for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
+        particles.push(createParticle());
       }
     };
 

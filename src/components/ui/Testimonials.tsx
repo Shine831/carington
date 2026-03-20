@@ -40,9 +40,9 @@ export function TestimonialsSection({ language }: { language: string }) {
   useEffect(() => {
     getReviews()
       .then((data) => {
-        // Show any real reviews (>=3 stars) if they exist, else show mocks
         const realReviews = data.filter((r: any) => r.rating >= 3);
-        setReviews(realReviews.length > 0 ? realReviews : MOCK_REVIEWS);
+        // Combiner pour toujours avoir un affichage riche
+        setReviews([...realReviews, ...MOCK_REVIEWS]);
       })
       .catch(() => setReviews(MOCK_REVIEWS))
       .finally(() => setLoading(false));

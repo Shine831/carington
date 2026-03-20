@@ -3,15 +3,15 @@
 import { motion, useInView, type Variants, type Transition } from "framer-motion";
 import { useRef } from "react";
 
-// Custom cubic-bezier, typed as a 4-tuple to satisfy Framer Motion's Easing type
-const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const EASE_IN_OUT: [number, number, number, number] = [0.45, 0, 0.55, 1];
+// Ultra-premium 2026 cubic-bezier curves (Apple/Stripe style)
+const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const EASE_IN_OUT: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
 // ─── Variants ──────────────────────────────────────────────────────────────────
 
 export const fadeUpVariant: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: EASE_OUT } },
 };
 
 export const fadeInVariant: Variants = {
@@ -56,7 +56,7 @@ interface AnimatedProps {
 
 export function FadeUp({ children, className = "", delay = 0 }: AnimatedProps) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
   const transition: Transition = { delay };
 
   return (

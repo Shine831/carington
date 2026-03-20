@@ -2,7 +2,7 @@
 
 # Carington — E-Jarnauld Soft
 
-**Plateforme de gestion IT haut de gamme pour le marché camerounais**
+**Plateforme de gestion IT & Cybersécurité de pointe pour le marché camerounais**
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![Firebase](https://img.shields.io/badge/Firebase-12-orange?logo=firebase)](https://firebase.google.com)
@@ -21,131 +21,74 @@
 
 **Carington** est l'interface web officielle d'**E-Jarnauld Soft**, entreprise spécialisée en infrastructures IT, cybersécurité et infogérance basée à Douala, Cameroun.
 
-La plateforme propose :
-- Un **site vitrine** bilingue (FR/EN) orienté conversion
-- Un **dashboard client** sécurisé par PIN chiffré pour suivre ses demandes et soumettre des témoignages
-- Un **panneau d'administration** complet pour gérer en temps réel les demandes, messages, clients, catalogue et avis
+La plateforme se distingue par :
+- Un **site vitrine** bilingue (FR/EN) conçu pour la conversion.
+- Un **dashboard client** hyper-sécurisé par PIN pour le suivi de projet et le recueil de témoignages.
+- Un **panneau d'administration CRM** ultra-performant pour gérer en temps réel les requêtes, messages, KPI, catalogue et modération.
 
-Toute l'expérience est conçue **mobile-first**, avec une esthétique premium, des animations Framer Motion et une architecture serverless entièrement hébergée sur Vercel + Firebase.
-
----
-
-## Stack technique
-
-| Couche | Technologie |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Langage | TypeScript 5 |
-| Styles | Tailwind CSS v4 + CSS Variables |
-| Animations | Framer Motion 12 |
-| Backend / Auth | Firebase 12 (Firestore + Authentication) |
-| Icônes | Lucide React |
-| Déploiement | Vercel (Edge Network) |
-| i18n | Système maison FR/EN + script Google Translate auto |
+Ce projet incarne les tendances **UI/UX 2026** (Mobile-first, zérolag/jank, fluidité absolue via Framer Motion & Lenis) encapsulées dans une architecture performante SSR sur Vercel Edge Networks.
 
 ---
 
-## Fonctionnalités clés
+## 🛠 Stack Technique
 
-### 🌐 Site public
-- Page d'accueil avec Hero animé, statistiques, services et témoignages clients dynamiques (Firestore)
-- Pages À propos, Services, Contact avec formulaire persisté
-- Blog / Politique de confidentialité
-- Système de réservation (audit & devis) avec validation Zod
-
-### 🔐 Sécurité & Authentification
-- Authentification Firebase (email/mot de passe)
-- PIN chiffré SHA-256 pour l'accès aux dashboards (4 chiffres client, 6 chiffres admin)
-- Limitation de changement de PIN (max 1 fois / 24h)
-- Re-authentification Firebase avant toute modification de mot de passe
-- Vérification par email avant changement d'adresse (`verifyBeforeUpdateEmail`)
-
-### 👤 Dashboard Client
-- Suivi en temps réel des demandes de service
-- Soumission et modification des témoignages avec notation 5 étoiles
-- Modification du profil et du code PIN
-- Session persistée via `sessionStorage`
-
-### 🛡️ Dashboard Administrateur
-- Vue synthétique : statistiques KPI en temps réel
-- Gestion des demandes avec changement de statut + note admin
-- Messagerie : lecture et archivage des messages de contact
-- Gestion des clients et suppression de comptes
-- Catalogue de services : créer, modifier, supprimer
-- Modération des témoignages : lecture et suppression
-- Badge de notification non-lus avec marquage persistant en base
-- Changement sécurisé du mot de passe admin et du PIN maître
-
-### 🌍 Internationalisation automatique
-- Traduction FR → EN entièrement automatisée via Google Translate
-- Cache intelligent des traductions (pas de re-traduction des chaînes non modifiées)
-- Script intégré dans le pipeline de build (`prebuild`)
+- **Framework Core** : Next.js 16 (App Router)
+- **Langage Moteur** : TypeScript 5
+- **Design System** : Tailwind CSS v4 + Variables CSS (Thème Premium Rouge/Blanc)
+- **Motion & Fluency** : Framer Motion 12 + Lenis Smooth Scroll
+- **Backend as a Service** : Firebase 12 (Authentication, Firestore, Security Rules)
+- **Internationalisation** : Module d'auto-traduction Node.js embarqué
+- **Déploiement** : Vercel
 
 ---
 
-## Structure du projet
+## 🚀 Fonctionnalités Clés
 
-```
-carington/
-├── src/
-│   ├── app/                          # Pages (App Router Next.js)
-│   │   ├── page.tsx                  # Accueil
-│   │   ├── about/                    # À propos
-│   │   ├── services/                 # Services
-│   │   ├── booking/                  # Formulaire devis
-│   │   ├── contact/                  # Contact
-│   │   ├── account/                  # Connexion / Inscription
-│   │   ├── dashboard/                # Espace client
-│   │   ├── admin/                    # Panneau administrateur
-│   │   ├── privacy/                  # Politique de confidentialité
-│   │   └── terms/                    # Conditions générales
-│   ├── components/
-│   │   └── ui/                       # Composants réutilisables
-│   │       ├── AuraGradient.tsx
-│   │       ├── Motion.tsx            # Animations Framer Motion
-│   │       ├── Header.tsx
-│   │       ├── Footer.tsx
-│   │       └── Testimonials.tsx
-│   ├── context/
-│   │   ├── LanguageContext.tsx       # Contexte de langue global
-│   │   └── translations.ts           # Dictionnaires FR/EN (auto-généré)
-│   ├── hooks/
-│   │   └── useAuth.ts                # Hook d'authentification Firebase
-│   └── lib/
-│       └── firebase/
-│           ├── config.ts             # Initialisation Firebase
-│           ├── auth.ts               # Fonctions d'authentification
-│           └── db.ts                 # Fonctions Firestore (CRUD)
-├── scripts/
-│   └── auto-translate.mjs            # Script de traduction automatique FR→EN
-└── public/                           # Assets statiques
-```
+### 🌟 Expérience Publique (Front-Office)
+- **Zéro-Jank UI** : Accélération matérielle, translations fluides et micro-interactions avancées.
+- **Thème Premium** : Identité visuelle percutante Rouge/Blanc inspirée des leaders de la tech mondiale.
+- **Réservation Stratégique** : Tunnel de devis sécurisé avec validation (Zod).
+- **Internationalisation Dynamique** : Traduction automatique maintenue en cache pour des performances optimales.
+
+### 🔐 Architecture de Sécurité (Accès Dashboards)
+- **Double Authentification Métier** : Combo Firebase Auth + Code PIN interne (chiffrement robuste SHA-256).
+- **Contrôle Granulaire** : Limitation anti-bruteforce (1 modif PIN max / 24h).
+- **Règles Firestore Strictes** : Isolation absolue des données clients (ISO 27001 compliant).
+
+### 👥 Espace Client
+- Suivi en temps réel des avancées de services (Statuts : Pending, Active, Completed).
+- Soumission d'Avis & Expériences (Intégration instantanée).
+- Profil et paramètres sécurisés.
+
+### ⚙️ Espace Administration
+- Métriques KPI en temps réel.
+- Vue synoptique de toutes les demandes et des messages entrants.
+- Mécanisme d'annotation interne pour collaborer sur le compte client.
+- Modération intégrale des services et des reviews.
 
 ---
 
-## Installation locale
+## 🏗 Installation Locale
 
 ### Prérequis
+- **Node.js** ≥ 18
+- Projet **Firebase** configuré (Authentication par Email/Mot de passe & base de données Firestore activée).
 
-- Node.js ≥ 18
-- Un projet Firebase avec **Authentication** (email/password) et **Firestore** activés
-
-### 1. Cloner le dépôt
+### 1. Cloner le Projet
 
 ```bash
 git clone https://github.com/votre-username/carington.git
 cd carington
 ```
 
-### 2. Installer les dépendances
+### 2. Dépendances
 
 ```bash
 npm install
 ```
 
-### 3. Configurer les variables d'environnement
-
-Créer un fichier `.env.local` à la racine :
+### 3. Variables d'Environnement
+Créez un fichier `.env.local` à la racine :
 
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
@@ -157,132 +100,40 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 NEXT_PUBLIC_ADMIN_EMAIL=admin@votredomaine.com
 ```
 
-### 4. Configurer l'admin dans Firestore
-
-Dans la collection `users`, le document correspondant à l'administrateur doit contenir :
-
+### 4. Élévation de Privilèges Administrateur
+Dans Firestore, dans la collection `users`, le document correspondant à l'e-mail administrateur doit spécifier :
 ```json
 {
   "role": "ADMIN",
-  "pin": "<SHA-256 hash du PIN à 6 chiffres>"
+  "pin": "<Hash SHA-256 de votre PIN à 6 chiffres>"
 }
 ```
 
-### 5. Lancer le serveur de développement
-
+### 5. Démarrer l'environnement
 ```bash
 npm run dev
 ```
-
-→ Ouvrir [http://localhost:3000](http://localhost:3000)
-
----
-
-## Scripts disponibles
-
-| Commande | Description |
-|---|---|
-| `npm run dev` | Serveur de développement (hot reload) |
-| `npm run build` | Build de production (déclenche l'auto-traduction) |
-| `npm run start` | Démarre le build de production |
-| `npm run lint` | Analyse ESLint |
-| `npm run translate` | Lance manuellement l'auto-traduction FR→EN |
-
-> **Note :** La traduction FR→EN s'exécute **automatiquement** à chaque `npm run build` via le hook `prebuild`. Les chaînes déjà traduites sont mises en cache dans `scripts/.translate-cache.json` pour éviter toute requête inutile.
+Rendez-vous sur [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Déploiement sur Vercel
+## 📦 Scripts Disponibles
 
-### Option A — Interface Vercel (recommandé)
+- `npm run dev` : Démarrage du serveur local.
+- `npm run build` : Construction optimisée (inclut la traduction auto).
+- `npm run lint` : Analyse de conformité du code ESLint.
+- `npm run translate` : Exécute le module interne pour générer l'anglais depuis les chaînes françaises via l'API Google Translate.
 
-1. Pousser le code sur GitHub
-2. Sur [vercel.com](https://vercel.com), importer votre dépôt
-3. Ajouter les variables d'environnement Firebase dans les paramètres du projet
-4. Cliquer sur **Deploy** — Vercel détecte automatiquement Next.js
+---
 
-> La traduction FR→EN s'exécutera automatiquement lors du build Vercel via le hook `prebuild`.
-
-### Option B — CLI Vercel
-
+## 🛡 Focus Sécurité — Firestore Rules
+Un fichier `firestore.rules` est inclus dans le projet. Pour garantir l'intégrité des opérations (les clients ne lisent que leurs données, les reviews sont lisibles, tout le reste est côté admin), veillez à exécuter le déploiement exclusif :
 ```bash
-npm install -g vercel
-vercel --prod
+npx firebase deploy --only firestore:rules
 ```
-
----
-
-## Règles de sécurité Firestore recommandées
-
-```js
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // Utilisateurs : lecture/écriture sur son propre document
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Bookings : propriétaire ou admin
-    match /bookings/{id} {
-      allow read, write: if request.auth != null;
-    }
-
-    // Messages de contact : écriture publique, lecture admin seulement
-    match /messages/{id} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null;
-    }
-
-    // Services : lecture publique, écriture admin
-    match /services/{id} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-
-    // Reviews : lecture publique, écriture authentifiée, suppression admin
-    match /reviews/{id} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
-    }
-  }
-}
-```
-
----
-
-## Roadmap
-
-- [ ] Notifications push (Firebase Cloud Messaging)
-- [ ] Tableau de bord analytique (graphiques de tendances)
-- [ ] Export des données (CSV / PDF)
-- [ ] Mode maintenance admin
-- [ ] Support multilingue étendu (Espagnol, Arabe)
-
----
-
-## Contribution
-
-Les contributions sont les bienvenues. Pour contribuer :
-
-1. Forker le projet
-2. Créer une branche (`git checkout -b feature/ma-feature`)
-3. Committer vos changements (`git commit -m 'feat: ma feature'`)
-4. Pousser la branche (`git push origin feature/ma-feature`)
-5. Ouvrir une **Pull Request**
-
----
-
-## Licence
-
-Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
 <div align="center">
-
-Développé avec ❤️ par **E-Jarnauld Soft** — Douala, Cameroun 🇨🇲
-
+  Développé et architecturé avec exigence par l'équipe <strong>E-Jarnauld Soft</strong>.
 </div>

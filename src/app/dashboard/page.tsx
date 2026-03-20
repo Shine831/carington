@@ -330,18 +330,18 @@ export default function DashboardPage() {
 
   if (!isPinVerified) {
     return (
-      <div className="min-h-[100svh] bg-[#0A0A0A] flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.05]" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10">
-          <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-[2.5rem] shadow-2xl flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 text-white flex items-center justify-center mb-6 border border-white/10 shadow-inner">
+      <div className="min-h-[100svh] bg-[var(--off-white)] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.03]" />
+        
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10 zero-jank">
+          <div className="bg-white/80 backdrop-blur-3xl border border-[var(--border)] p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.05)] flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] text-[var(--red)] flex items-center justify-center mb-6 border border-red-100 shadow-sm">
               <Lock className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight mb-2">
+            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">
               {hasPinConfigured ? t.dashboard.security.pin_verify_title : t.dashboard.security.pin_setup_title}
             </h1>
-            <p className="text-white/40 text-[11px] mb-8 leading-relaxed">
+            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed font-medium">
               {hasPinConfigured 
                 ? t.dashboard.security.pin_verify_desc 
                 : t.dashboard.security.pin_setup_desc}
@@ -356,29 +356,27 @@ export default function DashboardPage() {
                   placeholder={t.dashboard.security.pin_placeholder}
                   maxLength={4}
                   autoFocus
-                  className={`w-full bg-[#050505] border ${pinError ? "border-red-500 text-red-500" : "border-white/10 text-white focus:border-white/30"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-white/10`}
+                  className={`w-full bg-[var(--off-white)] border ${pinError ? "border-red-500 text-red-500" : "border-[var(--border)] text-[var(--charcoal)] focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-[var(--muted)]/50 zero-jank`}
                 />
                 <AnimatePresence>
                   {pinError && (
-                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest">
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest zero-jank">
                       {t.dashboard.security.pin_error}
                     </motion.p>
                   )}
                 </AnimatePresence>
               </div>
 
-              <button 
+              <motion.button 
                 type="submit" 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 disabled={pinInput.length < 4}
-                className="w-full py-4 bg-white text-[#0A0A0A] rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
+                className="w-full py-4 bg-[var(--red)] text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(230,0,0,0.2)] disabled:opacity-50 zero-jank"
               >
                 {hasPinConfigured ? t.dashboard.security.pin_submit_verify : t.dashboard.security.pin_submit_setup}
-              </button>
+              </motion.button>
             </form>
-
-            <button onClick={async () => { await logoutUser(); router.push("/"); }} className="mt-8 text-[10px] text-white/30 hover:text-white font-black uppercase tracking-widest transition-colors">
-              {t.dashboard.security.logout}
-            </button>
           </div>
         </motion.div>
       </div>
@@ -388,26 +386,25 @@ export default function DashboardPage() {
   const langKey = language as "fr" | "en";
 
   return (
-    <div className="min-h-[100svh] pt-32 pb-40 bg-[#0A0A0A] text-white relative overflow-hidden">
+    <div className="min-h-[100svh] pt-32 pb-40 bg-[var(--off-white)] text-[var(--charcoal)] relative overflow-hidden">
       {/* Background Ambience */}
-      <AuraGradient color="var(--red)" className="top-0 right-0 w-[600px] h-[600px] opacity-[0.05]" />
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] pointer-events-none" />
+      <AuraGradient color="var(--red)" className="top-0 right-0 w-[800px] h-[800px] opacity-[0.04]" />
 
       <div className="container-xl relative z-10 max-w-6xl">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 border-b border-white/10 pb-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 border-b border-[var(--border)] pb-10">
           <FadeUp>
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-2 w-8 bg-[var(--red)] rounded-full shadow-[0_0_15px_rgba(238,28,37,0.5)]" />
+              <div className="h-2 w-8 bg-[var(--red)] rounded-full shadow-[0_0_15px_rgba(230,0,0,0.3)]" />
               <span className="text-[10px] font-black text-[var(--red)] uppercase tracking-[0.25em]">
                 {t.dashboard.title}
               </span>
             </div>
-            <h1 className="text-4xl lg:text-6xl font-black text-white tracking-tighter mb-4 leading-tight">
+            <h1 className="text-4xl lg:text-6xl font-black text-[var(--charcoal)] tracking-tighter mb-4 leading-tight">
               {t.dashboard.welcome} <span className="text-[var(--red)]">{firstName}.</span>
             </h1>
-            <p className="text-sm font-medium text-white/40 max-w-lg leading-relaxed">
+            <p className="text-sm font-medium text-[var(--slate)] max-w-lg leading-relaxed">
               {language === "fr" 
                 ? "Ravi de vous revoir. Suivez l'avancement de vos projets en temps réel." 
                 : "Glad to see you back. Track your project progress in real-time."}
@@ -416,13 +413,13 @@ export default function DashboardPage() {
           
           <FadeIn delay={0.3}>
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/10 px-6 py-5 rounded-[2rem] shadow-xl">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md border border-[var(--border)] px-6 py-5 rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.02)] zero-jank">
+                <ShieldCheck className="w-5 h-5 text-[var(--red)]" />
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-emerald-400 font-black uppercase tracking-[0.2em]">
+                  <span className="text-[10px] text-[var(--charcoal)] font-black uppercase tracking-[0.2em]">
                     {t.dashboard.secure}
                   </span>
-                  <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Connecté en AES-256</span>
+                  <span className="text-[9px] text-[var(--muted)] font-bold uppercase tracking-widest">Connecté en AES-256</span>
                 </div>
               </div>
           </div>
@@ -430,7 +427,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 p-1 bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 mb-12 w-fit mx-auto md:mx-0">
+        <div className="flex gap-2 p-1 bg-white/80 backdrop-blur-md rounded-full border border-[var(--border)] mb-12 w-fit mx-auto md:mx-0 shadow-sm zero-jank">
           {[
             { id: "projects", label: t.dashboard.tabs.projects, icon: FileText },
             { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
@@ -439,8 +436,8 @@ export default function DashboardPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
-              className={`flex items-center gap-3 px-6 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all ${
-                activeTab === tab.id ? "bg-[var(--red)] text-white shadow-lg" : "text-white/40 hover:text-white hover:bg-white/5"
+              className={`flex items-center gap-3 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 zero-jank ${
+                activeTab === tab.id ? "bg-[var(--red)] text-white shadow-[0_8px_20px_rgba(230,0,0,0.2)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -453,11 +450,11 @@ export default function DashboardPage() {
         {activeTab === "projects" && (
           <FadeUp delay={0.2} className="mb-16">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-[var(--red)]/10 flex items-center justify-center border border-[var(--red)]/20 shadow-lg shadow-red-950/20"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
+              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[var(--red-light)] flex items-center justify-center border border-red-100 shadow-sm"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
                 {t.dashboard.projects.title}
               </h2>
-              <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
+              <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest rounded-full zero-jank shadow-sm hover:shadow-[0_10px_30px_rgba(230,0,0,0.2)]">
                 {t.dashboard.projects.new}
               </Link>
             </div>
@@ -467,35 +464,35 @@ export default function DashboardPage() {
               {loading ? (
                 <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
               ) : bookings.length === 0 ? (
-                <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{t.dashboard.projects.empty}</div>
+                <div className="py-20 text-center rounded-[2.5rem] bg-[var(--off-white)] border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)] zero-jank">{t.dashboard.projects.empty}</div>
               ) : bookings.map((req: any) => {
                 const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                 const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
                 const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
                 
                 return (
-                  <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl">
+                  <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] zero-jank">
                     <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
                     <div className="space-y-4 pl-2">
                       <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                           <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
-                           <h3 className="text-white font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
+                           <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
+                           <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
                         </div>
-                        <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls} bg-transparent`}>{mapObj.label}</span>
+                        <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100">
                         <div>
-                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">{t.dashboard.projects.date}</p>
-                          <p className="text-xs font-bold text-white tracking-widest">{date}</p>
+                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">{t.dashboard.projects.date}</p>
+                          <p className="text-xs font-bold text-[var(--charcoal)] tracking-widest">{date}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Budget</p>
-                          <p className="text-xs font-black text-emerald-400 italic">Devis Client</p>
+                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Budget</p>
+                          <p className="text-xs font-black text-[var(--red)] italic">Devis Client</p>
                         </div>
                       </div>
                       {req.adminNote && (
-                        <div className="p-4 bg-[var(--red)]/5 border border-[var(--red)]/10 rounded-2xl italic text-[11px] text-white/70 leading-relaxed">
+                        <div className="p-4 bg-[var(--red-light)] border border-red-100 rounded-2xl italic text-[11px] text-[var(--slate)] leading-relaxed">
                           <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">{t.dashboard.projects.admin_note}</span>
                           "{req.adminNote}"
                         </div>
@@ -503,7 +500,7 @@ export default function DashboardPage() {
                       {req.status === "PENDING" && (
                         <button 
                           onClick={() => handleDeleteRequest(req.id)}
-                          className="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all mt-4"
+                          className="w-full py-4 bg-white border border-slate-200 rounded-full text-[var(--charcoal)] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:border-[var(--red)] hover:text-[var(--red)] hover:shadow-sm transition-all mt-4 zero-jank"
                         >
                           <AlertTriangle className="w-4 h-4" /> {t.dashboard.projects.cancel}
                         </button>
@@ -515,41 +512,41 @@ export default function DashboardPage() {
             </div>
 
             {/* Desktop Table View */}
-            <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-xl border border-white/10 relative group/table hidden md:block">
+            <div className="bg-white backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-sm border border-[var(--border)] relative group/table hidden md:block zero-jank">
               <div className="overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left text-sm border-collapse min-w-[800px]">
                   <thead>
-                    <tr className="bg-white/5 border-b border-white/5">
+                    <tr className="bg-[var(--off-white)] border-b border-slate-100">
                       {[t.dashboard.projects.id, t.dashboard.projects.date, language === "fr" ? "Service" : "Service", language === "fr" ? "Statut" : "Status", t.dashboard.projects.admin_note, "Action"].map(h => (
-                        <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-white/40">{h}</th>
+                        <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-[var(--muted)]">{h}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-100">
                     <AnimatePresence>
                       {loading ? (
                          <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
                       ) : bookings.length === 0 ? (
-                        <tr><td colSpan={6} className="text-center py-24 text-white/30 font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{t.dashboard.projects.empty}</td></tr>
+                        <tr><td colSpan={6} className="text-center py-24 text-[var(--muted)] font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{t.dashboard.projects.empty}</td></tr>
                       ) : bookings.map((req, i) => {
                         const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                         const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
                         return (
-                          <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-white/5 transition-all group">
+                          <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-slate-50 transition-all group zero-jank">
                             <td className="py-6 px-8 font-mono font-black text-[10px] text-[var(--red)] tracking-widest">#{req.id.slice(0, 8).toUpperCase()}</td>
-                            <td className="py-6 px-8 font-black text-white/40 text-[11px] tracking-widest">{date}</td>
-                            <td className="py-6 px-8 font-black text-white text-sm tracking-tight uppercase">{req.serviceId}</td>
+                            <td className="py-6 px-8 font-black text-[var(--muted)] text-[11px] tracking-widest">{date}</td>
+                            <td className="py-6 px-8 font-black text-[var(--charcoal)] text-sm tracking-tight uppercase">{req.serviceId}</td>
                             <td className="py-6 px-8">
-                              <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${mapObj.cls} bg-transparent`}>
+                              <span className={`inline-flex items-center px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls} bg-transparent`}>
                                 {mapObj.label}
                               </span>
                             </td>
-                            <td className="py-6 px-8 font-bold text-white/60 text-xs italic leading-relaxed max-w-xs truncate">
+                            <td className="py-6 px-8 font-bold text-[var(--slate)] text-xs italic leading-relaxed max-w-xs truncate">
                               {req.adminNote || "-"}
                             </td>
                             <td className="py-6 px-8">
                               {req.status === "PENDING" && (
-                                <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-white hover:bg-red-500 tracking-widest border border-red-500/30 px-4 py-2 rounded-xl transition-all">
+                                <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-[var(--red)] hover:bg-[var(--red-light)] tracking-widest border border-red-200 px-4 py-2 rounded-full transition-all bg-white zero-jank">
                                   {t.dashboard.projects.cancel}
                                 </button>
                               )}
@@ -569,36 +566,36 @@ export default function DashboardPage() {
         {activeTab === "reviews" && (
           <FadeUp delay={0.2} className="mb-16">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-950/20"><Star className="w-5 h-5 text-amber-500 fill-current" /></div>
+              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center border border-amber-100 shadow-sm"><Star className="w-5 h-5 text-amber-500 fill-current" /></div>
                 {t.dashboard.reviews.title}
               </h2>
-              <button onClick={() => { setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true); }} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
+              <button onClick={() => { setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true); }} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[0_10px_30px_rgba(230,0,0,0.2)] active:scale-95 transition-transform zero-jank">
                 {t.dashboard.reviews.new}
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {userReviews.length === 0 ? (
-                <div className="col-span-full py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">
+                <div className="col-span-full py-20 text-center rounded-[2.5rem] bg-white border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)]">
                   {language === "fr" ? "Vous n'avez pas encore laissé d'avis." : "You haven't left any reviews yet."}
                 </div>
               ) : userReviews.map((rev: any) => (
-                <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md p-6 shadow-xl flex flex-col justify-between">
+                <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 shadow-sm flex flex-col justify-between zero-jank">
                   <div>
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map(s => (
-                          <Star key={s} className={`w-3 h-3 ${s <= rev.rating ? "text-amber-400 fill-amber-400" : "text-white/10"}`} />
+                          <Star key={s} className={`w-3 h-3 ${s <= rev.rating ? "text-amber-400 fill-amber-400" : "text-slate-100"}`} />
                         ))}
                       </div>
-                      <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{rev.createdAt ? new Date(rev.createdAt.seconds * 1000).toLocaleDateString() : "Récemment"}</span>
+                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{rev.createdAt ? new Date(rev.createdAt.seconds * 1000).toLocaleDateString() : "Récemment"}</span>
                     </div>
-                    <p className="text-sm font-medium text-white/70 leading-relaxed mb-6 italic">{'"'}{rev.comment}{'"'}</p>
+                    <p className="text-sm font-medium text-[var(--slate)] leading-relaxed mb-6 italic">{'"'}{rev.comment}{'"'}</p>
                   </div>
-                  <div className="flex gap-4 border-t border-white/5 pt-4">
-                    <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-white/40 hover:text-white transition-colors tracking-widest">{t.dashboard.reviews.edit}</button>
-                    <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[9px] font-black uppercase text-red-500/60 hover:text-red-500 transition-colors tracking-widest">{t.dashboard.reviews.delete}</button>
+                  <div className="flex gap-4 border-t border-slate-100 pt-4">
+                    <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors tracking-widest">{t.dashboard.reviews.edit}</button>
+                    <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[9px] font-black uppercase text-red-500/80 hover:text-red-600 transition-colors tracking-widest">{t.dashboard.reviews.delete}</button>
                   </div>
                 </div>
               ))}
@@ -610,8 +607,8 @@ export default function DashboardPage() {
         {activeTab === "profile" && (
           <FadeUp delay={0.2} className="mb-16">
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-950/20"><Users className="w-5 h-5 text-blue-500" /></div>
-              <h2 className="text-2xl font-black text-white tracking-tight">
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-sm"><Users className="w-5 h-5 text-blue-500" /></div>
+              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight">
                 {t.dashboard.profile.title}
               </h2>
             </div>
@@ -619,48 +616,48 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Profile Meta Cards */}
               <div className="lg:col-span-1 space-y-6">
-                <div className="p-8 bg-white/5 border border-white/10 rounded-[2rem] flex flex-col items-center text-center">
-                  <div className="w-20 h-20 rounded-full bg-[var(--red)] flex items-center justify-center text-2xl font-black text-white mb-4 shadow-[var(--shadow-red)]">
+                <div className="p-8 bg-white border border-[var(--border)] rounded-[2rem] flex flex-col items-center text-center shadow-sm zero-jank">
+                  <div className="w-20 h-20 rounded-full bg-[var(--red)] flex items-center justify-center text-2xl font-black text-white mb-4 shadow-[0_10px_30px_rgba(230,0,0,0.3)]">
                     {firstName[0]}
                   </div>
-                  <h3 className="text-xl font-black text-white tracking-tight">{user.displayName || "Sans Nom"}</h3>
-                  <p className="text-xs font-black uppercase text-white/40 tracking-[0.2em] mt-1">{user.email}</p>
+                  <h3 className="text-xl font-black text-[var(--charcoal)] tracking-tight">{user.displayName || "Sans Nom"}</h3>
+                  <p className="text-xs font-black uppercase text-[var(--muted)] tracking-[0.2em] mt-1">{user.email}</p>
                 </div>
 
-                <div className="p-8 bg-white/5 border border-white/10 rounded-[2rem] space-y-4">
+                <div className="p-8 bg-white border border-[var(--border)] rounded-[2rem] space-y-4 shadow-sm zero-jank">
                    <div className="flex items-center justify-between">
-                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{t.dashboard.profile.security}</span>
-                     <button onClick={() => setShowPinChangeModal(true)} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">{t.dashboard.profile.change_pin}</button>
+                     <span className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest">{t.dashboard.profile.security}</span>
+                     <button onClick={() => setShowPinChangeModal(true)} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest hover:underline">{t.dashboard.profile.change_pin}</button>
                    </div>
                    <div className="flex items-center justify-between">
-                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{language === "fr" ? "Mot de passe" : "Password"}</span>
-                     <button onClick={handlePasswordReset} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">{t.dashboard.profile.reset_password}</button>
+                     <span className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest">{language === "fr" ? "Mot de passe" : "Password"}</span>
+                     <button onClick={handlePasswordReset} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest hover:underline">{t.dashboard.profile.reset_password}</button>
                    </div>
                 </div>
               </div>
 
               {/* Edit Form */}
               <div className="lg:col-span-2">
-                <div className="p-8 md:p-10 bg-white/5 border border-white/10 rounded-[2.5rem] relative overflow-hidden">
-                  <AuraGradient color="var(--red)" className="bottom-0 right-0 w-64 h-64 opacity-[0.05]" />
+                <div className="p-8 md:p-10 bg-white border border-[var(--border)] rounded-[2.5rem] relative overflow-hidden shadow-sm zero-jank">
+                  <AuraGradient color="var(--red)" className="bottom-0 right-0 w-64 h-64 opacity-[0.03]" />
                   <form onSubmit={handleProfileUpdate} className="space-y-6 relative z-10">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">{t.dashboard.profile.full_name}</label>
+                        <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">{t.dashboard.profile.full_name}</label>
                         <input 
                           type="text" 
                           value={profileForm.name}
                           onChange={(e) => setProfileForm(p => ({ ...p, name: e.target.value }))}
-                          className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all"
+                          className="w-full bg-[var(--off-white)] border border-[var(--border)] text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all zero-jank"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">{t.dashboard.profile.email}</label>
+                        <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">{t.dashboard.profile.email}</label>
                         <input 
                           type="email" 
                           value={profileForm.email}
                           onChange={(e) => setProfileForm(p => ({ ...p, email: e.target.value }))}
-                          className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all"
+                          className="w-full bg-[var(--off-white)] border border-[var(--border)] text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all zero-jank"
                         />
                       </div>
                     </div>
@@ -676,15 +673,17 @@ export default function DashboardPage() {
                     </AnimatePresence>
 
                     <div className="pt-4">
-                      <button 
+                      <motion.button 
                         type="submit" 
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         disabled={isUpdatingProfile}
-                        className="relative group overflow-hidden px-8 py-4 bg-white text-black font-black text-[11px] uppercase tracking-[0.25em] rounded-xl shadow-2xl active:scale-95 transition-all disabled:opacity-50"
+                        className="relative group overflow-hidden px-8 py-4 bg-[var(--charcoal)] text-white font-black text-[11px] uppercase tracking-[0.25em] rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.15)] disabled:opacity-50 zero-jank"
                       >
                         <span className="relative z-10 flex items-center gap-2">
                           {isUpdatingProfile ? t.dashboard.profile.updating : t.dashboard.profile.save}
                         </span>
-                      </button>
+                      </motion.button>
                     </div>
                   </form>
                 </div>
@@ -695,42 +694,42 @@ export default function DashboardPage() {
              {/* Support Grid */}
         <StaggerContainer className="grid md:grid-cols-2 gap-8">
           <StaggerItem>
-            <div className="relative overflow-hidden p-10 border border-white/10 rounded-[2.5rem] bg-[#0D0D0D] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-start flex-col sm:flex-row gap-8 group transition-all duration-500 hover:border-[var(--red)]/40 hover:shadow-[0_0_30px_rgba(238,28,37,0.1)]">
-              <AuraGradient color="var(--red)" className="top-[-20%] left-[-10%] w-64 h-64 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity" />
-              <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 border border-[var(--red)]/20 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-all duration-500 shadow-lg shadow-red-950/20">
+            <div className="relative overflow-hidden p-10 border border-slate-200 rounded-[2.5rem] bg-white shadow-sm flex items-start flex-col sm:flex-row gap-8 group transition-all duration-500 hover:border-red-200 hover:shadow-[0_20px_40px_rgba(230,0,0,0.06)] zero-jank">
+              <AuraGradient color="var(--red)" className="top-[-20%] left-[-10%] w-64 h-64 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity" />
+              <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] border border-red-100 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-all duration-500 shadow-sm">
                 <AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 text-[var(--charcoal)]">
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-2xl font-black text-white tracking-tight leading-none">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
-                  <span className="px-2 py-0.5 rounded-lg bg-[var(--red)]/10 text-[var(--red)] text-[8px] font-black uppercase tracking-widest border border-[var(--red)]/20 shadow-[0_0_10px_rgba(238,28,37,0.1)]">Active SLA</span>
+                  <h3 className="text-2xl font-black tracking-tight leading-none">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
+                  <span className="px-2 py-0.5 rounded-full bg-[var(--red-light)] text-[var(--red)] text-[8px] font-black uppercase tracking-widest border border-red-100 shadow-sm">Active SLA</span>
                 </div>
-                <p className="text-sm text-white/40 font-medium leading-relaxed mb-6">Expertise critique à votre service. Intervention garantie en moins de 120min pour tous vos actifs numériques.</p>
+                <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Expertise critique à votre service. Intervention garantie en moins de 120min pour tous vos actifs numériques.</p>
                 
                 <div className="space-y-4 mb-8">
-                  <div className="flex items-center justify-between py-3 border-y border-white/5">
+                  <div className="flex items-center justify-between py-3 border-y border-slate-100">
                     <div className="flex flex-col">
-                      <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Canaux Actifs</span>
+                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Canaux Actifs</span>
                       <div className="flex gap-2 mt-1">
-                        {["WhatsApp", "Email", "Ticket"].map(c => <span key={c} className="text-[8px] font-bold text-white/80 bg-white/10 px-2 py-0.5 rounded-md border border-white/10">{c}</span>)}
+                        {["WhatsApp", "Email", "Ticket"].map(c => <span key={c} className="text-[8px] font-bold text-[var(--slate)] bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">{c}</span>)}
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="text-[9px] font-black text-white/40 uppercase tracking-widest block">Agent Dédié</span>
+                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest block">Agent Dédié</span>
                       <span className="text-[10px] font-bold text-[var(--red)] tracking-tight uppercase">Support Premium</span>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-8 px-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Dispo 24/7/365</span><span className="text-[10px] font-bold text-white tracking-widest">OPÉRATIONNEL</span></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
+                      <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Dispo 24/7/365</span><span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">OPÉRATIONNEL</span></div>
                     </div>
-                    <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Latence Ticketing</span><span className="text-[10px] font-bold text-white tracking-widest">87ms AVG</span></div>
+                    <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Latence Ticketing</span><span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">87ms AVG</span></div>
                   </div>
                 </div>
 
-                <Link href="/contact" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-[var(--red)]/30 uppercase tracking-[0.2em] transition-all active:scale-95 shadow-inner group/btn">
+                <Link href="/contact" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-full bg-[var(--off-white)] border border-slate-200 text-[10px] font-black text-[var(--charcoal)] hover:bg-white hover:border-red-200 uppercase tracking-[0.2em] transition-all group/btn shadow-sm">
                   Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)] group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -738,43 +737,43 @@ export default function DashboardPage() {
           </StaggerItem>
           
           <StaggerItem>
-             <div className="relative overflow-hidden p-10 border border-white/5 rounded-[2.5rem] bg-[#050505] shadow-[0_30px_60px_rgba(0,0,0,0.8)] flex items-start flex-col sm:flex-row gap-8 group ring-1 ring-white/10 hover:ring-[var(--red)]/40 hover:shadow-[0_0_40px_rgba(16,185,129,0.05)] transition-all duration-500">
-               <AuraGradient color="emerald" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.08] group-hover:opacity-[0.15] transition-opacity" />
-               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative z-10 transition-all duration-500 group-hover:bg-[var(--red)] shadow-inner">
-                 <Cpu className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
+             <div className="relative overflow-hidden p-10 border border-slate-200 rounded-[2.5rem] bg-white shadow-sm flex items-start flex-col sm:flex-row gap-8 group hover:border-emerald-200 hover:shadow-[0_20px_40px_rgba(16,185,129,0.06)] transition-all duration-500 zero-jank">
+               <AuraGradient color="emerald" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity" />
+               <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 relative z-10 transition-all duration-500 group-hover:bg-emerald-500 shadow-sm">
+                 <Cpu className="w-8 h-8 text-emerald-500 group-hover:text-white transition-colors" />
                </div>
-               <div className="relative z-10 flex-1">
+               <div className="relative z-10 flex-1 text-[var(--charcoal)]">
                  <div className="flex items-center gap-3 mb-3">
-                   <h3 className="text-2xl font-black text-white tracking-tight">Cloud & <span className="text-emerald-400">Infra.</span></h3>
-                   <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">Live Monitor</span>
+                   <h3 className="text-2xl font-black tracking-tight">Cloud & <span className="text-emerald-500">Infra.</span></h3>
+                   <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm">Live Monitor</span>
                  </div>
-                 <p className="text-sm text-white/70 font-medium leading-relaxed mb-6">Supervision proactive et maintenance automatisée. Maîtrisez la croissance de votre infrastructure.</p>
+                 <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Supervision proactive et maintenance automatisée. Maîtrisez la croissance de votre infrastructure.</p>
                  
                  <div className="space-y-4 mb-8">
-                   <div className="flex items-center justify-between py-3 border-y border-white/5">
+                   <div className="flex items-center justify-between py-3 border-y border-slate-100">
                      <div className="flex flex-col">
-                       <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Localisations Nodes</span>
+                       <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Localisations Nodes</span>
                        <div className="flex gap-2 mt-1">
-                          {["Douala-C1", "Paris-V1"].map(l => <span key={l} className="text-[8px] font-black text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">{l}</span>)}
+                          {["Douala-C1", "Paris-V1"].map(l => <span key={l} className="text-[8px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">{l}</span>)}
                        </div>
                      </div>
                      <div className="text-right">
-                       <span className="text-[9px] font-black text-white/40 uppercase tracking-widest block">Backups Actifs</span>
-                       <span className="text-[10px] font-bold text-white uppercase tabular-nums tracking-widest">14 / 30 Jours</span>
+                       <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest block">Backups Actifs</span>
+                       <span className="text-[10px] font-bold text-[var(--charcoal)] uppercase tabular-nums tracking-widest">14 / 30 Jours</span>
                      </div>
                    </div>
                    
                    <div className="flex items-center gap-8 px-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-                        <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Global Uptime</span><span className="text-[10px] font-bold text-white tracking-widest">99.99%</span></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                        <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Global Uptime</span><span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">99.99%</span></div>
                       </div>
-                      <div className="flex flex-col"><span className="text-[8px] font-black text-white/40 uppercase">Resource Load</span><span className="text-[10px] font-bold text-emerald-400 tracking-widest uppercase">Excellent</span></div>
+                      <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Resource Load</span><span className="text-[10px] font-bold text-emerald-600 tracking-widest uppercase">Excellent</span></div>
                    </div>
                  </div>
 
-                 <Link href="/services" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 hover:border-emerald-500/30 uppercase tracking-[0.2em] transition-all active:scale-95 group/btn2">
-                   Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-400 group-hover/btn2:translate-x-1 transition-transform" />
+                 <Link href="/services" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-full bg-[var(--off-white)] border border-slate-200 text-[10px] font-black text-[var(--charcoal)] hover:bg-white hover:border-emerald-200 uppercase tracking-[0.2em] transition-all group/btn2 shadow-sm">
+                   Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-500 group-hover/btn2:translate-x-1 transition-transform" />
                  </Link>
                </div>
              </div>
@@ -787,31 +786,31 @@ export default function DashboardPage() {
       <AnimatePresence>
         {showReviewModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowReviewModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowReviewModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md zero-jank" />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+              className="relative w-full max-w-lg bg-white border border-[var(--border)] shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden zero-jank"
             >
-              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
-              <button onClick={() => setShowReviewModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
+              <button onClick={() => setShowReviewModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[var(--off-white)] border border-slate-200 flex items-center justify-center text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors hover:bg-slate-100">
                 <X className="w-5 h-5" />
               </button>
               
               <div className="mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-[var(--red)]/10 border border-[var(--red)]/20 flex items-center justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] border border-red-100 flex items-center justify-center mb-6 shadow-sm">
                   <Star className="w-8 h-8 text-[var(--red)] fill-current" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight mb-2">
+                <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">
                   {t.dashboard.reviews.modal_title}
                 </h3>
-                <p className="text-sm font-medium text-white/40 leading-relaxed">
+                <p className="text-sm font-medium text-[var(--slate)] leading-relaxed">
                   {t.dashboard.reviews.modal_desc}
                 </p>
               </div>
 
-              <form onSubmit={editingReview ? handleUpdateReview : handleSubmitReview} className="space-y-6">
+              <form onSubmit={editingReview ? handleUpdateReview : handleSubmitReview} className="space-y-6 relative z-10">
                 <div>
-                  <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
+                  <label className="block text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-4">
                     {t.dashboard.reviews.rating}
                   </label>
                   <div className="flex gap-2">
@@ -825,7 +824,7 @@ export default function DashboardPage() {
                         className="p-2 -m-2 group transition-transform hover:scale-110 active:scale-95"
                       >
                         <Star className={`w-8 h-8 transition-colors ${
-                          (hoverRating || reviewRating) >= star ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" : "text-white/10"
+                          (hoverRating || reviewRating) >= star ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" : "text-slate-200"
                         }`} />
                       </button>
                     ))}
@@ -833,37 +832,39 @@ export default function DashboardPage() {
                 </div>
 
                 {editingReview && (
-                  <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mb-2">Modification de l'avis du</span>
-                    <span className="text-[10px] font-bold text-white tracking-widest">{new Date(editingReview.createdAt?.seconds * 1000).toLocaleDateString()}</span>
+                  <div className="p-4 bg-[var(--off-white)] border border-slate-200 rounded-xl shadow-sm">
+                    <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest block mb-1">Modification de l'avis du</span>
+                    <span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">{new Date(editingReview.createdAt?.seconds * 1000).toLocaleDateString()}</span>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
+                  <label className="block text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-4">
                     {t.dashboard.reviews.comment}
                   </label>
                   <div className="relative">
-                    <MessageSquare className="absolute top-4 left-4 w-5 h-5 text-white/20" />
+                    <MessageSquare className="absolute top-4 left-4 w-5 h-5 text-[var(--muted)]" />
                     <textarea 
                       required
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
                       placeholder={language === "fr" ? "Votre expérience..." : "Your experience..."}
-                      className="w-full h-32 pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-medium text-white outline-none focus:border-[var(--red)]/50 focus:bg-[#1A1A1A] transition-all resize-none"
+                      className="w-full h-32 pl-12 pr-4 py-4 bg-[var(--off-white)] border border-slate-200 rounded-2xl text-[var(--charcoal)] outline-none focus:border-[var(--red)] focus:ring-4 ring-red-100 transition-all resize-none shadow-sm zero-jank"
                     />
                   </div>
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={isSubmittingReview || reviewRating === 0}
-                  className="w-full py-5 bg-[var(--red)] text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50"
-                >
-                  {isSubmittingReview ? t.dashboard.profile.updating : (
-                    editingReview ? (language === "fr" ? "Mettre à jour" : "Update") : t.dashboard.reviews.submit
-                  )}
-                </button>
+                <div className="pt-2">
+                  <button 
+                    type="submit" 
+                    disabled={isSubmittingReview || reviewRating === 0}
+                    className="w-full py-5 bg-[var(--red)] text-white rounded-full font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(230,0,0,0.2)] active:scale-95 transition-all disabled:opacity-50 zero-jank flex justify-center items-center gap-2"
+                  >
+                    {isSubmittingReview ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (
+                      editingReview ? (language === "fr" ? "Mettre à jour" : "Update") : t.dashboard.reviews.submit
+                    )}
+                  </button>
+                </div>
               </form>
             </motion.div>
           </div>
@@ -872,28 +873,28 @@ export default function DashboardPage() {
         {/* PIN Change Modal */}
         {showPinChangeModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md zero-jank" />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-sm bg-[#111111] border border-white/10 shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden"
+              className="relative w-full max-w-sm bg-white border border-[var(--border)] shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden zero-jank"
             >
-              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-10" />
-              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+              <AuraGradient color="emerald" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
+              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[var(--off-white)] border border-slate-200 flex items-center justify-center text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors hover:bg-slate-100">
                 <X className="w-5 h-5" />
               </button>
               
               <div className="mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
-                  <Key className="w-6 h-6 text-emerald-400" />
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4 shadow-sm">
+                  <Key className="w-6 h-6 text-emerald-600" />
                 </div>
-                <h3 className="text-xl font-black text-white tracking-tight mb-1">Modifier mon PIN</h3>
-                <p className="text-[11px] font-medium text-white/40 leading-relaxed">Saisissez votre ancien PIN puis le nouveau (4 chiffres). Limité à 1 changement par 24h.</p>
+                <h3 className="text-xl font-black text-[var(--charcoal)] tracking-tight mb-1">Modifier mon PIN</h3>
+                <p className="text-[11px] font-medium text-[var(--slate)] leading-relaxed">Saisissez votre ancien PIN puis le nouveau (4 chiffres). Limité à 1 changement par 24h.</p>
               </div>
 
-              <form onSubmit={handlePinChangeSubmit} className="space-y-4">
+              <form onSubmit={handlePinChangeSubmit} className="space-y-4 relative z-10">
                 {/* Old PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Ancien Code PIN</label>
+                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Ancien Code PIN</label>
                   <div className="relative">
                     <input 
                       type={showOldPin ? "text" : "password"}
@@ -902,16 +903,16 @@ export default function DashboardPage() {
                       placeholder="••••"
                       maxLength={4}
                       required
-                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none placeholder:text-[var(--muted)]/50 transition-all shadow-sm zero-jank"
                     />
-                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
                       {showOldPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
                 {/* New PIN */}
                 <div>
-                  <label className="block text-[9px] font-black uppercase text-white/40 tracking-[0.2em] mb-2">Nouveau Code PIN (4 chiffres)</label>
+                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Nouveau Code PIN (4 chiffres)</label>
                   <div className="relative">
                     <input 
                       type={showNewPin ? "text" : "password"}
@@ -920,9 +921,9 @@ export default function DashboardPage() {
                       placeholder="••••"
                       maxLength={4}
                       required
-                      className="w-full bg-[#050505] border border-white/10 text-white rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-emerald-500 outline-none placeholder:text-white/10 transition-all"
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none placeholder:text-[var(--muted)]/50 transition-all shadow-sm zero-jank"
                     />
-                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
                       {showNewPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -930,22 +931,22 @@ export default function DashboardPage() {
                 
                 <AnimatePresence>
                   {pinChangeForm.error && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl zero-jank">
                       <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-                      <p className="text-[11px] text-red-400 font-bold">{pinChangeForm.error}</p>
+                      <p className="text-[11px] text-red-500 font-bold">{pinChangeForm.error}</p>
                     </motion.div>
                   )}
                   {pinChangeForm.success && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <p className="text-[11px] text-emerald-400 font-bold">{pinChangeForm.success}</p>
+                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl zero-jank">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <p className="text-[11px] text-emerald-600 font-bold">{pinChangeForm.success}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <div className="pt-2">
-                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 4 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-black font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2">
-                    {isChangingPin ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <><Key className="w-4 h-4" />Confirmer</>}
+                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 4 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 rounded-full text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(16,185,129,0.3)] active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2 zero-jank">
+                    {isChangingPin ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Key className="w-4 h-4" />Confirmer</>}
                   </button>
                 </div>
               </form>
