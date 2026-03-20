@@ -46,15 +46,12 @@
 
 /* ── Performance Utilities (Zero Jank) ── */
 .zero-jank {
-  transform: translateZ(0);
-  will-change: transform, opacity;
   backface-visibility: hidden;
-  perspective: 1000px;
+  /* Removed transform: translateZ(0) and will-change to prevent massive VRAM saturation which causes scroll glitching */
 }
 
 .gpu-accelerated {
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* ── Elite Utilities ─────────────────────────────────────── */
@@ -85,7 +82,6 @@
 /* ── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html { 
-  scroll-behavior: smooth; 
   scroll-padding-top: 100px; /* Space for fixed navbar */
 }
 
