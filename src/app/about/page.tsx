@@ -54,7 +54,7 @@ export default function AboutPage() {
             <blockquote className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight tracking-tight max-w-3xl italic font-serif serif-italic">
               "{t.about.quote}"
             </blockquote>
-            <cite className="block text-red-200 text-[10px] font-black uppercase tracking-[0.3em] mt-8 not-italic">— {t.about.quote_author}, E-JARNALUD SOFT</cite>
+            <cite className="block text-red-200 text-[10px] font-black uppercase tracking-[0.3em] mt-8 not-italic">— {t.about.quote_author}, E-JARNAULD SOFT</cite>
           </FadeUp>
         </div>
       </section>

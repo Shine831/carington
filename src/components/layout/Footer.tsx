@@ -106,7 +106,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-500">
-          <p>&copy; {new Date().getFullYear()} E-JARNALUD SOFT. {t.footer.copyright}</p>
+          <p>&copy; {new Date().getFullYear()} E-JARNAULD SOFT. {t.footer.copyright}</p>
           <div className="flex gap-10">
             <Link href="/privacy" className="hover:text-white transition-colors">{language === "fr" ? "Confidentialité" : "Privacy"}</Link>
             <Link href="/terms" className="hover:text-white transition-colors">{language === "fr" ? "CGV / CGU" : "Terms"}</Link>

@@ -34,8 +34,8 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-black text-[var(--charcoal)] uppercase tracking-tight mb-4">{language === "fr" ? "1. Collecte des Données" : "1. Data Collection"}</h2>
                 <p className="text-slate-500 leading-relaxed">
                   {language === "fr" 
-                    ? "E-JARNALUD SOFT s'engage à protéger l'intégrité de vos informations. Nous collectons uniquement les données nécessaires au chiffrage de vos projets et à la sécurisation de vos accès." 
-                    : "E-JARNALUD SOFT is committed to protecting the integrity of your information. We only collect data necessary for project estimates and securing your access."}
+                    ? "E-JARNAULD SOFT s'engage à protéger l'intégrité de vos informations. Nous collectons uniquement les données nécessaires au chiffrage de vos projets et à la sécurisation de vos accès." 
+                    : "E-JARNAULD SOFT is committed to protecting the integrity of your information. We only collect data necessary for project estimates and securing your access."}
                 </p>
               </section>
 
@@ -52,8 +52,8 @@ export default function PrivacyPage() {
                 <h2 className="text-xl font-black text-[var(--charcoal)] uppercase tracking-tight mb-4">{language === "fr" ? "3. Contact" : "3. Contact"}</h2>
                 <p className="text-slate-500 leading-relaxed">
                   {language === "fr" 
-                    ? "Pour toute demande concernant vos données personnelles, contactez notre DPO à security@ejarnalud.cm." 
-                    : "For any request concerning your personal data, contact our DPO at security@ejarnalud.cm."}
+                    ? "Pour toute demande concernant vos données personnelles, contactez notre DPO à security@ejarnauld.cm." 
+                    : "For any request concerning your personal data, contact our DPO at security@ejarnauld.cm."}
                 </p>
               </section>
             </div>
