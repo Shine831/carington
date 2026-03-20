@@ -69,6 +69,25 @@ Notre stack a été sélectionnée pour sa résilience et son évolutivité à l
 
 ---
 
+## 🛠 Standards de Développement
+
+### 1. Stratégie de Branching (Git Flow)
+Nous utilisons une structure Git Flow rigoureuse pour garantir la stabilité de la production :
+- **main** : Branche de production ultra-stable. Aucun commit direct autorisé.
+- **develop** : Branche d'intégration. Toutes les fonctionnalités finies y sont fusionnées.
+- **feature/** : Pour chaque nouveau composant ou fonctionnalité.
+- **fix/** : Pour les corrections de bugs urgents.
+
+### 2. Standards de Commits (Conventional Commits)
+Chaque message de commit doit suivre rigoureusement le format : `type(scope): description`.
+- `feat`: Nouvelle fonctionnalité.
+- `fix`: Correction de bug.
+- `docs`: Documentation uniquement.
+- `style`: Changements UI/UX (CSS, Premium Crimson, etc.).
+- `refactor`: Modification du code sans changement de fonctionnalité.
+
+---
+
 ## 🏗 Déploiement & Installation Locale
 
 Le code source a été conteneurisé et structuré de manière rigoureuse. Voici la procédure d'initialisation pour tout ingénieur rejoignant le projet :
