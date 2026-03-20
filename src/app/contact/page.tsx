@@ -7,6 +7,7 @@ import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem } from "@/
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { createContactMessage } from "@/lib/firebase/db";
+import { sendAdminEmail } from "@/app/actions/sendAdminEmail";
 
 export default function ContactPage() {
   const { t, language } = useI18n();
@@ -33,6 +34,7 @@ export default function ContactPage() {
     setLoading(true);
     try {
       await createContactMessage(form);
+      sendAdminEmail("contact", form).catch(console.error);
       setSuccess(true);
     } catch (err: any) {
       let errorMsg = t.contact.form.errors.network;

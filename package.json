@@ -11,6 +11,9 @@
     "translate": "node scripts/auto-translate.mjs"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
+    "@react-email/components": "^1.0.10",
+    "@react-email/render": "^2.0.4",
     "@studio-freight/lenis": "^1.0.42",
     "firebase": "^12.10.0",
     "framer-motion": "^12.38.0",
@@ -18,6 +21,7 @@
     "next": "16.1.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.9.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {

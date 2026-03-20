@@ -9,6 +9,7 @@ import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { createBooking, getServices } from "@/lib/firebase/db";
+import { sendAdminEmail } from "@/app/actions/sendAdminEmail";
 
 const INITIAL = {
   clientType: "b2b",
@@ -64,6 +65,7 @@ export default function BookingPage() {
         userId: user?.uid ?? null,
         ...form,
       });
+      sendAdminEmail("booking", form).catch(console.error);
       setSubmitted(true);
     } catch (err: any) {
       let errorMsg = t.booking.errors.network;
