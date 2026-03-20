@@ -156,8 +156,8 @@ export default function ServicesPage() {
               <div className="w-24 h-24 bg-white/50 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-8 border-2 border-dashed border-slate-200">
                 <Search className="w-10 h-10 text-slate-300" />
               </div>
-              <h3 className="text-2xl font-black text-[var(--charcoal)] mb-3 uppercase tracking-tight">Expertise introuvable</h3>
-              <p className="text-base text-[var(--slate)] font-medium mb-10 max-w-xs mx-auto">Aucun service ne correspond à la recherche <strong className="text-[var(--red)]">"{query}"</strong>. Nos ingénieurs peuvent néanmoins réaliser du sur-mesure.</p>
+              <h3 className="text-2xl font-black text-[var(--charcoal)] mb-3 uppercase tracking-tight">{t.services_page.not_found}</h3>
+              <p className="text-base text-[var(--slate)] font-medium mb-10 max-w-xs mx-auto">{t.services_page.not_found_desc}</p>
               <button onClick={() => setQuery("")} className="btn btn-red px-10 py-5 font-black uppercase text-[10px] tracking-widest shadow-[var(--shadow-red)]">
                 {t.services_page.show_all}
               </button>
@@ -170,7 +170,7 @@ export default function ServicesPage() {
               animate={{ opacity: 1 }}
               className="text-center py-32"
             >
-               <p className="text-slate-400 font-bold uppercase tracking-widest">Le catalogue est en cours de mise à jour.</p>
+               <p className="text-slate-400 font-bold uppercase tracking-widest">{t.services_page.updating}</p>
             </motion.div>
           )}
         </div>

@@ -11,15 +11,22 @@ export const translations = {
     hero: {
       tag: "Opérations IT · Douala",
       badge: "Systèmes Sécurisés",
+      location: "Douala, Cameroun",
       title_part1: "Architecture de",
       title_part2: "Confiance.",
+      title_v2: "Architecture Informatique de Confiance.",
       desc: "E-JARNALUD SOFT fusionne l'expertise technique et la vision stratégique pour bâtir les infrastructures numériques les plus résilientes du Cameroun.",
+      search_placeholder: "Ex: Câblage IT, Maintenance...",
+      btn_discover: "Découvrir",
       btn_audit: "Lancer un Audit",
+      btn_audit_main: "Audit & Devis Gratuit",
       btn_audit_sub: "Réponse garantie en < 2h",
       btn_explore: "Explorer Expertises",
       stats: "Évalué 4.9/5 par nos partenaires"
     },
     services: {
+      tag: "Expertises",
+      explore: "Explorer",
       title: "Solutions de Pointe",
       cyber: {
         tag: "Sécurité",
@@ -46,55 +53,80 @@ export const translations = {
       tag: "Engagement 2026",
       title_part1: "Une expertise sans",
       title_part2: "compromis.",
-      desc: "Nous ne construisons pas seulement des serveurs, nous architecturons la souveraineté numérique locale.",
+      title: "Des solutions d'excellence.",
+      desc: "Parce que la technologie ne doit pas être un frein, mais un moteur de croissance. Nous nous engageons à propulser vos activités avec des standards incomparables.",
       items: {
         certs: "Certifications ISO 27001.",
+        certs_desc: "Des ingénieurs certifiés et des déploiements fiables, conformes aux meilleures pratiques IT internationales.",
         speed: "Intervention < 2 heures.",
+        speed_desc: "Support client dédié et intervention technique rapide sous 2h pour vous assurer une continuité de service.",
         sov: "Données au Cameroun.",
+        sov_desc: "Aucune mauvaise surprise financière. Nos offres sont claires, étudiées sur-mesure et justifiées dès l'audit.",
         int: "Solutions bout-en-bout."
       },
+      support_title: "Support 2026",
+      support_desc: "Une équipe technique experte disponible à tout moment pour optimiser vos systèmes d'information.",
+      team: "Douala Core Team",
       card_title: "Certifié Confiance",
       card_desc: "Chaque architecture est soumise à un audit de résilience multicouche."
     },
+    faq: {
+      tag: "Expertise & Clarté",
+      title: "Questions Fréquentes.",
+      desc: "Nous levons le voile sur les enjeux techniques pour vous permettre de décider en toute sérénité.",
+      question_placeholder: "Besoin d'une réponse spécifique ?",
+      contact_eng: "Contacter un ingénieur"
+    },
+    cta: {
+      tag: "Audit Offert",
+      title: "Prêt à sécuriser votre avenir numérique ?",
+      desc: "Nos ingénieurs répondent sous 2 heures. Audit IT gratuit et sans engagement.",
+      btn_audit: "Demander un Devis",
+      btn_contact: "Contactez-nous"
+    },
     about: {
-      tag: "Héritage & Vision",
+      tag: "Ingénierie de Précision",
       since: "Depuis 2014",
-      title_part1: "Bâtir la Résilience Numérique",
-      title_part2: "du Cameroun.",
-      desc: "Fondée à Douala, E-JARNALUD SOFT fusionne l'excellence technique et l'innovation continue pour protéger les actifs les plus critiques de nos clients.",
-      quote: "Nous n'installons pas des logiciels. Nous architecturons des écosystèmes robustes et des boucliers numériques.",
+      title_part1: "L'excellence technique",
+      title_part2: "au service de votre infrastructure.",
+      desc: "Carington est un leader panafricain spécialisé dans les solutions critiques d'infrastructure IT, de cybersécurité et de réseaux intelligents. Nous transformons les défis complexes en opportunités technologiques.",
+      quote: "L'innovation n'est pas seulement technologique, c'est une question de vision et d'intégrité.",
       quote_author: "Fondateur",
       commit_tag: "Nos Engagements",
-      commit_title: "Pourquoi nous faire confiance ?",
-      promise_tag: "L'Engagement Écarlate",
-      promise_title: "Ce que nous promettons.",
+      commit_title: "Les Piliers de notre Expertise",
+      pillars: [
+        { title: "Sécurité Maximale", desc: "Protocoles de protection avancés pour vos actifs numériques les plus précieux." },
+        { title: "Excellence Certifiée", desc: "Une équipe d'ingénieurs diplômés des meilleures institutions internationales." },
+        { title: "Innovation Continue", desc: "Veille technologique constante pour anticiper les menaces de demain." },
+        { title: "Support 24/7", desc: "Disponibilité totale pour garantir la continuité de vos opérations critiques." }
+      ],
+      promise_tag: "Notre Promesse",
+      promise_title: "Une vision 360° de votre sécurité.",
       promises: [
-        "Premier audit IT offert sans engagement pour chaque nouveau client.",
-        "Souveraineté totale des données clients sur le territoire camerounais.",
-        "Temps de réponse critique (downtime) inférieur à 2 heures via TMA.",
-        "Rapport mensuel de sécurité transparent pour tous vos systèmes gérés."
+        "Audit de vulnérabilité complet et transparent",
+        "Déploiement agile et respect des délais",
+        "Formation de vos équipes aux meilleures pratiques",
+        "Optimisation des coûts d'infrastructure"
       ],
       stats: {
-        clients: "Clients actifs au Cameroun",
-        years: "Années d'expertise IT continue",
-        sat: "Satisfaction client mesurée"
+        clients: "Clients Institutionnels",
+        years: "Années d'Expérience",
+        sat: "Taux de Satisfaction"
       },
-      pillars: [
-        { title: "Sécurité Totale", desc: "Protocoles de protection de niveau militaire." },
-        { title: "Certifications", desc: "Partenariats officiels avec les leaders mondiaux." },
-        { title: "Précision", desc: "Respect scrupuleux des délais et des SLA." },
-        { title: "Équipe 24/7", desc: "Ingénieurs d'astreinte pour urgences critiques." }
-      ]
+      view_services: "Voir Services",
+      talk_expert: "Parler à un expert"
     },
     services_page: {
-      tag: "8 Expertises Certifiées",
-      title: "Catalogue des Services Techniques.",
-      desc: "Solutions B2B et B2C qualifiées. Déployées par des ingénieurs certifiés depuis Douala.",
-      search_placeholder: "Filtrer : Réseau, Urgence, PME...",
-      solutions_available: "Solutions Disponibles",
-      empty_results: "Aucun résultat pour",
-      show_all: "Tout afficher",
-      cta_card: "DEMANDER DEVIS",
+      tag: "Catalogue de Solutions",
+      title: "Des services conçus pour la performance.",
+      desc: "Découvrez notre gamme complète d'interventions techniques, de la cybersécurité avancée au déploiement de réseaux télécoms.",
+      search_placeholder: "Chercher une expertise...",
+      solutions_available: "solutions disponibles",
+      cta_card: "Demander Devis",
+      not_found: "Expertise introuvable",
+      not_found_desc: "Aucun service ne correspond à votre recherche. Nos ingénieurs peuvent néanmoins réaliser du sur-mesure.",
+      show_all: "Afficher tout le catalogue",
+      updating: "Le catalogue est en cours de mise à jour.",
       items: {
         it: { title: "Infogérance", desc: "Maintenance préventive, helpdesk, mises à jour critiques et licences logicielles." },
         network_cable: { title: "Câblage Informatique", desc: "Câblage Cat6A, fibre optique, baies de brassage et certification de liens." },
@@ -135,8 +167,25 @@ export const translations = {
         },
         message: "Message (Décrivez votre besoin...)",
         send: "Envoyer le message",
-        secure: "Données confidentielles · AES-256"
-      }
+        secure: "Données confidentielles · AES-256",
+        sending: "Envoi...",
+        success_title: "Message envoyé avec succès !",
+        success_desc: "Notre équipe vous répondra dans les plus brefs délais.",
+        new_msg: "Nouveau message",
+        errors: {
+          name_req: "Nom requis.",
+          email_inv: "Email invalide.",
+          msg_short: "Message trop court.",
+          network: "Erreur réseau. Impossible d'établir une connexion sécurisée.",
+          denied: "Accès refusé. Veuillez vérifier votre session ou rafraîchir la page.",
+          overload: "Le service est temporairement surchargé. Patientez quelques instants.",
+          quota: "Limite atteinte. Veuillez patienter avant de réessayer."
+        }
+      },
+      hq_val: "Marché NDOPASSI, Douala",
+      phone_val: "+237 654 74 93 57",
+      tech_val: "+237 697 16 72 59",
+      email_val: "cust_care@ejs-cm.com"
     },
     booking: {
       tag: "Portail Chiffré AES-256",
@@ -165,7 +214,30 @@ export const translations = {
         { title: "Analyse", desc: "Nos ingénieurs étudient votre dossier en moins de 12 heures." },
         { title: "Devis & SLA", desc: "Proposition technique avec délais, tarifs CFA et spécifications détaillées." },
         { title: "Exécution", desc: "Intervention sur site ou déploiement distant certifié et sécurisé." }
-      ]
+      ],
+      success_title: "Demande envoyée !",
+      success_desc: "Votre demande de devis a été enregistrée. Notre équipe vous contactera dans les 24h ouvrées.",
+      view_requests: "Voir mes demandes",
+      create_account: "Créer un compte pour suivre",
+      new_booking: "Nouvelle demande",
+      errors: {
+        entity_req: "Nom de l'entité requis.",
+        email_inv: "Email invalide.",
+        phone_req: "Numéro de téléphone requis.",
+        desc_short: "Description trop courte (min. 20 caractères).",
+        network: "Erreur réseau. Impossible d'établir une connexion sécurisée.",
+        denied: "Accès refusé. Veuillez vérifier votre session ou rafraîchir la page.",
+        overload: "Le service est temporairement surchargé. Patientez quelques instants.",
+        quota: "Limite de requêtes atteinte. Veuillez patienter avant de réessayer."
+      },
+      loading_services: "Chargement des services...",
+      b2b: "Entreprise (B2B)",
+      b2c: "Particulier (B2C)",
+      ong: "Administration / ONG",
+      budget_undef: "Non défini",
+      time_urgent: "Urgence (< 24h)",
+      time_normal: "Standard (1–2 semaines)",
+      time_plan: "Planifié (1 mois+)"
     },
     account: {
       tag: "Espace Client",
@@ -197,13 +269,18 @@ export const translations = {
         requests: "Requêtes",
         clients: "Clients",
         catalog: "Catalogue",
-        settings: "Paramètres"
+        messages: "Messages",
+        testimonials: "Témoignages",
+        settings: "Paramètres",
+        logout: "Déconnexion"
       },
       stats: {
         pending: "En Attente",
         active: "En Cours",
         completed: "Terminés",
-        revenue: "Revenus"
+        revenue: "Revenus",
+        users: "Utilisateurs",
+        services: "Services"
       },
       table: {
         title: "Requêtes Entrantes",
@@ -214,7 +291,29 @@ export const translations = {
         value: "Valeur",
         status: "Statut",
         open: "Ouvrir",
-        pagination: "Affichage {start}–{end} sur {total} requêtes"
+        pagination: "Affichage {start}–{end} sur {total} requêtes",
+        actions: "Actions",
+        date: "Date"
+      },
+      modals: {
+        status_update: "Mettre à jour le statut",
+        admin_note: "Note de l'administrateur",
+        save: "Enregistrer",
+        cancel: "Annuler",
+        delete_confirm: "Êtes-vous sûr de vouloir supprimer cet élément ?",
+        new_service: "Ajouter un service",
+        edit_service: "Modifier le service",
+        title: "Titre",
+        desc: "Description",
+        price: "Prix (CFA)",
+        category: "Catégorie"
+      },
+      security: {
+        pin_title: "Code PIN d'Accès",
+        pin_desc: "Entrez votre code à 4 chiffres pour déverrouiller le panel.",
+        pin_error: "Code PIN incorrect.",
+        pin_unlock: "Déverrouiller",
+        pin_setup: "Configurer le PIN"
       }
     },
     dashboard: {
@@ -229,11 +328,55 @@ export const translations = {
         zero_breach: "Zéro Intrusion",
         scheduled: "Maintenance Programmée"
       },
-      sections: {
-        requests: "Requêtes & Tickets Actifs",
-        archive: "Voir toutes les archives",
-        alerts: "Alertes Système",
-        logs: "Voir tous les logs d'audit"
+      tabs: {
+        projects: "Projets",
+        reviews: "Avis",
+        profile: "Compte"
+      },
+      projects: {
+        title: "Mes Demandes & Devis",
+        new: "Nouveau Devis",
+        empty: "Aucune demande en cours.",
+        id: "Dossier #",
+        date: "Date",
+        budget: "Budget",
+        admin_note: "Note Admin",
+        cancel: "Annuler Demande"
+      },
+      reviews: {
+        title: "Mes Témoignages",
+        new: "Nouvel Avis",
+        empty: "Vous n'avez pas encore laissé d'avis.",
+        edit: "Modifier",
+        delete: "Supprimer",
+        modal_title: "Votre avis compte",
+        modal_desc: "Aidez-nous à affiner notre excellence en partageant votre expérience.",
+        rating: "Note (1 à 5 étoiles)",
+        comment: "Commentaire",
+        submit: "Publier",
+        thanks: "Merci pour votre témoignage !"
+      },
+      profile: {
+        title: "Gestion du Compte",
+        full_name: "Nom Complet",
+        email: "Adresse Email",
+        save: "Sauvegarder",
+        updating: "En cours...",
+        success: "Profil mis à jour !",
+        security: "Sécurité & Accès",
+        change_pin: "Modifier le PIN",
+        reset_password: "Réinitialiser le mot de passe"
+      },
+      security: {
+        pin_setup_title: "Configuration Sécurité",
+        pin_setup_desc: "Afin de protéger vos données, veuillez configurer un Code PIN à 4 chiffres.",
+        pin_verify_title: "Accès Sécurisé",
+        pin_verify_desc: "Veuillez entrer votre Code PIN à 4 chiffres pour accéder à vos devis.",
+        pin_placeholder: "••••",
+        pin_error: "Code Incorrect",
+        pin_submit_setup: "Enregistrer mon PIN",
+        pin_submit_verify: "Déverrouiller",
+        logout: "Déconnexion"
       }
     },
     footer: {
@@ -258,15 +401,22 @@ export const translations = {
     hero: {
       tag: "IT Operations · Douala",
       badge: "Secured Systems",
+      location: "Douala, Cameroon",
       title_part1: "Architecture of",
       title_part2: "Trust.",
+      title_v2: "Trusted IT Architecture.",
       desc: "E-JARNALUD SOFT merges technical expertise with strategic vision to build Cameroon's most resilient digital infrastructures.",
-      btn_audit: "Start an Audit",
+      search_placeholder: "Ex: IT Cabling, Management...",
+      btn_discover: "Discover",
+      btn_audit: "Start Audit",
+      btn_audit_main: "Audit & Free Quote",
       btn_audit_sub: "Guaranteed response < 2h",
       btn_explore: "Explore Expertise",
       stats: "Rated 4.9/5 by our partners"
     },
     services: {
+      tag: "Expertise",
+      explore: "Explore",
       title: "Leading Solutions",
       cyber: {
         tag: "Security",
@@ -293,55 +443,80 @@ export const translations = {
       tag: "Engagement 2026",
       title_part1: "Expertise without",
       title_part2: "compromise.",
-      desc: "We don't just build servers, we architect local digital sovereignty.",
+      title: "Elite Solutions.",
+      desc: "Because technology should not be a brake, but a growth engine. We are committed to propelling your activities with incomparable standards.",
       items: {
         certs: "ISO 27001 Certifications.",
+        certs_desc: "Certified engineers and reliable deployments, complying with international IT best practices.",
         speed: "Intervention < 2 hours.",
-        sov: "Data in Cameroon.",
+        speed_desc: "Dedicated client support and fast technical intervention under 2h to ensure service continuity.",
+        sov: "Transparent Pricing.",
+        sov_desc: "No financial surprises. Our offers are clear, custom-studied, and justified from the audit.",
         int: "End-to-end solutions."
       },
+      support_title: "Support 2026",
+      support_desc: "An expert technical team available at any time to optimize your information systems.",
+      team: "Douala Core Team",
       card_title: "Certified Trust",
       card_desc: "Every architecture undergoes a multi-layer resilience audit."
     },
+    faq: {
+      tag: "Expertise & Clarity",
+      title: "FAQ.",
+      desc: "We clarify technical challenges to help you make decisions with complete peace of mind.",
+      question_placeholder: "Need a specific answer?",
+      contact_eng: "Contact an engineer"
+    },
+    cta: {
+      tag: "Free Audit",
+      title: "Ready to secure your digital future?",
+      desc: "Our engineers respond within 2 hours. Free IT audit with no obligation.",
+      btn_audit: "Request a Quote",
+      btn_contact: "Contact Us"
+    },
     about: {
-      tag: "Heritage & Vision",
+      tag: "Precision Engineering",
       since: "Since 2014",
-      title_part1: "Building Cameroon's Digital",
-      title_part2: "Resilience.",
-      desc: "Founded in Douala, E-JARNALUD SOFT merges technical excellence and continuous innovation to protect our clients' most critical assets.",
-      quote: "We don't install software. We architect robust ecosystems and digital shields.",
+      title_part1: "Technical excellence",
+      title_part2: "at the service of your infrastructure.",
+      desc: "Carington is a pan-African leader specializing in critical IT infrastructure solutions, cybersecurity, and smart networks. We transform complex challenges into technological opportunities.",
+      quote: "Innovation is not just technological, it's a matter of vision and integrity.",
       quote_author: "Founder",
       commit_tag: "Our Commitments",
-      commit_title: "Why Trust Us?",
-      promise_tag: "The Scarlet Commitment",
-      promise_title: "What We Promise.",
+      commit_title: "Pillars of Our Expertise",
+      pillars: [
+        { title: "Maximum Security", desc: "Advanced protection protocols for your most valuable digital assets." },
+        { title: "Certified Excellence", desc: "A team of engineers graduated from the best international institutions." },
+        { title: "Continuous Innovation", desc: "Constant tech watch to anticipate tomorrow's threats." },
+        { title: "24/7 Support", desc: "Total availability to ensure the continuity of your critical operations." }
+      ],
+      promise_tag: "Our Promise",
+      promise_title: "A 360° vision of your security.",
       promises: [
-        "First IT audit offered with no obligation for every new client.",
-        "Total sovereignty of client data on Cameroonian territory.",
-        "Critical response time (downtime) under 2 hours via TMA.",
-        "Transparent monthly security report for all your managed systems."
+        "Complete and transparent vulnerability audit",
+        "Agile deployment and deadline compliance",
+        "Training your teams in best practices",
+        "Optimization of infrastructure costs"
       ],
       stats: {
-        clients: "Active clients in Cameroon",
-        years: "Years of continuous IT expertise",
-        sat: "Measured client satisfaction"
+        clients: "Institutional Clients",
+        years: "Years of Experience",
+        sat: "Satisfaction Rate"
       },
-      pillars: [
-        { title: "Total Security", desc: "Military-grade protection protocols." },
-        { title: "Certifications", desc: "Official partnerships with world leaders." },
-        { title: "Precision", desc: "Scrupulous respect for deadlines and SLAs." },
-        { title: "24/7 Team", desc: "On-call engineers for critical emergencies." }
-      ]
+      view_services: "View Services",
+      talk_expert: "Talk to an expert"
     },
     services_page: {
-      tag: "8 Certified Expertises",
-      title: "Technical Services Catalog.",
-      desc: "Qualified B2B and B2C solutions. Deployed by certified engineers from Douala.",
-      search_placeholder: "Filter: Network, Emergency, SME...",
-      solutions_available: "Solutions Available",
-      empty_results: "No results for",
-      show_all: "Show all",
-      cta_card: "REQUEST QUOTE",
+      tag: "Solution Catalog",
+      title: "Services designed for performance.",
+      desc: "Discover our full range of technical interventions, from advanced cybersecurity to telecom network deployment.",
+      search_placeholder: "Search for an expertise...",
+      solutions_available: "solutions available",
+      cta_card: "Request Quote",
+      not_found: "Expertise not found",
+      not_found_desc: "No service matches your search. However, our engineers can provide custom solutions.",
+      show_all: "Show all catalog",
+      updating: "The catalog is currently being updated.",
       items: {
         it: { title: "IT Management", desc: "Preventive maintenance, helpdesk, critical updates and software licenses." },
         network_cable: { title: "Structured Cabling", desc: "Cat6A cabling, fiber optics, server racks, and link certification." },
@@ -382,8 +557,25 @@ export const translations = {
         },
         message: "Message (Describe your need...)",
         send: "Send message",
-        secure: "Confidential data · AES-256"
-      }
+        secure: "Confidential data · AES-256",
+        sending: "Sending...",
+        success_title: "Message sent successfully!",
+        success_desc: "Our team will get back to you shortly.",
+        new_msg: "New message",
+        errors: {
+          name_req: "Name required.",
+          email_inv: "Invalid email.",
+          msg_short: "Message too short.",
+          network: "Network error. Unable to establish a secure connection.",
+          denied: "Access denied. Please check your session or refresh.",
+          overload: "Service is temporarily overloaded. Please wait a moment.",
+          quota: "Request limit reached. Please wait before retrying."
+        }
+      },
+      hq_val: "NDOPASSI Market, Douala",
+      phone_val: "+237 654 74 93 57",
+      tech_val: "+237 697 16 72 59",
+      email_val: "cust_care@ejs-cm.com"
     },
     booking: {
       tag: "AES-256 Encrypted Portal",
@@ -412,7 +604,30 @@ export const translations = {
         { title: "Analysis", desc: "Our engineers study your case in less than 12 hours." },
         { title: "Quote & SLA", desc: "Technical proposal with deadlines, CFA rates and detailed specs." },
         { title: "Execution", desc: "On-site intervention or certified secure remote deployment." }
-      ]
+      ],
+      success_title: "Request Sent!",
+      success_desc: "Your quote request has been recorded. Our team will contact you within 24 business hours.",
+      view_requests: "View my requests",
+      create_account: "Create account to track",
+      new_booking: "New request",
+      errors: {
+        entity_req: "Entity name required.",
+        email_inv: "Invalid email.",
+        phone_req: "Phone number required.",
+        desc_short: "Description too short (min. 20 chars).",
+        network: "Network error. Unable to establish a secure connection.",
+        denied: "Access denied. Please check your session or refresh.",
+        overload: "Service is temporarily overloaded. Please wait a moment.",
+        quota: "Request limit reached. Please wait before retrying."
+      },
+      loading_services: "Loading services...",
+      b2b: "Business (B2B)",
+      b2c: "Individual (B2C)",
+      ong: "Gov / NGO",
+      budget_undef: "Undefined",
+      time_urgent: "Urgent (< 24h)",
+      time_normal: "Standard (1–2 weeks)",
+      time_plan: "Planned (1 month+)"
     },
     account: {
       tag: "Client Portal",
@@ -444,13 +659,18 @@ export const translations = {
         requests: "Requests",
         clients: "Clients",
         catalog: "Catalog",
-        settings: "Settings"
+        messages: "Messages",
+        testimonials: "Testimonials",
+        settings: "Settings",
+        logout: "Logout"
       },
       stats: {
         pending: "Pending",
         active: "Active",
         completed: "Completed",
-        revenue: "Revenue"
+        revenue: "Revenue",
+        users: "Users",
+        services: "Services"
       },
       table: {
         title: "Incoming Requests",
@@ -461,7 +681,29 @@ export const translations = {
         value: "Value",
         status: "Status",
         open: "Open",
-        pagination: "Showing {start}–{end} of {total} requests"
+        pagination: "Showing {start}–{end} of {total} requests",
+        actions: "Actions",
+        date: "Date"
+      },
+      modals: {
+        status_update: "Update Status",
+        admin_note: "Administrator Note",
+        save: "Save",
+        cancel: "Cancel",
+        delete_confirm: "Are you sure you want to delete this item?",
+        new_service: "Add Service",
+        edit_service: "Edit Service",
+        title: "Title",
+        desc: "Description",
+        price: "Price (CFA)",
+        category: "Category"
+      },
+      security: {
+        pin_title: "Access PIN Code",
+        pin_desc: "Enter your 4-digit code to unlock the panel.",
+        pin_error: "Incorrect PIN code.",
+        pin_unlock: "Unlock",
+        pin_setup: "Setup PIN"
       }
     },
     dashboard: {
@@ -476,11 +718,55 @@ export const translations = {
         zero_breach: "Zero Breaches",
         scheduled: "Scheduled Maintenance"
       },
-      sections: {
-        requests: "Active Requests & Tickets",
-        archive: "View All Archive",
-        alerts: "System Alerts",
-        logs: "View Full Audit Logs"
+      tabs: {
+        projects: "Projects",
+        reviews: "Reviews",
+        profile: "Account"
+      },
+      projects: {
+        title: "My Requests & Quotes",
+        new: "New Quote",
+        empty: "No active requests.",
+        id: "Case #",
+        date: "Date",
+        budget: "Budget",
+        admin_note: "Admin Note",
+        cancel: "Cancel Request"
+      },
+      reviews: {
+        title: "My Reviews",
+        new: "New Review",
+        empty: "You haven't left any reviews yet.",
+        edit: "Edit",
+        delete: "Delete",
+        modal_title: "Your feedback matters",
+        modal_desc: "Help us refine our excellence by sharing your experience.",
+        rating: "Rating (1 to 5 stars)",
+        comment: "Comment",
+        submit: "Publish",
+        thanks: "Thank you for your review!"
+      },
+      profile: {
+        title: "Account Management",
+        full_name: "Full Name",
+        email: "Email Address",
+        save: "Save Changes",
+        updating: "Updating...",
+        success: "Profile updated!",
+        security: "Security & Access",
+        change_pin: "Change PIN",
+        reset_password: "Reset Password"
+      },
+      security: {
+        pin_setup_title: "Security Configuration",
+        pin_setup_desc: "To protect your data, please configure a 4-digit PIN Code.",
+        pin_verify_title: "Secure Access",
+        pin_verify_desc: "Please enter your 4-digit PIN Code to access your quotes.",
+        pin_placeholder: "••••",
+        pin_error: "Incorrect Code",
+        pin_submit_setup: "Save my PIN",
+        pin_submit_verify: "Unlock",
+        logout: "Logout"
       }
     },
     footer: {

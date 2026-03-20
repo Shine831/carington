@@ -97,7 +97,7 @@ export default function Home() {
                 </span>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--charcoal)] rounded-full">
                   <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-wider">Douala, Cameroun</span>
+                  <span className="text-[10px] font-black text-white uppercase tracking-wider">{t.hero.location}</span>
                 </div>
               </div>
             </FadeUp>
@@ -107,22 +107,22 @@ export default function Home() {
                 style={{ scale: textScale }}
                 className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95]"
               >
-                Votre partenaire<br/>
+                {t.hero.title_v2.split("Informatique")[0]}<br/>
                 <motion.span 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 1, delay: 0.5 }}
                   className="text-[var(--red)]"
                 >
-                  Informatique
+                  {language === "fr" ? "Informatique" : "IT"}
                 </motion.span><br/>
-                de confiance.
+                {t.hero.title_v2.split("Informatique")[1] || t.hero.title_v2.split("IT")[1]}
               </motion.h1>
             </FadeUp>
 
             <FadeUp delay={0.3}>
               <p className="text-body-lg mb-12 text-[var(--slate)] leading-relaxed max-w-lg border-l-2 border-[var(--red)]/20 pl-6">
-                Solutions informatiques sur-mesure, infogérance experte et sécurité absolue (ISO 27001) pour professionnels et entreprises à Douala et partout ailleurs.
+                {t.hero.desc}
               </p>
             </FadeUp>
 
@@ -135,12 +135,12 @@ export default function Home() {
                 </div>
                 <input 
                   type="text" 
-                  placeholder="Ex: Câblage Informatique, Infogérance..." 
+                  placeholder={t.hero.search_placeholder} 
                   className="w-full py-3 px-2 bg-transparent outline-none text-sm font-bold text-[var(--charcoal)] placeholder:text-slate-400 placeholder:font-medium"
                 />
                 <Link href="/services">
                   <button className="bg-[var(--charcoal)] text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--red)] transition-colors shadow-md">
-                    Découvrir
+                    {t.hero.btn_discover}
                   </button>
                 </Link>
               </div>
@@ -156,7 +156,7 @@ export default function Home() {
                       className="btn btn-red px-10 py-5 text-lg group relative flex items-center shadow-[var(--shadow-red)]"
                     >
                       <div className="flex items-center">
-                        Audit & Devis Gratuit
+                        {t.hero.btn_audit_main}
                         <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
                           <ArrowRight className="w-5 h-5 ml-2" />
                         </motion.span>
@@ -262,7 +262,7 @@ export default function Home() {
       <section className="section-py relative">
         <div className="container-xl relative z-10">
           <FadeUp className="mb-16">
-            <span className="tag-red mb-4 inline-flex tracking-widest">{language === "fr" ? "Expertise" : "Expertise"}</span>
+            <span className="tag-red mb-4 inline-flex tracking-widest">{t.services.tag}</span>
             <h2 className="display-lg text-[var(--charcoal)]">{t.services.title}</h2>
           </FadeUp>
 
@@ -294,7 +294,7 @@ export default function Home() {
                       
                       <div className="mt-auto pt-6 border-t border-black/5 flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-[var(--red)] transition-colors">
-                          {language === "fr" ? "Explorer" : "Explore"}
+                          {t.services.explore}
                         </span>
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
                       </div>
@@ -312,19 +312,19 @@ export default function Home() {
         <div className="container-xl">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <SlideLeft>
-              <span className="tag-red mb-4 inline-flex">Pourquoi E-Jarnauld ?</span>
+              <span className="tag-red mb-4 inline-flex">{language === "fr" ? "Pourquoi E-Jarnauld ?" : "Why E-Jarnauld?"}</span>
               <h2 className="display-lg text-[var(--charcoal)] mb-8">
-                Des solutions <span className="text-[var(--red)] italic font-serif">d'excellence</span>.
+                {t.why.title.split("d'excellence")[0]}{t.why.title.split("excellence")[0]} <span className="text-[var(--red)] italic font-serif">{language === "fr" ? "d'excellence" : "excellence"}</span>.
               </h2>
               <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">
-                Parce que la technologie ne doit pas être un frein, mais un moteur de croissance. Nous nous engageons à propulser vos activités avec des standards incomparables.
+                {t.why.desc}
               </p>
               
               <div className="grid sm:grid-cols-1 gap-8">
                 {[
-                  { icon: ShieldCheck, title: "Expertise Approuvée", text: "Des ingénieurs certifiés et des déploiements fiables, conformes aux meilleures pratiques IT internationales." },
-                  { icon: Zap, title: "Réactivité Absolue", text: "Support client dédié et intervention technique rapide sous 2h pour vous assurer une continuité de service." },
-                  { icon: Server, title: "Tarifs Transparents", text: "Aucune mauvaise surprise financière. Nos offres sont claires, étudiées sur-mesure et justifiées dès l'audit." },
+                  { icon: ShieldCheck, title: t.why.items.certs, text: t.why.items.certs_desc },
+                  { icon: Zap, title: t.why.items.speed, text: t.why.items.speed_desc },
+                  { icon: Server, title: t.why.items.sov, text: t.why.items.sov_desc },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-6 group items-start border-b border-slate-100 pb-6 last:border-0">
                     <div className="w-14 h-14 rounded-2xl bg-[var(--off-white)] border border-transparent group-hover:border-[var(--red)]/20 group-hover:bg-red-50 flex items-center justify-center shrink-0 transition-colors shadow-sm">
@@ -346,8 +346,8 @@ export default function Home() {
                   <div className="w-20 h-20 bg-[var(--charcoal)] rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
                     <ShieldCheck className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">Support 2026</h3>
-                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">Une équipe technique experte disponible à tout moment pour optimiser vos systèmes d'information.</p>
+                  <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">{t.why.support_title}</h3>
+                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">{t.why.support_desc}</p>
                   <div className="flex -space-x-3">
                     {[1,2,3].map(i => (
                       <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400 shadow-sm">
@@ -355,7 +355,7 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-6 text-[var(--red)]">Douala Core Team</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-6 text-[var(--red)]">{t.why.team}</p>
                 </BentoCard>
               </div>
             </SlideRight>
@@ -372,18 +372,16 @@ export default function Home() {
         <div className="container-xl">
           <div className="grid lg:grid-cols-12 gap-12">
             <SlideLeft className="lg:col-span-5">
-              <span className="tag-red mb-4 inline-flex tracking-widest">{language === "fr" ? "Expertise & Clarté" : "Expertise & Clarity"}</span>
-              <h2 className="display-lg text-[var(--charcoal)] mb-6">{language === "fr" ? "Questions Fréquentes." : "FAQ."}</h2>
+              <span className="tag-red mb-4 inline-flex tracking-widest">{t.faq.tag}</span>
+              <h2 className="display-lg text-[var(--charcoal)] mb-6">{t.faq.title}</h2>
               <p className="text-body mb-8 text-[var(--slate)] leading-relaxed">
-                {language === "fr" 
-                  ? "Nous levons le voile sur les enjeux techniques pour vous permettre de décider en toute sérénité." 
-                  : "We clarify technical challenges to help you make decisions with complete peace of mind."}
+                {t.faq.desc}
               </p>
               
               <div className="p-8 bg-white rounded-[2rem] border-2 border-[var(--border)] shadow-sm">
-                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-3">Besoin d'une réponse spécifique ?</p>
+                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-3">{t.faq.question_placeholder}</p>
                 <Link href="/contact" className="text-sm font-black text-[var(--red)] flex items-center gap-2 group">
-                  {language === "fr" ? "Contacter un ingénieur" : "Contact an engineer"} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  {t.faq.contact_eng} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </SlideLeft>
@@ -420,15 +418,13 @@ export default function Home() {
           <FadeUp>
             <div className="text-center max-w-2xl mx-auto">
               <span className="inline-flex items-center gap-2 bg-white/5 text-white/60 border border-white/10 rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] mb-8">
-                {language === "fr" ? "Audit Offert" : "Free Audit"}
+                {t.cta.tag}
               </span>
               <h2 className="display-lg text-white mb-6">
-                {language === "fr" ? "Prêt à sécuriser votre avenir numérique ?" : "Ready to secure your digital future?"}
+                {t.cta.title}
               </h2>
               <p className="text-slate-400 text-lg mb-12 leading-relaxed">
-                {language === "fr" 
-                  ? "Nos ingénieurs répondent sous 2 heures. Audit IT gratuit et sans engagement." 
-                  : "Our engineers respond within 2 hours. Free IT audit with no obligation."}
+                {t.cta.desc}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <Link href="/booking">
@@ -444,7 +440,7 @@ export default function Home() {
                 <Link href="/contact">
                   <MagneticButton>
                     <motion.span className="btn btn-outline-white px-12 py-5 text-lg font-black">
-                      {t.nav.contact}
+                      {t.cta.btn_contact}
                     </motion.span>
                   </MagneticButton>
                 </Link>

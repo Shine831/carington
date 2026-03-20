@@ -43,12 +43,12 @@ export default function BookingPage() {
   const set = (field: string, val: string) => setForm((f) => ({ ...f, [field]: val }));
 
   const validate = () => {
-    if (!form.entity.trim()) return language === "fr" ? "Nom de l'entité requis." : "Entity name required.";
+    if (!form.entity.trim()) return t.booking.errors.entity_req;
     if (!form.email.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(form.email))
-      return language === "fr" ? "Email invalide." : "Invalid email.";
-    if (!form.phone.trim()) return language === "fr" ? "Numéro de téléphone requis." : "Phone number required.";
+      return t.booking.errors.email_inv;
+    if (!form.phone.trim()) return t.booking.errors.phone_req;
     if (!form.description.trim() || form.description.length < 20)
-      return language === "fr" ? "Description trop courte (min. 20 caractères)." : "Description too short (min. 20 chars).";
+      return t.booking.errors.desc_short;
     return null;
   };
 
@@ -66,10 +66,10 @@ export default function BookingPage() {
       });
       setSubmitted(true);
     } catch (err: any) {
-      let errorMsg = language === "fr" ? "Erreur réseau. Impossible d'établir une connexion sécurisée." : "Network error. Unable to establish a secure connection.";
-      if (err?.code === "permission-denied") errorMsg = language === "fr" ? "Accès refusé. Veuillez vérifier votre session ou rafraîchir la page." : "Access denied. Please check your session or refresh.";
-      if (err?.code === "unavailable") errorMsg = language === "fr" ? "Le service est temporairement surchargé. Patientez quelques instants." : "Service is temporarily overloaded. Please wait a moment.";
-      if (err?.message?.includes("quota")) errorMsg = language === "fr" ? "Limite de requêtes atteinte. Veuillez patienter avant de réessayer." : "Request limit reached. Please wait before retrying.";
+      let errorMsg = t.booking.errors.network;
+      if (err?.code === "permission-denied") errorMsg = t.booking.errors.denied;
+      if (err?.code === "unavailable") errorMsg = t.booking.errors.overload;
+      if (err?.message?.includes("quota")) errorMsg = t.booking.errors.quota;
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -133,26 +133,24 @@ export default function BookingPage() {
                     </motion.div>
                     <div>
                       <h2 className="text-3xl font-black text-[var(--charcoal)] tracking-tighter mb-3">
-                        {language === "fr" ? "Demande envoyée !" : "Request Sent!"}
+                        {t.booking.success_title}
                       </h2>
                       <p className="text-sm text-[var(--slate)] font-medium max-w-sm leading-relaxed">
-                        {language === "fr"
-                          ? "Votre demande de devis a été enregistrée. Notre équipe vous contactera dans les 24h ouvrées."
-                          : "Your quote request has been recorded. Our team will contact you within 24 business hours."}
+                        {t.booking.success_desc}
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 mt-4">
                       {user ? (
                         <Link href="/dashboard" className="btn btn-red px-8 py-4">
-                          {language === "fr" ? "Voir mes demandes" : "View my requests"} <ArrowRight className="w-4 h-4" />
+                          {t.booking.view_requests} <ArrowRight className="w-4 h-4" />
                         </Link>
                       ) : (
                         <Link href="/account" className="btn btn-red px-8 py-4">
-                          <User className="w-4 h-4" /> {language === "fr" ? "Créer un compte pour suivre" : "Create account to track"}
+                          <User className="w-4 h-4" /> {t.booking.create_account}
                         </Link>
                       )}
                       <button onClick={() => { setSubmitted(false); setForm(INITIAL); }} className="btn btn-outline px-8 py-4">
-                        {language === "fr" ? "Nouvelle demande" : "New request"}
+                        {t.booking.new_booking}
                       </button>
                     </div>
                   </motion.div>
@@ -190,9 +188,9 @@ export default function BookingPage() {
                           <div className="form-group bg-white/50 backdrop-blur-sm rounded-xl relative">
                             <select value={form.clientType} onChange={e => set("clientType", e.target.value)}
                               className="form-input border-2 border-white/80 bg-transparent rounded-xl py-4 appearance-none shadow-sm focus:bg-white" id="booking-type">
-                              <option value="b2b">{language === "fr" ? "Entreprise (B2B)" : "Business (B2B)"}</option>
-                              <option value="b2c">{language === "fr" ? "Particulier (B2C)" : "Individual (B2C)"}</option>
-                              <option value="ong">{language === "fr" ? "Administration / ONG" : "Gov / NGO"}</option>
+                              <option value="b2b">{t.booking.b2b}</option>
+                              <option value="b2c">{t.booking.b2c}</option>
+                              <option value="ong">{t.booking.ong}</option>
                             </select>
                             <label htmlFor="booking-type" className="floating-label font-bold text-[var(--slate)]">{t.booking.step1_type}</label>
                             <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]"><ChevronRight className="w-4 h-4 rotate-90" /></div>
@@ -230,7 +228,7 @@ export default function BookingPage() {
                             <select value={form.serviceId} onChange={e => set("serviceId", e.target.value)}
                               className="form-input border-2 border-white/80 bg-transparent rounded-xl py-4 appearance-none shadow-sm focus:bg-white" id="booking-service">
                               {services.length === 0 ? (
-                                <option value="">{language === "fr" ? "Chargement des services..." : "Loading services..."}</option>
+                                <option value="">{t.booking.loading_services}</option>
                               ) : (
                                 services.map(s => (
                                   <option key={s.id} value={s.title}>{s.title}</option>
@@ -245,7 +243,7 @@ export default function BookingPage() {
                             <div className="form-group bg-white/50 backdrop-blur-sm rounded-xl relative">
                               <select value={form.budget} onChange={e => set("budget", e.target.value)}
                                 className="form-input border-2 border-white/80 bg-transparent rounded-xl py-4 appearance-none shadow-sm focus:bg-white" id="booking-budget">
-                                <option value="undef">{language === "fr" ? "Non défini" : "Undefined"}</option>
+                                <option value="undef">{t.booking.budget_undef}</option>
                                 <option value="lt500">&lt; 500K CFA</option>
                                 <option value="500to2m">500K – 2 Millions</option>
                                 <option value="2to10m">2 – 10 Millions</option>
@@ -258,9 +256,9 @@ export default function BookingPage() {
                             <div className="form-group bg-white/50 backdrop-blur-sm rounded-xl relative">
                               <select value={form.timeframe} onChange={e => set("timeframe", e.target.value)}
                                 className="form-input border-2 border-white/80 bg-transparent rounded-xl py-4 appearance-none shadow-sm focus:bg-white" id="booking-time">
-                                <option value="urgent">{language === "fr" ? "Urgence (< 24h)" : "Urgent (< 24h)"}</option>
-                                <option value="normal">{language === "fr" ? "Standard (1–2 semaines)" : "Standard (1–2 weeks)"}</option>
-                                <option value="planifie">{language === "fr" ? "Planifié (1 mois+)" : "Planned (1 month+)"}</option>
+                                <option value="urgent">{t.booking.time_urgent}</option>
+                                <option value="normal">{t.booking.time_normal}</option>
+                                <option value="planifie">{t.booking.time_plan}</option>
                               </select>
                               <label htmlFor="booking-time" className="floating-label font-bold text-[var(--slate)]">{t.booking.step2_time}</label>
                               <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--muted)]"><ChevronRight className="w-4 h-4 rotate-90" /></div>
@@ -285,7 +283,7 @@ export default function BookingPage() {
                           className="btn btn-red text-base px-12 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)] disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           {loading ? (
-                            <><Loader2 className="w-5 h-5 animate-spin mr-2" /> {language === "fr" ? "Envoi en cours..." : "Sending..."}</>
+                            <><Loader2 className="w-5 h-5 animate-spin mr-2" /> {language === "fr" ? "Envoi..." : "Sending..."}</>
                           ) : (
                             <>{t.booking.submit} <ArrowRight className="w-5 h-5 ml-2" /></>
                           )}
@@ -293,7 +291,7 @@ export default function BookingPage() {
                         <p className="text-[10px] font-black text-[var(--muted)] mt-6 uppercase tracking-widest leading-loose">
                           {t.booking.terms}{" "}
                           <Link href="/terms" className="text-[var(--red)] hover:underline decoration-2 underline-offset-4 decoration-[var(--red)]/30 transition-all">
-                            {language === "fr" ? "Conditions Générales" : "Terms of Service"}
+                            {language === "fr" ? "Conditions Générales" : "Terms of Use"}
                           </Link>.
                         </p>
                       </div>

@@ -1,94 +1,63 @@
-# Carington - Elite Solutions Agency
+# 🛡️ Carrington Elite - Agence de Résilience Digitale 2026
 
-![Carington Banner](https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop)
+**Carrington** est une plateforme Next.js 14+ haute performance conçue pour une agence d'ingénierie IT et de cybersécurité basée au Cameroun. Elle incarne l'alliance entre un design futuriste (Glassmorphism, Micro-animations) et une robustesse technique de classe mondiale.
 
-Carington is a state-of-the-art digital platform designed for an Elite Solutions Agency. It provides a highly secure, performant, and premium experience for both clients and administrators to manage critical projects, technical services, and professional testimonials.
+## 🚀 Fonctionnalités Clés
 
-## ✨ Premium Features
+### 🌍 Expérience Bilingue Intégrale (i18n)
+Système d'internationalisation natif gérant le Français et l'Anglais sur l'intégralité du site :
+- Bascule instantanée de la langue sans rechargement de page.
+- Dashboards Administrateur et Client 100% localisés.
 
-### 🛡️ Advanced Security & Auth
-- **Dual-Factor Security**: Industry-standard authentication coupled with a **Master PIN** system for sensitive operations.
-- **Anti-Brute Force**: 24-hour cooldown delays on security modifications (PIN/Password).
-- **Graceful Re-authentication**: Secure email and profile updates requiring session validation.
-- **RBAC (Role-Based Access Control)**: Granular permissions separating Elite Clients from System Administrators.
+### 🔐 Architecture de Sécurité Avancée
+- **Gestion de Compte Autonome** : Les utilisateurs et administrateurs gèrent leurs profils (Nom, Email) de manière sécurisée.
+- **Double Protection PIN** : 
+    - Master PIN à 6 chiffres pour l'administration.
+    - Code PIN à 4 chiffres pour les clients.
+- **Authentification Robuste** : Intégration Firebase Auth avec flux de ré-authentification pour les actions sensibles.
 
-### 👤 Client Experience
-- **Personalized Dashboard**: Real-time project tracking with AES-256 encrypted session visualization.
-- **Testimonial Autonomy**: Clients have full control over their public reviews, with dedicated CRUD capabilities.
-- **Booking Intelligence**: Streamlined quote request system for tailored technical solutions.
-- **Identity Management**: Seamless profile customization (Display Name, Email, Security Codes).
+### 📊 Tableaux de Bord Premium
+- **Client** : Suivi des devis en temps réel et gestion autonome des témoignages (CRUD complet).
+- **Admin** : Gestion centralisée des demandes, des messages, du catalogue de services et des comptes utilisateurs.
+- **Responsive Design** : Expérience "Mobile-First" optimisée pour tous les terminaux (iOS/Android/Desktop).
 
-### ⚡ Technical Excellence
-- **Edge Performance**: Built with Next.js 15 for optimal server-side rendering and lighting-fast interactions.
-- **Aesthetic Excellence**: 2026 design language featuring Glassmorphism, Aura Gradients, and micro-animations via Framer Motion.
-- **Mobile-First Core**: Fully responsive architecture ensuring a premium experience on any device, from smartphones to ultra-wide displays.
-- **Firebase Infrastructure**: Robust backend powered by Firestore and Firebase Auth for real-time data synchronization.
+## 🛠️ Stack Technique
 
-## 🚀 Tech Stack
+- **Framework** : Next.js 14 (App Router)
+- **Styling** : Vanilla CSS + Tailwind Core + Framer Motion (Animations spatiales)
+- **Base de données** : Firebase Firestore (NoSQL)
+- **Authentification** : Firebase Auth (Identity Platform)
+- **i18n** : Context API custom pour une performance maximale
 
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
-- **Styling**: Vanilla CSS & Tailwind CSS (Utility-First)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Backend/DB**: [Firebase](https://firebase.google.com/) (Auth, Firestore)
-- **Deployment**: [Vercel](https://vercel.com/)
+## 📦 Installation & Déploiement
 
-## 🛠️ Getting Started
-
-### Prerequisites
-- Node.js 18.x or higher
-- Firebase Project
-
-### Installation
-
-1. **Clone the repository**:
+1. **Clonage & Dépendances** :
    ```bash
-   git clone https://github.com/your-username/carington.git
-   cd carington
-   ```
-
-2. **Install dependencies**:
-   ```bash
+   git clone [url-du-repo]
    npm install
    ```
 
-3. **Environment Configuration**:
-   Create a `.env.local` file in the root directory and populate it with your Firebase credentials (refer to `.env.example`):
+2. **Variables d'Environnement** :
+   Créez un fichier `.env.local` avec vos clés Firebase :
    ```env
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+   NEXT_PUBLIC_FIREBASE_API_KEY=...
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+   ...
    ```
 
-4. **Run development server**:
+3. **Build de Production** :
    ```bash
-   npm run dev
+   npm run build
    ```
 
-### Production Build
-To generate a production-ready bundle:
-```bash
-npm run build
-```
+4. **Déploiement Vercel** :
+   Le projet est optimisé pour un déploiement "Zero-Config" sur Vercel. Connectez simplement votre dépôt GitHub.
 
-## 📂 Project Structure
-
-```text
-src/
-├── app/             # Next.js App Router (Pages & Layouts)
-├── components/      # UI & Reusable Components
-├── context/         # React Context (Language, Auth)
-├── hooks/           # Custom React Hooks
-├── lib/             # Firebase Configuration & DB Logic
-└── public/          # Static Assets & Metadata
-```
-
-## 🌐 Deployment
-
-This project is optimized for **Vercel**. Simply connect your GitHub repository to Vercel, import the environment variables, and it will deploy automatically on every push.
+## 📐 Design & UX
+Le design suit les dernières tendances **"High-Tech 2026"** :
+- **Glassmorphism** : Effets de flou et de transparence sur les composants.
+- **Aura Gradients** : Fonds dynamiques et gradients satinés.
+- **Micro-interactions** : Retours visuels tactiles sur chaque bouton et champ de saisie.
 
 ---
-© 2026 Carington. All rights reserved. Built for Excellence.
+*Propulsé par l'excellence technique de Carrington Elite.*

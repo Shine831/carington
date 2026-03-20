@@ -220,18 +220,20 @@ export default function DashboardPage() {
         await updateUserDoc(user.uid, { displayName: profileForm.name });
       }
 
-      // 2. Update Email if changed (requires re-auth)
+      // 2. Update Email if changed
       if (profileForm.email !== user.email) {
-        if (!profileForm.currentPassword) {
-          throw new Error(language === "fr" ? "Veuillez saisir votre mot de passe pour changer d'email." : "Please enter your password to change email.");
+        try {
+          await updateEmail(user, profileForm.email);
+          await updateUserDoc(user.uid, { email: profileForm.email });
+        } catch (emailErr: any) {
+          if (emailErr.code === "auth/requires-recent-login") {
+            throw new Error(language === "fr" ? "Pour changer d'email, veuillez vous déconnecter et vous reconnecter par sécurité." : "For security, please log out and back in to change your email.");
+          }
+          throw emailErr;
         }
-        const credential = EmailAuthProvider.credential(user.email!, profileForm.currentPassword);
-        await reauthenticateWithCredential(user, credential);
-        await updateEmail(user, profileForm.email);
-        await updateUserDoc(user.uid, { email: profileForm.email });
       }
 
-      setProfileForm(p => ({ ...p, success: language === "fr" ? "Profil mis à jour !" : "Profile updated!", currentPassword: "" }));
+      setProfileForm(p => ({ ...p, success: language === "fr" ? "Profil mis à jour !" : "Profile updated!" }));
     } catch (err: any) {
       setProfileForm(p => ({ ...p, error: err.message }));
     } finally {
@@ -311,12 +313,12 @@ export default function DashboardPage() {
               <Lock className="w-8 h-8" />
             </div>
             <h1 className="text-2xl font-black text-white tracking-tight mb-2">
-              {hasPinConfigured ? "Accès Sécurisé" : "Configuration Sécurité"}
+              {hasPinConfigured ? t.dashboard.security.pin_verify_title : t.dashboard.security.pin_setup_title}
             </h1>
             <p className="text-white/40 text-[11px] mb-8 leading-relaxed">
               {hasPinConfigured 
-                ? "Veuillez entrer votre Code PIN à 4 chiffres pour accéder à vos devis." 
-                : "Afin de protéger vos données, veuillez configurer un Code PIN à 4 chiffres."}
+                ? t.dashboard.security.pin_verify_desc 
+                : t.dashboard.security.pin_setup_desc}
             </p>
             
             <form onSubmit={handlePinSubmit} className="w-full space-y-6">
@@ -325,7 +327,7 @@ export default function DashboardPage() {
                   type="password"
                   value={pinInput}
                   onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
-                  placeholder="••••"
+                  placeholder={t.dashboard.security.pin_placeholder}
                   maxLength={4}
                   autoFocus
                   className={`w-full bg-[#050505] border ${pinError ? "border-red-500 text-red-500" : "border-white/10 text-white focus:border-white/30"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-white/10`}
@@ -333,7 +335,7 @@ export default function DashboardPage() {
                 <AnimatePresence>
                   {pinError && (
                     <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest">
-                      Code Incorrect
+                      {t.dashboard.security.pin_error}
                     </motion.p>
                   )}
                 </AnimatePresence>
@@ -344,12 +346,12 @@ export default function DashboardPage() {
                 disabled={pinInput.length < 4}
                 className="w-full py-4 bg-white text-[#0A0A0A] rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
               >
-                {hasPinConfigured ? "Déverrouiller" : "Enregistrer mon PIN"}
+                {hasPinConfigured ? t.dashboard.security.pin_submit_verify : t.dashboard.security.pin_submit_setup}
               </button>
             </form>
 
             <button onClick={async () => { await logoutUser(); router.push("/"); }} className="mt-8 text-[10px] text-white/30 hover:text-white font-black uppercase tracking-widest transition-colors">
-              Déconnexion
+              {t.dashboard.security.logout}
             </button>
           </div>
         </motion.div>
@@ -377,10 +379,12 @@ export default function DashboardPage() {
               </span>
             </div>
             <h1 className="text-4xl lg:text-6xl font-black text-white tracking-tighter mb-4 leading-tight">
-              Bonjour, <span className="text-[var(--red)]">{firstName}.</span>
+              {t.dashboard.welcome} <span className="text-[var(--red)]">{firstName}.</span>
             </h1>
             <p className="text-sm font-medium text-white/40 max-w-lg leading-relaxed">
-              Ravi de vous revoir. Suivez l{"'"}avancement de vos projets et bénéficiez de notre expertise technique en temps réel.
+              {language === "fr" 
+                ? "Ravi de vous revoir. Suivez l'avancement de vos projets en temps réel." 
+                : "Glad to see you back. Track your project progress in real-time."}
             </p>
           </FadeUp>
           
@@ -401,7 +405,7 @@ export default function DashboardPage() {
               >
                 <LogOut className="w-5 h-5 text-[var(--red)] group-hover:text-white transition-colors" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                   Sortie
+                   {language === "fr" ? "Sortie" : "Logout"}
                 </span>
               </button>
             </div>
@@ -411,9 +415,9 @@ export default function DashboardPage() {
         {/* Tab Switcher */}
         <div className="flex gap-2 p-1 bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 mb-12 w-fit mx-auto md:mx-0">
           {[
-            { id: "projects", label: language === "fr" ? "Projets" : "Projects", icon: FileText },
-            { id: "reviews", label: language === "fr" ? "Avis" : "Reviews", icon: Star },
-            { id: "profile", label: language === "fr" ? "Compte" : "Account", icon: Users }
+            { id: "projects", label: t.dashboard.tabs.projects, icon: FileText },
+            { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
+            { id: "profile", label: t.dashboard.tabs.profile, icon: Users }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -434,10 +438,10 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-[var(--red)]/10 flex items-center justify-center border border-[var(--red)]/20 shadow-lg shadow-red-950/20"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
-                {language === "fr" ? "Mes Demandes & Devis" : "My Requests & Quotes"}
+                {t.dashboard.projects.title}
               </h2>
               <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
-                {language === "fr" ? "Nouveau Devis" : "New Quote"}
+                {t.dashboard.projects.new}
               </Link>
             </div>
 
@@ -446,7 +450,7 @@ export default function DashboardPage() {
               {loading ? (
                 <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
               ) : bookings.length === 0 ? (
-                <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</div>
+                <div className="py-20 text-center rounded-[2.5rem] bg-white/5 border border-dashed border-white/10 uppercase font-black text-[10px] tracking-widest text-white/30">{t.dashboard.projects.empty}</div>
               ) : bookings.map((req: any) => {
                 const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                 const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
@@ -458,14 +462,14 @@ export default function DashboardPage() {
                     <div className="space-y-4 pl-2">
                       <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                           <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Dossier #{req.id.slice(0, 8).toUpperCase()}</span>
+                           <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
                            <h3 className="text-white font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
                         </div>
                         <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg ${mapObj.cls} bg-transparent`}>{mapObj.label}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                         <div>
-                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">Date</p>
+                          <p className="text-[9px] font-black uppercase text-white/30 tracking-widest mb-1">{t.dashboard.projects.date}</p>
                           <p className="text-xs font-bold text-white tracking-widest">{date}</p>
                         </div>
                         <div>
@@ -475,7 +479,7 @@ export default function DashboardPage() {
                       </div>
                       {req.adminNote && (
                         <div className="p-4 bg-[var(--red)]/5 border border-[var(--red)]/10 rounded-2xl italic text-[11px] text-white/70 leading-relaxed">
-                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">Note Admin</span>
+                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">{t.dashboard.projects.admin_note}</span>
                           "{req.adminNote}"
                         </div>
                       )}
@@ -484,7 +488,7 @@ export default function DashboardPage() {
                           onClick={() => handleDeleteRequest(req.id)}
                           className="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl text-white text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-[var(--shadow-red)] active:scale-95 transition-all mt-4"
                         >
-                          <AlertTriangle className="w-4 h-4" /> Annuler Demande
+                          <AlertTriangle className="w-4 h-4" /> {t.dashboard.projects.cancel}
                         </button>
                       )}
                     </div>
@@ -499,7 +503,7 @@ export default function DashboardPage() {
                 <table className="w-full text-left text-sm border-collapse min-w-[800px]">
                   <thead>
                     <tr className="bg-white/5 border-b border-white/5">
-                      {["Dossier ID", "Date", "Service", "Statut", "Note Admin", "Action"].map(h => (
+                      {[t.dashboard.projects.id, t.dashboard.projects.date, language === "fr" ? "Service" : "Service", language === "fr" ? "Statut" : "Status", t.dashboard.projects.admin_note, "Action"].map(h => (
                         <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-white/40">{h}</th>
                       ))}
                     </tr>
@@ -509,7 +513,7 @@ export default function DashboardPage() {
                       {loading ? (
                          <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
                       ) : bookings.length === 0 ? (
-                        <tr><td colSpan={6} className="text-center py-24 text-white/30 font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{language === "fr" ? "Aucune demande en cours." : "No active requests."}</td></tr>
+                        <tr><td colSpan={6} className="text-center py-24 text-white/30 font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{t.dashboard.projects.empty}</td></tr>
                       ) : bookings.map((req, i) => {
                         const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                         const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
@@ -529,7 +533,7 @@ export default function DashboardPage() {
                             <td className="py-6 px-8">
                               {req.status === "PENDING" && (
                                 <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-white hover:bg-red-500 tracking-widest border border-red-500/30 px-4 py-2 rounded-xl transition-all">
-                                  {language === "fr" ? "Annuler" : "Cancel"}
+                                  {t.dashboard.projects.cancel}
                                 </button>
                               )}
                             </td>
@@ -550,10 +554,10 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-950/20"><Star className="w-5 h-5 text-amber-500 fill-current" /></div>
-                {language === "fr" ? "Mes Témoignages" : "My Reviews"}
+                {t.dashboard.reviews.title}
               </h2>
               <button onClick={() => { setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true); }} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[var(--shadow-red)] active:scale-95 transition-transform">
-                {language === "fr" ? "Nouvel Avis" : "New Review"}
+                {t.dashboard.reviews.new}
               </button>
             </div>
 
@@ -576,8 +580,8 @@ export default function DashboardPage() {
                     <p className="text-sm font-medium text-white/70 leading-relaxed mb-6 italic">{'"'}{rev.comment}{'"'}</p>
                   </div>
                   <div className="flex gap-4 border-t border-white/5 pt-4">
-                    <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-white/40 hover:text-white transition-colors tracking-widest">Modifier</button>
-                    <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[9px] font-black uppercase text-red-500/60 hover:text-red-500 transition-colors tracking-widest">Supprimer</button>
+                    <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-white/40 hover:text-white transition-colors tracking-widest">{t.dashboard.reviews.edit}</button>
+                    <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[9px] font-black uppercase text-red-500/60 hover:text-red-500 transition-colors tracking-widest">{t.dashboard.reviews.delete}</button>
                   </div>
                 </div>
               ))}
@@ -591,7 +595,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-4 mb-8">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-950/20"><Users className="w-5 h-5 text-blue-500" /></div>
               <h2 className="text-2xl font-black text-white tracking-tight">
-                {language === "fr" ? "Gestion du Compte" : "Account Settings"}
+                {t.dashboard.profile.title}
               </h2>
             </div>
 
@@ -608,12 +612,12 @@ export default function DashboardPage() {
 
                 <div className="p-8 bg-white/5 border border-white/10 rounded-[2rem] space-y-4">
                    <div className="flex items-center justify-between">
-                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Sécurité PIN</span>
-                     <button onClick={() => setShowPinChangeModal(true)} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">Modifier</button>
+                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{t.dashboard.profile.security}</span>
+                     <button onClick={() => setShowPinChangeModal(true)} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">{t.dashboard.profile.change_pin}</button>
                    </div>
                    <div className="flex items-center justify-between">
-                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Mot de passe</span>
-                     <button onClick={handlePasswordReset} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">Réinitialiser</button>
+                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{language === "fr" ? "Mot de passe" : "Password"}</span>
+                     <button onClick={handlePasswordReset} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest">{t.dashboard.profile.reset_password}</button>
                    </div>
                 </div>
               </div>
@@ -625,7 +629,7 @@ export default function DashboardPage() {
                   <form onSubmit={handleProfileUpdate} className="space-y-6 relative z-10">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">Nom Complet</label>
+                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">{t.dashboard.profile.full_name}</label>
                         <input 
                           type="text" 
                           value={profileForm.name}
@@ -634,7 +638,7 @@ export default function DashboardPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">Adresse Email</label>
+                        <label className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] pl-1">{t.dashboard.profile.email}</label>
                         <input 
                           type="email" 
                           value={profileForm.email}
@@ -644,19 +648,6 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-emerald-400 tracking-[0.2em] pl-1 flex items-center gap-2">
-                         <Lock className="w-3 h-3" /> Mot de passe actuel
-                         <span className="text-white/20 capitalize font-medium italic">(Requis pour changer d'email)</span>
-                      </label>
-                      <input 
-                        type="password" 
-                        value={profileForm.currentPassword}
-                        onChange={(e) => setProfileForm(p => ({ ...p, currentPassword: e.target.value }))}
-                        placeholder="••••••••"
-                        className="w-full bg-[#050505] border border-white/10 text-white p-4 rounded-xl text-sm font-bold focus:border-white/30 outline-none transition-all placeholder:text-white/5"
-                      />
-                    </div>
 
                     <AnimatePresence>
                       {profileForm.error && (
@@ -674,7 +665,7 @@ export default function DashboardPage() {
                         className="relative group overflow-hidden px-8 py-4 bg-white text-black font-black text-[11px] uppercase tracking-[0.25em] rounded-xl shadow-2xl active:scale-95 transition-all disabled:opacity-50"
                       >
                         <span className="relative z-10 flex items-center gap-2">
-                          {isUpdatingProfile ? "En cours..." : "Sauvegarder les modifications"}
+                          {isUpdatingProfile ? t.dashboard.profile.updating : t.dashboard.profile.save}
                         </span>
                       </button>
                     </div>
@@ -794,17 +785,17 @@ export default function DashboardPage() {
                   <Star className="w-8 h-8 text-[var(--red)] fill-current" />
                 </div>
                 <h3 className="text-2xl font-black text-white tracking-tight mb-2">
-                  {language === "fr" ? "Votre avis compte" : "Your feedback matters"}
+                  {t.dashboard.reviews.modal_title}
                 </h3>
                 <p className="text-sm font-medium text-white/40 leading-relaxed">
-                  {language === "fr" ? "Aidez-nous à affiner notre excellence en partageant votre expérience avec E-Jarnauld Soft." : "Help us refine our excellence by sharing your experience with E-Jarnauld Soft."}
+                  {t.dashboard.reviews.modal_desc}
                 </p>
               </div>
 
               <form onSubmit={editingReview ? handleUpdateReview : handleSubmitReview} className="space-y-6">
                 <div>
                   <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
-                    {language === "fr" ? "Note (1 à 5 étoiles)" : "Rating (1 to 5 stars)"}
+                    {t.dashboard.reviews.rating}
                   </label>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -833,7 +824,7 @@ export default function DashboardPage() {
 
                 <div>
                   <label className="block text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4">
-                    {language === "fr" ? "Votre Témoignage" : "Your Testimonial"}
+                    {t.dashboard.reviews.comment}
                   </label>
                   <div className="relative">
                     <MessageSquare className="absolute top-4 left-4 w-5 h-5 text-white/20" />
@@ -841,7 +832,7 @@ export default function DashboardPage() {
                       required
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder={language === "fr" ? "Ex: Déploiement parfait, équipe très réactive..." : "Ex: Perfect deployment, highly responsive team..."}
+                      placeholder={language === "fr" ? "Votre expérience..." : "Your experience..."}
                       className="w-full h-32 pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-medium text-white outline-none focus:border-[var(--red)]/50 focus:bg-[#1A1A1A] transition-all resize-none"
                     />
                   </div>
@@ -849,15 +840,11 @@ export default function DashboardPage() {
 
                 <button 
                   type="submit" 
-                  disabled={reviewRating === 0 || isSubmittingReview || !reviewComment.trim()}
-                  className="w-full py-4 rounded-xl bg-[var(--red)] text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
+                  disabled={isSubmittingReview || reviewRating === 0}
+                  className="w-full py-5 bg-[var(--red)] text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.3em] shadow-[var(--shadow-red)] active:scale-95 transition-all disabled:opacity-50"
                 >
-                  {isSubmittingReview ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    editingReview 
-                      ? (language === "fr" ? "Mettre à jour" : "Update review")
-                      : (language === "fr" ? "Publier mon avis" : "Publish review")
+                  {isSubmittingReview ? t.dashboard.profile.updating : (
+                    editingReview ? (language === "fr" ? "Mettre à jour" : "Update") : t.dashboard.reviews.submit
                   )}
                 </button>
               </form>

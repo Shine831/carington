@@ -19,9 +19,9 @@ export default function ContactPage() {
   const set = (field: string, val: string) => setForm((f) => ({ ...f, [field]: val }));
 
   const validate = () => {
-    if (!form.name.trim()) return language === "fr" ? "Nom requis." : "Name required.";
-    if (!form.email.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) return language === "fr" ? "Email invalide." : "Invalid email.";
-    if (!form.message.trim() || form.message.length < 10) return language === "fr" ? "Message trop court." : "Message too short.";
+    if (!form.name.trim()) return t.contact.form.errors.name_req;
+    if (!form.email.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) return t.contact.form.errors.email_inv;
+    if (!form.message.trim() || form.message.length < 10) return t.contact.form.errors.msg_short;
     return null;
   };
 
@@ -35,10 +35,10 @@ export default function ContactPage() {
       await createContactMessage(form);
       setSuccess(true);
     } catch (err: any) {
-      let errorMsg = language === "fr" ? "Erreur réseau. Impossible d'établir une connexion sécurisée." : "Network error. Unable to establish a secure connection.";
-      if (err?.code === "permission-denied") errorMsg = language === "fr" ? "Accès refusé. Veuillez vérifier votre session ou rafraîchir la page." : "Access denied. Please check your session or refresh.";
-      if (err?.code === "unavailable") errorMsg = language === "fr" ? "Le service est temporairement surchargé. Patientez quelques instants." : "Service is temporarily overloaded. Please wait a moment.";
-      if (err?.message?.includes("quota")) errorMsg = language === "fr" ? "Limite atteinte. Veuillez patienter avant de réessayer." : "Request limit reached. Please wait before retrying.";
+      let errorMsg = t.contact.form.errors.network;
+      if (err?.code === "permission-denied") errorMsg = t.contact.form.errors.denied;
+      if (err?.code === "unavailable") errorMsg = t.contact.form.errors.overload;
+      if (err?.message?.includes("quota")) errorMsg = t.contact.form.errors.quota;
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -46,10 +46,10 @@ export default function ContactPage() {
   };
 
   const CONTACT_ITEMS = [
-    { icon: MapPin, label: "SIÈGE SOCIAL", val: "Marché NDOPASSI, Douala" },
-    { icon: Phone, label: "APPEL & WHATSAPP", val: "+237 654 74 93 57", red: true },
-    { icon: Phone, label: "LIGNE TECHNIQUE", val: "+237 697 16 72 59" },
-    { icon: Mail, label: "EMAIL SUPPORT", val: "cust_care@ejs-cm.com" },
+    { icon: MapPin, label: language === "fr" ? "SIÈGE SOCIAL" : "HEADQUARTERS", val: t.contact.hq_val },
+    { icon: Phone, label: language === "fr" ? "APPEL & WHATSAPP" : "CALL & WHATSAPP", val: t.contact.phone_val, red: true },
+    { icon: Phone, label: language === "fr" ? "LIGNE TECHNIQUE" : "TECH LINE", val: t.contact.tech_val },
+    { icon: Mail, label: "EMAIL SUPPORT", val: t.contact.email_val },
   ];
 
   return (
@@ -124,13 +124,13 @@ export default function ContactPage() {
                         <CheckCircle2 className="w-10 h-10" />
                       </div>
                       <h3 className="text-2xl font-black text-[var(--charcoal)] mb-4 tracking-tighter">
-                        {language === "fr" ? "Message envoyé avec succès !" : "Message sent successfully!"}
+                        {t.contact.form.success_title}
                       </h3>
                       <p className="text-sm font-medium text-[var(--slate)] mb-8">
-                        {language === "fr" ? "Notre équipe vous répondra dans les plus brefs délais." : "Our team will get back to you shortly."}
+                        {t.contact.form.success_desc}
                       </p>
                       <button onClick={() => { setSuccess(false); setForm({ name: "", email: "", phone: "", subject: "devis", message: "" }); }} className="btn btn-red px-8 py-3 text-[10px] uppercase font-black">
-                        {language === "fr" ? "Nouveau message" : "New message"}
+                        {t.contact.form.new_msg}
                       </button>
                     </motion.div>
                   ) : (
@@ -182,7 +182,7 @@ export default function ContactPage() {
                           disabled={loading}
                           className="btn btn-red text-base px-10 py-5 w-full md:w-auto justify-center font-black uppercase tracking-widest shadow-[var(--shadow-red)] disabled:opacity-60"
                         >
-                          {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" />{language === "fr" ? "Envoi..." : "Sending..."}</> : <>{t.contact.form.send} <Send className="w-4 h-4 ml-2" /></>}
+                           {loading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" />{t.contact.form.sending}</> : <>{t.contact.form.send} <Send className="w-4 h-4 ml-2" /></>}
                         </motion.button>
                         <p className="text-[10px] font-black text-[var(--muted)] mt-5 flex items-center gap-2 uppercase tracking-widest">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />

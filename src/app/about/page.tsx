@@ -115,14 +115,14 @@ export default function AboutPage() {
                 <Link href="/services">
                   <MagneticButton>
                     <motion.span whileHover={{ scale: 1.05, y: -2 }} className="btn btn-red px-10 py-5 font-black uppercase text-[10px] tracking-widest shadow-[var(--shadow-red)]">
-                      {language === "fr" ? "Voir Services" : "View Services"} <ArrowRight className="w-4 h-4 ml-2" />
+                      {t.about.view_services} <ArrowRight className="w-4 h-4 ml-2" />
                     </motion.span>
                   </MagneticButton>
                 </Link>
                 <Link href="/contact">
                   <MagneticButton>
                     <motion.span className="btn btn-outline border-slate-200 hover:border-[var(--red)]/40 px-10 py-5 font-black uppercase text-[10px] tracking-widest bg-white">
-                      {language === "fr" ? "Parler à un expert" : "Talk to an expert"}
+                      {t.about.talk_expert}
                     </motion.span>
                   </MagneticButton>
                 </Link>
