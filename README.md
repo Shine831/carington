@@ -40,6 +40,7 @@ Notre stack a été sélectionnée pour sa résilience et son évolutivité à l
 - **Notification Transactionnelle** : Resend (Next.js Server Actions)
 - **PWA (Progressive Web App)** : Manifest natif pour installation desktop/mobile
 - **Internationalisation (i18n)** : Script interne Node.js de traduction automatique (FR/EN)
+- **Suivi des Changements** : `CHANGELOG.md` maintenu selon les standards Keep a Changelog.
 
 ---
 
@@ -92,21 +93,13 @@ npm install
 ```
 
 ### 3. Variables d'Environnement
-Créez un fichier `.env.local` à la racine pour lier le front-end au backend serverless :
+Copiez le fichier `.env.example` vers `.env.local` et remplissez les valeurs nécessaires :
 
-```env
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-# Emailing System (Resend API)
-RESEND_API_KEY=re_123456789_xxxxxxxxxxx
-ADMIN_EMAIL=admin@e-jarnauld.com
+```bash
+cp .env.example .env.local
 ```
+
+Le fichier `.env.local` permet de lier le front-end au backend serverless.
 
 ### 4. Élévation de Privilèges Administrateur
 La première configuration admin se fait dans Firestore. Dans la collection `users`, le document correspondant à l'e-mail administrateur doit impérativement spécifier :
