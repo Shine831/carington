@@ -93,7 +93,10 @@ npm install
 ```
 
 ### 3. Variables d'Environnement
-Copiez le fichier `.env.example` vers `.env.local` et remplissez les valeurs nécessaires :
+Copiez le fichier `.env.example` vers `.env.local` et remplissez les valeurs nécessaires. Les clés obligatoires sont :
+- `NEXT_PUBLIC_FIREBASE_*` : Configuration de votre projet Firebase.
+- `RESEND_API_KEY` : Clé API pour l'envoi d'e-mails.
+- `ADMIN_MASTER_PIN` : Code PIN maître pour l'accès sécurisé à l'administration.
 
 ```bash
 cp .env.example .env.local
