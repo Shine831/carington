@@ -452,7 +452,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 p-1 bg-white/80 backdrop-blur-md rounded-full border border-[var(--border)] mb-12 w-fit mx-auto md:mx-0 shadow-sm zero-jank">
+        <div className="flex gap-2 p-1.5 bg-white rounded-full border border-[var(--border)] mb-12 w-fit mx-auto md:mx-0 shadow-md glass-morphism">
           {[
             { id: "projects", label: t.dashboard.tabs.projects, icon: FileText },
             { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
@@ -461,12 +461,19 @@ export default function DashboardPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
-              className={`flex items-center gap-3 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 zero-jank ${
-                activeTab === tab.id ? "bg-[var(--red)] text-white shadow-[0_8px_20px_rgba(230,0,0,0.2)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"
+              className={`flex items-center gap-3 px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 relative group overflow-hidden ${
+                activeTab === tab.id ? "text-white" : "text-[var(--muted)] hover:text-[var(--charcoal)]"
               }`}
             >
-              <tab.icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{tab.label}</span>
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTabGlow"
+                  className="absolute inset-0 bg-[var(--red)] shadow-[0_8px_25px_rgba(230,0,0,0.3)] -z-0"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <tab.icon className="w-4 h-4 relative z-10" />
+              <span className="hidden sm:inline relative z-10">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -484,105 +491,82 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {/* Mobile Cards View */}
-            <div className="md:hidden space-y-6">
+            {/* Bento Grid View (Modernized) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {loading ? (
-                <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
+                <div className="col-span-full py-20 flex justify-center"><div className="w-12 h-12 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
               ) : bookings.length === 0 ? (
-                <div className="py-20 text-center rounded-[2.5rem] bg-[var(--off-white)] border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)] zero-jank">{t.dashboard.projects.empty}</div>
+                <div className="col-span-full py-24 text-center rounded-[3rem] bg-white border border-dashed border-slate-200 uppercase font-black text-xs tracking-[0.3em] text-[var(--muted)] glass-morphism">{t.dashboard.projects.empty}</div>
               ) : bookings.map((req: any) => {
                 const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                 const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
-                const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
+                const accentColor = req.status === "PENDING" ? "var(--red)" : req.status === "ACTIVE" ? "#3B82F6" : req.status === "COMPLETED" ? "#10B981" : "#EF4444";
                 
                 return (
-                  <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] zero-jank">
-                    <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
-                    <div className="space-y-4 pl-2">
+                  <motion.div
+                    key={req.id}
+                    whileHover={{ y: -5 }}
+                    className="bento-item p-8 glass-morphism spatial-ui-layer relative group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: accentColor }} />
+                    <div className="relative z-10 space-y-6">
                       <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                           <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
-                           <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
+                           <span className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
+                           <h3 className="display-sm text-[var(--charcoal)] leading-tight uppercase line-clamp-2">{req.serviceId}</h3>
                         </div>
-                        <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
+                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls} glass-morphism`}>{mapObj.label}</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100">
-                        <div>
+
+                      {/* Micro-visualization: Completion Gauge */}
+                      <div className="py-4 border-y border-slate-100/50">
+                        <div className="flex justify-between items-center mb-2">
+                           <span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">Progression</span>
+                           <span className="text-[10px] font-black text-[var(--charcoal)]">{req.status === 'COMPLETED' ? '100%' : req.status === 'ACTIVE' ? '65%' : '5%'}</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: req.status === 'COMPLETED' ? '100%' : req.status === 'ACTIVE' ? '65%' : '5%' }}
+                            transition={{ duration: 1, ease: "circOut" }}
+                            className="h-full bg-[var(--red)]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100">
                           <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">{t.dashboard.projects.date}</p>
                           <p className="text-xs font-bold text-[var(--charcoal)] tracking-widest">{date}</p>
                         </div>
-                        <div>
+                        <div className="p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100">
                           <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Budget</p>
-                          <p className="text-xs font-black text-[var(--red)] italic">Devis Client</p>
+                          <p className="text-xs font-black text-[var(--red)] italic">Devis</p>
                         </div>
                       </div>
+
                       {req.adminNote && (
-                        <div className="p-4 bg-[var(--red-light)] border border-red-100 rounded-2xl italic text-[11px] text-[var(--slate)] leading-relaxed">
-                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">{t.dashboard.projects.admin_note}</span>
+                        <div className="p-5 bg-[var(--red-light)]/50 border border-red-100 rounded-2xl italic text-[11px] text-[var(--slate)] leading-relaxed relative overflow-hidden">
+                          <AuraGradient color="var(--red)" className="w-32 h-32 -top-16 -right-16 opacity-[0.05]" />
+                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-2 not-italic tracking-widest">{t.dashboard.projects.admin_note}</span>
                           "{req.adminNote}"
                         </div>
                       )}
+
                       {req.status === "PENDING" && (
-                        <button 
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                           onClick={() => handleDeleteRequest(req.id)}
-                          className="w-full py-4 bg-white border border-slate-200 rounded-full text-[var(--charcoal)] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:border-[var(--red)] hover:text-[var(--red)] hover:shadow-sm transition-all mt-4 zero-jank"
+                          className="w-full py-4 bg-white border border-slate-200 rounded-full text-[var(--charcoal)] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:border-red-500 hover:text-red-500 hover:shadow-md transition-all mt-4"
                         >
                           <AlertTriangle className="w-4 h-4" /> {t.dashboard.projects.cancel}
-                        </button>
+                        </motion.button>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
-
-            {/* Desktop Table View */}
-            <div className="bg-white backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-sm border border-[var(--border)] relative group/table hidden md:block zero-jank">
-              <div className="overflow-x-auto custom-scrollbar">
-                <table className="w-full text-left text-sm border-collapse min-w-[800px]">
-                  <thead>
-                    <tr className="bg-[var(--off-white)] border-b border-slate-100">
-                      {[t.dashboard.projects.id, t.dashboard.projects.date, language === "fr" ? "Service" : "Service", language === "fr" ? "Statut" : "Status", t.dashboard.projects.admin_note, "Action"].map(h => (
-                        <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-[var(--muted)]">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    <AnimatePresence>
-                      {loading ? (
-                         <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
-                      ) : bookings.length === 0 ? (
-                        <tr><td colSpan={6} className="text-center py-24 text-[var(--muted)] font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{t.dashboard.projects.empty}</td></tr>
-                      ) : bookings.map((req, i) => {
-                        const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-                        const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
-                        return (
-                          <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-slate-50 transition-all group zero-jank">
-                            <td className="py-6 px-8 font-mono font-black text-[10px] text-[var(--red)] tracking-widest">#{req.id.slice(0, 8).toUpperCase()}</td>
-                            <td className="py-6 px-8 font-black text-[var(--muted)] text-[11px] tracking-widest">{date}</td>
-                            <td className="py-6 px-8 font-black text-[var(--charcoal)] text-sm tracking-tight uppercase">{req.serviceId}</td>
-                            <td className="py-6 px-8">
-                              <span className={`inline-flex items-center px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls} bg-transparent`}>
-                                {mapObj.label}
-                              </span>
-                            </td>
-                            <td className="py-6 px-8 font-bold text-[var(--slate)] text-xs italic leading-relaxed max-w-xs truncate">
-                              {req.adminNote || "-"}
-                            </td>
-                            <td className="py-6 px-8">
-                              {req.status === "PENDING" && (
-                                <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-[var(--red)] hover:bg-[var(--red-light)] tracking-widest border border-red-200 px-4 py-2 rounded-full transition-all bg-white zero-jank">
-                                  {t.dashboard.projects.cancel}
-                                </button>
-                              )}
-                            </td>
-                          </motion.tr>
-                        );
-                      })}
-                    </AnimatePresence>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </FadeUp>
         )}

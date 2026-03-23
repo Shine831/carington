@@ -559,22 +559,35 @@ export default function AdminDashboard() {
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[600px] h-[600px] opacity-[0.03]" />
 
       {/* Sidebar (Desktop) */}
-      <motion.aside className="w-64 xl:w-72 bg-white flex flex-col fixed top-0 bottom-0 left-0 z-40 hidden md:flex border-r border-slate-200 zero-jank shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-        <div className="p-8 border-b border-slate-100">
+      <motion.aside className="w-64 xl:w-72 glass-morphism flex flex-col fixed top-0 bottom-0 left-0 z-40 hidden md:flex border-r border-slate-200/50 zero-jank shadow-[var(--shadow-xl)]">
+        <div className="p-8 border-b border-slate-100/50">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-2xl bg-[var(--red-light)] border border-red-100 flex items-center justify-center shadow-sm"><Shield className="w-5 h-5 text-[var(--red)]" /></div>
+            <div className="w-12 h-12 rounded-2xl bg-[var(--red)] border border-[var(--red)] flex items-center justify-center shadow-[var(--shadow-red)] relative overflow-hidden group">
+              <Shield className="w-6 h-6 text-white relative z-10" />
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100"
+              />
+            </div>
             <div>
-              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{t.admin.tag}</p>
-              <p className="font-black text-[var(--charcoal)] text-sm tracking-tight"><span className="text-emerald-500">ACTIVE</span> SESSION</p>
+              <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.3em]">{t.admin.tag}</p>
+              <p className="font-black text-[var(--charcoal)] text-sm tracking-tight flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                SESSION ACTIVE
+              </p>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2 mt-4 custom-scrollbar overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1.5 mt-4 custom-scrollbar overflow-y-auto">
           {NAV.map(({ id, label, icon: Icon, badge }) => (
-            <button key={id} onClick={() => setActiveTab(id)} className={`w-full flex items-center justify-between px-5 py-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 zero-jank ${activeTab === id ? "bg-[var(--off-white)] text-[var(--red)] shadow-sm border border-[var(--border)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"}`}>
-              <span className="flex items-center gap-4"><Icon className="w-4 h-4" />{label}</span>
-              {badge && <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${activeTab === id ? "bg-[var(--red)] text-white shadow-sm" : "bg-[var(--off-white)] border border-slate-200 text-[var(--muted)]"}`}>{badge}</span>}
+            <button key={id} onClick={() => setActiveTab(id)} className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-500 relative group overflow-hidden ${activeTab === id ? "text-white shadow-[var(--shadow-md)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-white"}`}>
+              {activeTab === id && (
+                <motion.div layoutId="adminNavGlow" className="absolute inset-0 bg-[var(--charcoal)] -z-10" />
+              )}
+              <span className="flex items-center gap-4 relative z-10"><Icon className={`w-4 h-4 ${activeTab === id ? "text-[var(--red)]" : ""}`} />{label}</span>
+              {badge && <span className={`px-2.5 py-1 rounded-full text-[9px] font-black relative z-10 ${activeTab === id ? "bg-[var(--red)] text-white" : "bg-red-50 text-[var(--red)]"}`}>{badge}</span>}
             </button>
           ))}
         </nav>
@@ -623,7 +636,7 @@ export default function AdminDashboard() {
       <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-20">
         
         {/* Top Header */}
-        <header className="bg-white/80 backdrop-blur-md px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-slate-200 shadow-[0_5px_30px_rgba(0,0,0,0.02)] zero-jank">
+        <header className="glass-morphism px-4 md:px-8 py-4 md:py-5 flex items-center justify-end sticky top-0 z-50 border-b border-slate-200/50 shadow-[var(--shadow-sm)] zero-jank">
           <div className="flex items-center gap-4 md:gap-6 relative">
             <button onClick={() => fetchData()} title="Actualiser les données" className="px-4 md:px-5 py-2.5 rounded-full bg-[var(--red-light)] border border-red-100 text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-all duration-300 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm focus:ring-4 ring-red-100 outline-none zero-jank">
                <Clock className="w-4 h-4" />
@@ -675,19 +688,23 @@ export default function AdminDashboard() {
 
         <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden z-10 w-full overflow-x-hidden">
           
-          {/* Stats Bento */}
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+          {/* Stats Bento (Premium 2026) */}
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {STATS.map(({ label, val, icon: Icon, color }) => (
               <StaggerItem key={label}>
-                <div className="card p-5 md:p-8 bg-white border border-[var(--border)] relative h-full flex flex-col justify-between rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(230,0,0,0.05)] transition-all duration-300 zero-jank group">
-                  <div className="relative z-10 mb-4">
-                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.1em]">{label}</p>
-                    <p className={`text-4xl md:text-5xl font-black ${color} tracking-tighter italic mt-1 drop-shadow-sm`}>{val}</p>
+                <motion.div
+                  whileHover={{ y: -5 }}
+                  className="bento-item p-8 glass-morphism relative h-full flex flex-col justify-between group shadow-sm border-[1px] hover:border-[var(--red)]/20 transition-all duration-500"
+                >
+                  <div className="relative z-10">
+                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-2">{label}</p>
+                    <p className={`text-5xl font-black ${color} tracking-tighter leading-none`}>{val}</p>
                   </div>
-                  <div className={`absolute bottom-4 right-4 md:bottom-5 md:right-5 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border ${color.replace("text-", "bg-").replace("-500", "-50")} ${color.replace("text-", "border-").replace("-500", "-100")} shadow-sm group-hover:scale-110 transition-transform duration-300 zero-jank`}>
-                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
+                  <div className={`mt-6 w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-500 group-hover:rotate-[10deg] ${color.replace("text-", "bg-").replace("-500", "-50/50")} ${color.replace("text-", "border-").replace("-500", "-100/50")}`}>
+                    <Icon className={`w-7 h-7 ${color}`} />
                   </div>
-                </div>
+                  <AuraGradient color={color.includes("red") ? "var(--red)" : color.replace("text-", "").replace("-500", "")} className="w-32 h-32 -bottom-10 -right-10 opacity-[0.03] group-hover:opacity-[0.1]" />
+                </motion.div>
               </StaggerItem>
             ))}
           </StaggerContainer>
@@ -701,29 +718,32 @@ export default function AdminDashboard() {
                <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black shadow-[var(--shadow-red)]">+ Ajouter Service</button>
             )}
           </div>
-                   <div className="md:hidden space-y-6 mb-12">
+                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {activeTab === "requests" && data.requests.map((req) => {
               const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-              const accentColor = req.status === "PENDING" ? "bg-amber-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-[var(--red)]";
+              const accentColor = req.status === "PENDING" ? "#F59E0B" : req.status === "ACTIVE" ? "#3B82F6" : req.status === "COMPLETED" ? "#10B981" : "var(--red)";
               
               return (
-                <div key={req.id} className="relative group overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md shadow-sm zero-jank">
-                  {/* Status Indicator Bar */}
-                  <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor} shadow-[0_0_15px_rgba(0,0,0,0.05)]`} />
+                <motion.div
+                  key={req.id}
+                  whileHover={{ y: -5 }}
+                  className="bento-item glass-morphism spatial-ui-layer group"
+                >
+                  <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: accentColor }} />
                   
-                  <div className="p-6 space-y-5">
-                    <div className="flex justify-between items-start pl-2">
+                  <div className="p-8 space-y-6">
+                    <div className="flex justify-between items-start">
                        <div className="space-y-1">
                         <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p>
-                        <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight">{req.clientName || req.entity}</h3>
+                        <h3 className="display-sm text-[var(--charcoal)] line-clamp-1 group-hover:text-[var(--red)] transition-colors">{req.clientName || req.entity}</h3>
                       </div>
-                      <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
+                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls} glass-morphism`}>{mapObj.label}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100 ml-2">
+                    <div className="grid grid-cols-2 gap-4 p-5 bg-[var(--off-white)] rounded-[1.5rem] border border-slate-100">
                       <div>
                         <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Service</p>
-                        <p className="text-xs font-bold text-[var(--charcoal)] leading-tight">{req.serviceId}</p>
+                        <p className="text-xs font-bold text-[var(--charcoal)] leading-tight uppercase truncate">{req.serviceId}</p>
                       </div>
                       <div>
                         <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Budget</p>
@@ -731,22 +751,20 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 pl-2">
-                      <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-[var(--red-light)] flex items-center justify-center border border-red-100"><Phone className="w-3.5 h-3.5 text-[var(--red)]" /></div>
-                         <span className="text-sm font-bold text-[var(--slate)]">{req.phone}</span>
-                      </div>
+                    <div className="flex items-center gap-3 px-2">
+                       <div className="w-10 h-10 rounded-full bg-[var(--red-light)] flex items-center justify-center border border-red-100 shadow-sm"><Phone className="w-4 h-4 text-[var(--red)]" /></div>
+                       <span className="text-xs font-black text-[var(--charcoal)] tracking-widest">{req.phone}</span>
                     </div>
 
-                    <div className="flex gap-3 pt-2 pl-2">
-                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-4 bg-[var(--charcoal)] hover:bg-[#222] rounded-full text-white text-[11px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(0,0,0,0.1)] active:scale-95 transition-all zero-jank">
-                        <Eye className="w-4 h-4" /> Ouvrir
+                    <div className="flex gap-4 pt-4 border-t border-slate-100/50">
+                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-4 bg-[var(--charcoal)] text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-[var(--shadow-md)] hover:bg-black transition-all">
+                        <Eye className="w-4 h-4" /> Détails
                       </button>
                       <div className="flex-1 relative">
                         <select 
                           value={req.status} 
                           onChange={(e) => attemptStatusChange(req.id, e.target.value)} 
-                          className="w-full h-full py-4 bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[10px] font-black uppercase tracking-widest px-4 focus:border-[var(--red)] outline-none appearance-none text-center shadow-sm zero-jank"
+                          className="w-full h-full py-4 bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[9px] font-black uppercase tracking-widest px-4 focus:border-[var(--red)] outline-none appearance-none text-center shadow-sm cursor-pointer"
                         >
                           <option value="PENDING">Statut</option>
                           <option value="ACTIVE">Actif</option>
@@ -756,7 +774,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
 
@@ -873,149 +891,6 @@ export default function AdminDashboard() {
             )}
 
 
-          </div>
-
-          <div className="bg-white rounded-[2rem] overflow-hidden border border-[var(--border)] shadow-[0_10px_30px_rgba(0,0,0,0.03)] relative group/table hidden md:block zero-jank">
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-[var(--muted)] md:hidden pointer-events-none group-hover/table:opacity-0 transition-opacity">
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] vertical-text">Scroll</span>
-              <ArrowRight className="w-3 h-3 rotate-0" />
-            </div>
-            <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full text-left text-sm border-collapse min-w-[700px]">
-                
-                {activeTab === "requests" && (
-                  <>
-                    <thead>
-                      <tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Client", "Service / Délai", "Devis", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {data.requests.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-[var(--muted)] font-bold">Aucune requête.</td></tr>) : data.requests.map((req) => {
-                        const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-                        return (
-                          <tr key={req.id} className="hover:bg-slate-50 transition-colors group zero-jank">
-                            <td className="py-5 px-6 font-mono text-[10px] text-[var(--muted)]">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-5 px-6 font-black text-[var(--charcoal)] tracking-tight">{req.clientName || req.entity} <br/><span className="text-[var(--red)] text-[9px] font-bold tracking-widest">{req.phone}</span></td>
-                            <td className="py-5 px-6 font-bold text-[var(--slate)]">{req.serviceId} <br/><span className="text-[9px] text-[var(--muted)] uppercase tracking-widest">{req.timeframe}</span></td>
-                            <td className="py-5 px-6 font-black text-[var(--charcoal)] text-base">{req.budget}</td>
-                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span></td>
-                            <td className="py-5 px-6 flex items-center gap-2">
-                              <select value={req.status} onChange={(e) => attemptStatusChange(req.id, e.target.value)} className="bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[10px] p-2.5 px-4 font-bold uppercase cursor-pointer hover:border-slate-300 focus:border-[var(--red)] focus:outline-none focus:ring-2 ring-red-100 transition-all shadow-sm zero-jank">
-                                <option value="PENDING" className="bg-white text-[var(--charcoal)]">PENDING</option>
-                                <option value="ACTIVE" className="bg-white text-[var(--charcoal)]">ACTIVE</option>
-                                <option value="COMPLETED" className="bg-white text-[var(--charcoal)]">COMPLETED</option>
-                                <option value="REJECTED" className="bg-white text-[var(--charcoal)]">REJECTED</option>
-                              </select>
-                              <button onClick={() => setSelectedBooking(req)} className="p-2.5 bg-slate-100 rounded-full hover:bg-slate-200 text-[var(--charcoal)] transition-colors zero-jank" title="Voir détails"><Eye className="w-4 h-4" /></button>
-                              <button onClick={() => handleDeleteBooking(req.id)} className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors zero-jank" title="Supprimer définitivement"><Trash2 className="w-4 h-4" /></button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </>
-                )}
-
-                {activeTab === "messages" && (
-                  <>
-                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Nom", "Email", "Sujet", "Statut", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {data.messages.length === 0 ? (<tr><td colSpan={6} className="text-center py-20 text-[var(--muted)] font-bold">Aucun message.</td></tr>) : data.messages.map((msg) => {
-                         const mapObj = STATUS_MAP[langKey][msg.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].UNREAD;
-                         return (
-                          <tr key={msg.id} className="hover:bg-slate-50 transition-colors group zero-jank">
-                            <td className="py-5 px-6 font-mono text-[10px] text-[var(--muted)]">{msg.createdAt ? new Date(msg.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                            <td className="py-5 px-6 font-black text-[var(--charcoal)]">{msg.name}</td>
-                            <td className="py-5 px-6 font-bold text-[var(--red)]">{msg.email}</td>
-                            <td className="py-5 px-6 font-medium text-[var(--slate)] max-w-[200px] truncate" title={msg.message}>{msg.subject}: {msg.message}</td>
-                            <td className="py-5 px-6"><span className={`inline-flex px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span></td>
-                            <td className="py-5 px-6 flex items-center gap-2">
-                              <select value={msg.status} onChange={(e) => handleUpdateMessage(msg.id, e.target.value)} className="bg-white border border-slate-200 text-[var(--charcoal)] rounded-full text-[10px] p-2.5 px-4 font-bold uppercase cursor-pointer hover:border-slate-300 focus:border-[var(--red)] focus:outline-none focus:ring-2 ring-red-100 transition-all shadow-sm zero-jank">
-                                <option value="UNREAD" className="bg-white text-[var(--charcoal)]">UNREAD</option>
-                                <option value="READ" className="bg-white text-[var(--charcoal)]">READ</option>
-                                <option value="REPLIED" className="bg-white text-[var(--charcoal)]">REPLIED</option>
-                              </select>
-                              <button onClick={() => setSelectedMessage(msg)} className="p-2.5 bg-slate-100 rounded-full hover:bg-slate-200 text-[var(--charcoal)] transition-colors zero-jank" title="Voir détails"><Eye className="w-4 h-4" /></button>
-                            </td>
-                          </tr>
-                         )
-                      })}
-                    </tbody>
-                  </>
-                )}
-
-                {activeTab === "clients" && (
-                  <>
-                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Nom", "Email", "Rôle", "ID", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {data.clients.length === 0 ? (<tr><td colSpan={6} className="text-center py-10 text-[var(--muted)] font-bold">Aucun client.</td></tr>) : data.clients.map((cli) => (
-                        <tr key={cli.id} className="hover:bg-slate-50 transition-colors zero-jank">
-                          <td className="py-4 px-6 font-mono text-[9px] text-[var(--muted)]">{cli.createdAt ? new Date(cli.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                          <td className="py-4 px-6 font-black text-[var(--charcoal)]">{cli.displayName || "N/A"}</td>
-                          <td className="py-4 px-6 font-bold text-[var(--slate)]">{cli.email}</td>
-                          <td className="py-4 px-6"><span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase border shadow-sm ${cli.role === 'ADMIN' ? 'bg-[var(--red-light)] text-[var(--red)] border-red-100' : 'bg-white text-[var(--slate)] border-slate-200'}`}>{cli.role || "CLIENT"}</span></td>
-                          <td className="py-4 px-6 font-mono text-[9px] text-[var(--muted)]">{cli.uid}</td>
-                          <td className="py-4 px-6 text-[10px] font-black text-slate-400">
-                            {cli.role === 'ADMIN' ? (
-                              <span className="text-[var(--muted)]">Auth Firebase</span>
-                            ) : (
-                              <button onClick={() => handleDeleteClient(cli.uid)} className="flex items-center gap-2 p-2 bg-red-50 text-red-500 rounded-full hover:bg-[var(--red)] hover:text-white transition-colors zero-jank border border-red-100 shadow-sm">
-                                <Trash2 className="w-3.5 h-3.5" /> Supprimer
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </>
-                )}
-
-                {activeTab === "services" && (
-                  <>
-                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Titre", "Catégorie", "Prix CFA", "Description", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {data.services.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-[var(--muted)] font-bold">Catalogue vide.</td></tr>) : data.services.map((srv) => (
-                        <tr key={srv.id} className="hover:bg-slate-50 transition-colors zero-jank">
-                          <td className="py-4 px-6 font-black text-[var(--charcoal)]">{srv.title}</td>
-                          <td className="py-4 px-6 font-bold text-[var(--muted)] text-[10px] uppercase">{srv.category || "IT"}</td>
-                          <td className="py-4 px-6 font-black text-[var(--charcoal)]">{srv.priceCFA}</td>
-                          <td className="py-4 px-6 font-medium text-[var(--slate)] text-xs max-w-xs">{srv.description}</td>
-                          <td className="py-4 px-6 flex items-center gap-2">
-                            <button onClick={() => setEditServiceModal(srv)} className="p-2.5 bg-slate-100 text-[var(--charcoal)] rounded-full hover:bg-slate-200 transition-colors zero-jank shadow-sm"><Edit3 className="w-4 h-4" /></button>
-                            <button onClick={() => handleDeleteService(srv.id)} className="p-2.5 bg-red-50 border border-red-100 text-red-500 rounded-full hover:bg-[var(--red)] hover:text-white transition-colors zero-jank shadow-sm"><Trash2 className="w-4 h-4" /></button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </>
-                )}
-                {activeTab === "reviews" && (
-                  <>
-                    <thead><tr className="bg-[var(--off-white)] border-b border-slate-200">{["Date", "Client & Service", "Note", "Commentaire", "Action"].map(h => <th key={h} className="py-5 px-6 font-black uppercase tracking-[0.2em] text-[10px] text-[var(--muted)]">{h}</th>)}</tr></thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {data.reviews.length === 0 ? (<tr><td colSpan={5} className="text-center py-10 text-[var(--muted)] font-bold">Aucun témoignage.</td></tr>) : data.reviews.map((rev) => (
-                        <tr key={rev.id} className="hover:bg-slate-50 transition-colors zero-jank">
-                          <td className="py-4 px-6 font-mono text-[9px] text-[var(--muted)]">{rev.createdAt ? new Date(rev.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</td>
-                          <td className="py-4 px-6"><p className="font-black text-[var(--charcoal)]">{rev.authorName || "Client"}</p><p className="text-[9px] text-[var(--muted)] uppercase tracking-widest">{rev.serviceId || "Général"}</p></td>
-                          <td className="py-4 px-6">
-                            <div className="flex gap-1">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star key={i} className={`w-3 h-3 ${i < rev.rating ? "fill-amber-400 text-amber-400" : "fill-slate-100 text-slate-100"}`} />
-                              ))}
-                            </div>
-                          </td>
-                          <td className="py-4 px-6 font-medium text-[var(--slate)] text-xs italic max-w-xs truncate">"{rev.comment}"</td>
-                          <td className="py-4 px-6">
-                            <button onClick={() => handleDeleteReview(rev.id)} className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-[var(--red)] hover:text-white transition-colors border border-red-100 shadow-sm zero-jank" title="Supprimer">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </>
-                )}
-              </table>
-            </div>
           </div>
 
           {/* Profile Tab */}
