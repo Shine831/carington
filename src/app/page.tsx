@@ -103,13 +103,13 @@ export default function Home() {
             <FadeUp delay={0.2}>
               <motion.h1 
                 style={{ scale: textScale }}
-                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95]"
+                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95] kinetic-text"
               >
                 {t.hero.title_v2.split("Informatique")[0]}<br/>
                 <motion.span 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1, delay: 0.5 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 100, delay: 0.5 }}
                   className="text-[var(--red)]"
                 >
                   {language === "fr" ? "Informatique" : "IT"}
@@ -256,48 +256,57 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* ── SERVICES BENTO (Pure Tech Refactor) ───────────────── */}
-      <section className="section-py relative">
+      {/* ── SERVICES BENTO (Fluid Asymmetric Layout) ───────────────── */}
+      <section className="section-py relative overflow-hidden">
         <div className="container-xl relative z-10">
           <FadeUp className="mb-16">
-            <span className="tag-red mb-4 inline-flex tracking-widest">{t.services.tag}</span>
-            <h2 className="display-lg text-[var(--charcoal)]">{t.services.title}</h2>
+            <span className="tag-red mb-4 inline-flex tracking-widest glass-morphism py-1.5 px-4 shadow-sm">{t.services.tag}</span>
+            <h2 className="display-lg text-[var(--charcoal)] kinetic-text">{t.services.title}</h2>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer className="bento-grid">
             {SERVICES.map(({ id, tag, icon: Icon, title, desc, span, highlight }) => (
-              <StaggerItem key={id} className={span}>
+              <StaggerItem key={id} className={`col-span-12 ${span || "md:col-span-6 lg:col-span-4"}`}>
                 <Link href="/booking" className="block h-full">
-                  <BentoCard highlight={false} className="h-full group border-2">
+                  <motion.div
+                    whileHover={{ y: -5 }}
+                    transition={{ type: "spring", damping: 15 }}
+                    className={`bento-item h-full p-8 md:p-10 group border-[1px] ${highlight ? "border-[var(--red)]/30" : "border-[var(--border)]"}`}
+                  >
                     {/* Floating Aura for Bento */}
                     <AuraGradient 
                       color={highlight ? "var(--red)" : "var(--slate)"} 
-                      className={`bottom-[-20%] right-[-10%] w-40 h-40 opacity-[0.05] group-hover:opacity-[0.15] transition-opacity`} 
+                      className={`bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.03] group-hover:opacity-[0.1] transition-opacity`}
                     />
 
                     <div className="relative z-10 flex flex-col h-full">
-                      <div className={`w-14 h-14 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border transition-all duration-500 ${
+                      <div className={`w-16 h-16 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-8 border transition-all duration-700 ${
                         highlight 
-                          ? "bg-[var(--red)] border-[var(--red)] shadow-[0_10px_30px_rgba(200,16,46,0.2)]" 
-                          : "bg-white/10 border-white/20 group-hover:bg-[var(--red)] group-hover:border-[var(--red)]"
+                          ? "bg-[var(--red)] border-[var(--red)] shadow-[var(--shadow-red)]"
+                          : "bg-white/50 border-white/80 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] group-hover:shadow-[var(--shadow-red)]"
                       }`}>
-                        <Icon className={`w-6 h-6 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
+                        <Icon className={`w-7 h-7 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
                       </div>
                       
-                      <span className={`inline-flex py-1 px-3 rounded-full border text-[10px] font-black uppercase tracking-widest mb-3 self-start ${
+                      <span className={`inline-flex py-1.5 px-4 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] mb-4 self-start ${
                         highlight ? "bg-white/20 border-white/20 text-white" : "bg-black/5 border-black/5 text-[var(--muted)]"
                       }`}>{tag}</span>
-                      <h3 className="text-xl font-black mb-3 mt-2 leading-tight text-[var(--charcoal)]">{title}</h3>
-                      <p className="text-sm mb-8 text-[var(--slate)] leading-relaxed">{desc}</p>
+                      <h3 className="display-sm mb-4 text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors">{title}</h3>
+                      <p className="text-body-sm mb-8 leading-relaxed opacity-80">{desc}</p>
                       
-                      <div className="mt-auto pt-6 border-t border-black/5 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-[var(--red)] transition-colors">
+                      <div className="mt-auto pt-8 border-t border-black/5 flex items-center justify-between">
+                        <span className="text-[11px] font-black uppercase tracking-[0.25em] group-hover:text-[var(--red)] transition-colors">
                           {t.services.explore}
                         </span>
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                        <motion.div
+                          whileHover={{ x: 5 }}
+                          transition={{ type: "spring", damping: 10 }}
+                        >
+                          <ArrowRight className="w-5 h-5 group-hover:text-[var(--red)] transition-colors" />
+                        </motion.div>
                       </div>
                     </div>
-                  </BentoCard>
+                  </motion.div>
                 </Link>
               </StaggerItem>
             ))}
@@ -338,23 +347,27 @@ export default function Home() {
             </SlideLeft>
             
             <SlideRight className="relative">
-              <div className="relative aspect-square max-w-sm mx-auto">
+              <div className="relative aspect-square max-w-sm mx-auto spatial-ui-layer">
                 <AuraGradient color="var(--red)" className="inset-0 w-full h-full opacity-[0.1]" />
-                <BentoCard highlight className="h-full flex flex-col justify-center items-center text-center p-12 border-2">
-                  <div className="w-20 h-20 bg-[var(--charcoal)] rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
-                    <ShieldCheck className="w-10 h-10 text-white" />
+                <motion.div
+                  whileHover={{ rotateY: 10, rotateX: -5 }}
+                  className="bento-item h-full flex flex-col justify-center items-center text-center p-12 border-[1px] glass-morphism shadow-xl"
+                >
+                  <div className="w-24 h-24 bg-[var(--charcoal)] rounded-3xl flex items-center justify-center mb-8 shadow-2xl relative overflow-hidden group-hover:bg-[var(--red)] transition-colors duration-700">
+                    <ShieldCheck className="w-10 h-10 text-white relative z-10" />
+                    <AuraGradient color="white" className="w-full h-full opacity-[0.2]" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">{t.why.support_title}</h3>
-                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">{t.why.support_desc}</p>
+                  <h3 className="display-sm mb-4 text-[var(--charcoal)]">{t.why.support_title}</h3>
+                  <p className="text-body-sm text-[var(--slate)] mb-8 leading-relaxed">{t.why.support_desc}</p>
                   <div className="flex -space-x-3">
                     {[1,2,3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400 shadow-sm">
+                      <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-black text-slate-400 shadow-sm">
                         EJS
                       </div>
                     ))}
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-6 text-[var(--red)]">{t.why.team}</p>
-                </BentoCard>
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] mt-8 text-[var(--red)]">{t.why.team}</p>
+                </motion.div>
               </div>
             </SlideRight>
           </div>

@@ -59,10 +59,10 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-sm shadow-[var(--shadow-sm)] border-b border-[var(--border)]"
-            : "bg-white border-b border-[var(--border)]"
+            ? "glass-morphism shadow-[var(--shadow-md)] py-2"
+            : "bg-white border-b border-[var(--border)] py-0"
         }`}
       >
         <div className="container-xl">
@@ -73,21 +73,22 @@ export default function Navbar() {
 
             
             {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-2">
               {NAV_LINKS.map(({ href, label }) => {
                 const isActive = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`relative px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-colors group ${
-                      isActive ? "text-[var(--red)]" : "text-[var(--slate)] hover:text-[var(--charcoal)]"
+                    className={`relative px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 group rounded-full ${
+                      isActive ? "text-[var(--red)] bg-[var(--red)]/5" : "text-[var(--slate)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"
                     }`}
                   >
                     {label}
-                    <span className={`absolute inset-x-4 bottom-0 h-0.5 bg-[var(--red)] rounded-full transition-transform duration-300 origin-left ${
-                      isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                    }`} />
+                    <motion.span
+                      layoutId="nav-glow"
+                      className={`absolute inset-0 bg-[var(--red)]/5 rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity`}
+                    />
                   </Link>
                 );
               })}
@@ -98,7 +99,7 @@ export default function Navbar() {
               {/* Language Switcher */}
               <button 
                 onClick={toggleLanguage}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-[var(--red)]/20 hover:bg-[var(--off-white)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)]"
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-[var(--border)] hover:border-[var(--red)]/40 hover:bg-white transition-all text-[10px] font-black uppercase tracking-[0.2em] text-[var(--charcoal)] glass-morphism shadow-sm"
               >
                 <Globe className="w-4 h-4 text-[var(--red)]" />
                 {language === "fr" ? "EN" : "FR"}
@@ -135,8 +136,12 @@ export default function Navbar() {
                   </Link>
                   <Link href="/booking">
                     <MagneticButton className="flex items-center">
-                      <span className="btn btn-red text-[10px] px-6 py-2.5 flex items-center gap-2 shadow-[var(--shadow-red)]">
-                        {t.nav.cta} <ChevronRight className="w-4 h-4" />
+                      <span className="btn btn-red text-[10px] px-8 py-3 flex items-center gap-2 shadow-[var(--shadow-red)] group overflow-hidden relative">
+                        <span className="relative z-10">{t.nav.cta}</span>
+                        <ChevronRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
+                        <motion.span
+                          className="absolute inset-0 bg-white/20 -z-0 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"
+                        />
                       </span>
                     </MagneticButton>
                   </Link>
