@@ -61,14 +61,14 @@ export default function Home() {
     <div className="min-h-screen bg-[var(--off-white)] overflow-hidden">
 
       {/* ── ELITE HERO (White/Red 2026 Premium) ───────────────────── */}
-      <section ref={heroRef} className="relative min-h-[90svh] flex items-center pt-24 md:pt-32 overflow-hidden bg-white">
+      <section ref={heroRef} className="relative min-h-screen flex items-center pt-24 md:pt-32 overflow-hidden bg-white">
         
-        {/* Aura Gradients (Bright clean style) */}
-        <AuraGradient color="var(--red)" className="top-[-10%] right-[-5%] w-[800px] h-[800px] opacity-[0.06]" delay={0} />
-        <AuraGradient color="var(--slate)" className="bottom-[10%] left-[5%] w-[600px] h-[600px] opacity-[0.03]" delay={2} />
+        {/* Spectacular Aura Gradients */}
+        <AuraGradient color="var(--red)" className="top-[-20%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.08]" delay={0} />
+        <AuraGradient color="#3B82F6" className="bottom-[5%] left-[-5%] w-[800px] h-[800px] opacity-[0.04]" delay={2} />
 
-        {/* Minimal Grid Overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(#EAEAEA_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.4] pointer-events-none" />
+        {/* Dynamic Grid Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
         {/* Spatial Depth Layers */}
         <SpatialLayer speed={0.4} className="top-1/4 left-[10%] opacity-20">
@@ -103,18 +103,34 @@ export default function Home() {
             <FadeUp delay={0.2}>
               <motion.h1 
                 style={{ scale: textScale }}
-                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95]"
+                className="display-2xl text-[var(--charcoal)] mb-10 tracking-tighter"
               >
-                {t.hero.title_v2.split("Informatique")[0]}<br/>
-                <motion.span 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  className="text-[var(--red)]"
-                >
-                  {language === "fr" ? "Informatique" : "IT"}
-                </motion.span><br/>
-                {t.hero.title_v2.split("Informatique")[1] || t.hero.title_v2.split("IT")[1]}
+                <span className="block">
+                  {language === "fr"
+                    ? t.hero.title_v2.split("Informatique")[0]
+                    : t.hero.title_v2.split("IT")[0]}
+                </span>
+                <span className="flex items-center gap-6">
+                  <motion.span
+                    initial={{ scaleX: 0, opacity: 0 }}
+                    animate={{ scaleX: 1, opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-[0.1em] bg-[var(--red)] flex-1 hidden md:block origin-left"
+                  />
+                  <motion.span
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-[var(--red)] italic font-serif"
+                  >
+                    {language === "fr" ? "Informatique" : "IT"}
+                  </motion.span>
+                </span>
+                <span className="block">
+                  {language === "fr"
+                    ? (t.hero.title_v2.split("Informatique")[1] || "")
+                    : (t.hero.title_v2.split("IT")[1] || "")}
+                </span>
               </motion.h1>
             </FadeUp>
 
@@ -145,22 +161,25 @@ export default function Home() {
             </FadeUp>
 
             <FadeUp delay={0.5}>
-              <div className="flex flex-wrap gap-5 items-center">
+              <div className="flex flex-wrap gap-6 items-center">
                 <Link href="/booking">
                   <MagneticButton>
                     <motion.span
-                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileHover={{ scale: 1.02, y: -4 }}
                       whileTap={{ scale: 0.98 }}
-                      className="btn btn-red px-10 py-5 text-lg group relative flex items-center shadow-[var(--shadow-red)]"
+                      className="btn-premium btn-red px-12 py-6 text-base group shadow-red"
                     >
-                      <div className="flex items-center">
-                        {t.hero.btn_audit_main}
-                        <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                          <ArrowRight className="w-5 h-5 ml-2" />
-                        </motion.span>
-                      </div>
+                      {t.hero.btn_audit_main}
+                      <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                        <ArrowRight className="w-5 h-5" />
+                      </motion.span>
                     </motion.span>
                   </MagneticButton>
+                </Link>
+                <Link href="/services">
+                  <button className="btn-premium btn-outline px-12 py-6 text-base">
+                    {t.hero.btn_discover}
+                  </button>
                 </Link>
               </div>
             </FadeUp>
@@ -264,37 +283,37 @@ export default function Home() {
             <h2 className="display-lg text-[var(--charcoal)]">{t.services.title}</h2>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SERVICES.map(({ id, tag, icon: Icon, title, desc, span, highlight }) => (
               <StaggerItem key={id} className={span}>
                 <Link href="/booking" className="block h-full">
-                  <BentoCard highlight={false} className="h-full group border-2">
+                  <BentoCard highlight={false} className="h-full group border-px border-black/5 hover:border-[var(--red)]/20">
                     {/* Floating Aura for Bento */}
                     <AuraGradient 
-                      color={highlight ? "var(--red)" : "var(--slate)"} 
-                      className={`bottom-[-20%] right-[-10%] w-40 h-40 opacity-[0.05] group-hover:opacity-[0.15] transition-opacity`} 
+                      color={highlight ? "var(--red)" : "#3B82F6"}
+                      className={`bottom-[-10%] right-[-5%] w-64 h-64 opacity-[0.03] group-hover:opacity-[0.1] transition-opacity duration-700`}
                     />
 
                     <div className="relative z-10 flex flex-col h-full">
-                      <div className={`w-14 h-14 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border transition-all duration-500 ${
+                      <div className={`w-16 h-16 glass rounded-2xl flex items-center justify-center mb-8 border transition-all duration-700 ${
                         highlight 
-                          ? "bg-[var(--red)] border-[var(--red)] shadow-[0_10px_30px_rgba(200,16,46,0.2)]" 
-                          : "bg-white/10 border-white/20 group-hover:bg-[var(--red)] group-hover:border-[var(--red)]"
+                          ? "bg-[var(--red)] border-[var(--red)] shadow-red"
+                          : "bg-white border-black/5 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] group-hover:shadow-red"
                       }`}>
-                        <Icon className={`w-6 h-6 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
+                        <Icon className={`w-7 h-7 transition-colors duration-700 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
                       </div>
                       
-                      <span className={`inline-flex py-1 px-3 rounded-full border text-[10px] font-black uppercase tracking-widest mb-3 self-start ${
-                        highlight ? "bg-white/20 border-white/20 text-white" : "bg-black/5 border-black/5 text-[var(--muted)]"
+                      <span className={`inline-flex py-1.5 px-4 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] mb-4 self-start ${
+                        highlight ? "bg-white/20 border-white/20 text-white" : "bg-slate-100 border-black/5 text-[var(--muted)] group-hover:bg-white/20 group-hover:border-white/20 group-hover:text-white transition-all duration-700"
                       }`}>{tag}</span>
-                      <h3 className="text-xl font-black mb-3 mt-2 leading-tight text-[var(--charcoal)]">{title}</h3>
-                      <p className="text-sm mb-8 text-[var(--slate)] leading-relaxed">{desc}</p>
+                      <h3 className={`text-2xl font-black mb-4 mt-2 leading-tight transition-colors duration-700 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`}>{title}</h3>
+                      <p className={`text-[13px] mb-10 leading-relaxed font-medium transition-colors duration-700 ${highlight ? "text-white/80" : "text-[var(--slate)] group-hover:text-white/80"}`}>{desc}</p>
                       
-                      <div className="mt-auto pt-6 border-t border-black/5 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-[var(--red)] transition-colors">
+                      <div className={`mt-auto pt-8 border-t flex items-center justify-between transition-colors duration-700 ${highlight ? "border-white/10" : "border-black/5 group-hover:border-white/10"}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-700 ${highlight ? "text-white" : "text-[var(--muted)] group-hover:text-white"}`}>
                           {t.services.explore}
                         </span>
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                        <ArrowRight className={`w-5 h-5 transition-all duration-500 ${highlight ? "text-white" : "text-[var(--muted)] group-hover:text-white group-hover:translate-x-2"}`} />
                       </div>
                     </div>
                   </BentoCard>

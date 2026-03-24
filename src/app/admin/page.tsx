@@ -546,10 +546,10 @@ export default function AdminDashboard() {
   ];
 
   const STATS = [
-    { label: t.admin.stats.pending, val: data.requests.filter(r => r.status === "PENDING").length, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-    { label: t.admin.stats.active, val: data.requests.filter(r => r.status === "ACTIVE").length, icon: Activity, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-    { label: t.admin.stats.completed, val: data.requests.filter(r => r.status === "COMPLETED").length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-    { label: t.admin.stats.users, val: data.clients.length, icon: Users, color: "text-[var(--red)]", bg: "bg-[var(--red)]/10", border: "border-[var(--red)]/20" }
+    { label: t.admin.stats.pending, val: data.requests.filter(r => r.status === "PENDING").length, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20", barBg: "bg-amber-500" },
+    { label: t.admin.stats.active, val: data.requests.filter(r => r.status === "ACTIVE").length, icon: Activity, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20", barBg: "bg-blue-500" },
+    { label: t.admin.stats.completed, val: data.requests.filter(r => r.status === "COMPLETED").length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", barBg: "bg-emerald-500" },
+    { label: t.admin.stats.users, val: data.clients.length, icon: Users, color: "text-[var(--red)]", bg: "bg-[var(--red)]/10", border: "border-[var(--red)]/20", barBg: "bg-[var(--red)]" }
   ];
 
   const langKey = language as "fr" | "en";
@@ -676,16 +676,40 @@ export default function AdminDashboard() {
         <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden z-10 w-full overflow-x-hidden">
           
           {/* Stats Bento */}
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-            {STATS.map(({ label, val, icon: Icon, color }) => (
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {STATS.map(({ label, val, icon: Icon, color, bg, border, barBg }) => (
               <StaggerItem key={label}>
-                <div className="card p-5 md:p-8 bg-white border border-[var(--border)] relative h-full flex flex-col justify-between rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(230,0,0,0.05)] transition-all duration-300 zero-jank group">
-                  <div className="relative z-10 mb-4">
-                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.1em]">{label}</p>
-                    <p className={`text-4xl md:text-5xl font-black ${color} tracking-tighter italic mt-1 drop-shadow-sm`}>{val}</p>
-                  </div>
-                  <div className={`absolute bottom-4 right-4 md:bottom-5 md:right-5 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border ${color.replace("text-", "bg-").replace("-500", "-50")} ${color.replace("text-", "border-").replace("-500", "-100")} shadow-sm group-hover:scale-110 transition-transform duration-300 zero-jank`}>
-                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
+                <div className="bento-card p-8 group border-black/5">
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${bg} ${border} group-hover:scale-110 transition-transform duration-500`}>
+                        <Icon className={`w-6 h-6 ${color}`} />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <motion.div
+                          animate={{ scaleY: [0.3, 1, 0.5, 1.2, 0.7], opacity: [0.6, 1, 0.8, 1, 0.7] }}
+                          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                          className={`w-0.5 h-4 origin-bottom ${barBg}`}
+                        />
+                        <motion.div
+                          animate={{ scaleY: [0.6, 0.3, 1.1, 0.5, 0.9], opacity: [0.8, 0.5, 1, 0.7, 0.9] }}
+                          transition={{ repeat: Infinity, duration: 1.5, delay: 0.2, ease: "easeInOut" }}
+                          className={`w-0.5 h-4 origin-bottom ${barBg} opacity-60`}
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.2em] mb-1">{label}</p>
+                    <p className={`text-5xl font-black ${color} tracking-tighter italic`}>{val}</p>
+
+                    {/* Micro-Gauge Visualizer */}
+                    <div className="mt-8 h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "70%" }}
+                        transition={{ duration: 1.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        className={`h-full ${barBg} rounded-full`}
+                      />
+                    </div>
                   </div>
                 </div>
               </StaggerItem>

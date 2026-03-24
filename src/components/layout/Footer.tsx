@@ -15,20 +15,21 @@ export default function Footer() {
   if (isAdmin) return null;
 
   return (
-    <footer className="bg-[var(--charcoal)] text-white mt-auto relative overflow-hidden border-t border-white/5">
-      {/* Subtle Aura for Footer */}
-      <AuraGradient color="var(--red)" className="bottom-[-10%] left-[-5%] w-96 h-96 opacity-[0.05]" />
+    <footer className="bg-[var(--charcoal)] text-white mt-auto relative overflow-hidden">
+      {/* Spectacular Aura for Footer */}
+      <AuraGradient color="var(--red)" className="top-[-20%] right-[-10%] w-[800px] h-[800px] opacity-[0.08]" />
+      <AuraGradient color="#3B82F6" className="bottom-[-20%] left-[-10%] w-[600px] h-[600px] opacity-[0.05]" />
       
       <div className="container-xl pt-32 pb-20 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-24">
           
           {/* Brand — Logo + Contact rapide */}
           <div className="lg:col-span-1">
             {/* Logo white variant for dark footer */}
-            <div className="mb-8 [&_span]:!text-white [&_.text-\[var\(--slate\)\]]:!text-slate-400">
+            <div className="mb-10 [&_span]:!text-white [&_.text-\[var\(--slate\)\]]:!text-slate-500">
               <Logo />
             </div>
-            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-8 max-w-xs">
+            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-10 max-w-xs border-l border-white/10 pl-6">
               {t.footer.desc}
             </p>
             {/* Contact rapide : WhatsApp + Appel seulement */}
@@ -55,9 +56,9 @@ export default function Footer() {
           
           {/* Solutions (i18n) */}
           <div className="mt-12 lg:mt-0">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.footer.cols.solutions}</h4>
-            <ul className="space-y-4 text-sm font-bold">
-              <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.it.title}</Link></li>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-10">{t.footer.cols.solutions}</h4>
+            <ul className="space-y-5 text-[13px] font-bold">
+              <li><Link href="/services" className="text-slate-400 hover:text-white transition-all hover:translate-x-1 inline-block">{t.services_page.items.it.title}</Link></li>
               <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.cyber.title}</Link></li>
               <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.network.title}</Link></li>
               <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.video.title}</Link></li>
@@ -105,9 +106,9 @@ export default function Footer() {
 
         </div>
 
-        <div className="border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-500">
+        <div className="border-t border-white/5 mt-32 pt-12 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
           <p>&copy; {new Date().getFullYear()} E-JARNAULD SOFT. {t.footer.copyright}</p>
-          <div className="flex gap-10">
+          <div className="flex gap-12">
             <Link href="/privacy" className="hover:text-white transition-colors">{language === "fr" ? "Confidentialité" : "Privacy"}</Link>
             <Link href="/terms" className="hover:text-white transition-colors">{language === "fr" ? "CGV / CGU" : "Terms"}</Link>
           </div>

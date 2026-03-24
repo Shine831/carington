@@ -58,35 +58,37 @@ export default function Navbar() {
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-sm shadow-[var(--shadow-sm)] border-b border-[var(--border)]"
-            : "bg-white border-b border-[var(--border)]"
+            ? "glass shadow-md py-2"
+            : "bg-white/80 backdrop-blur-md py-4"
         }`}
       >
         <div className="container-xl">
-          <div className="flex items-center justify-between h-[68px] md:h-[80px]">
+          <div className="flex items-center justify-between h-[60px] md:h-[70px]">
             
             {/* Logo */}
             <Logo />
 
             
             {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-2">
               {NAV_LINKS.map(({ href, label }) => {
                 const isActive = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
-                    className={`relative px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] transition-colors group ${
+                    className={`relative px-5 py-2 text-[10px] font-extrabold uppercase tracking-[0.2em] transition-all duration-300 group ${
                       isActive ? "text-[var(--red)]" : "text-[var(--slate)] hover:text-[var(--charcoal)]"
                     }`}
                   >
                     {label}
-                    <span className={`absolute inset-x-4 bottom-0 h-0.5 bg-[var(--red)] rounded-full transition-transform duration-300 origin-left ${
-                      isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    <motion.span
+                      layoutId={isActive ? "nav-underline" : undefined}
+                      className={`absolute inset-x-5 bottom-0 h-0.5 bg-[var(--red)] rounded-full transition-all duration-300 ${
+                      isActive ? "opacity-100" : "opacity-0 group-hover:opacity-40"
                     }`} />
                   </Link>
                 );
@@ -98,45 +100,47 @@ export default function Navbar() {
               {/* Language Switcher */}
               <button 
                 onClick={toggleLanguage}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-[var(--red)]/20 hover:bg-[var(--off-white)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)]"
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-[var(--border)] hover:border-[var(--red)]/40 hover:bg-white transition-all text-[9px] font-black uppercase tracking-[0.15em] text-[var(--charcoal)] shadow-sm"
               >
-                <Globe className="w-4 h-4 text-[var(--red)]" />
+                <Globe className="w-3.5 h-3.5 text-[var(--red)]" />
                 {language === "fr" ? "EN" : "FR"}
               </button>
+
+              <div className="h-6 w-px bg-[var(--border)] mx-2" />
 
               {user ? (
                 <>
                   <Link href={role === "ADMIN" ? "/admin" : "/dashboard"}>
                     <motion.span
-                      whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
-                      className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
+                      whileHover={{ y: -2 }}
+                      className="text-[9px] font-black uppercase tracking-[0.15em] flex items-center gap-2 px-4 py-2.5 text-[var(--slate)] hover:text-[var(--charcoal)] transition-colors"
                     >
-                      <User className="w-4 h-4" /> {user.displayName?.split(" ")[0] || t.nav.account}
+                      <User className="w-4 h-4 text-[var(--red)]" /> {user.displayName?.split(" ")[0] || t.nav.account}
                     </motion.span>
                   </Link>
                   <motion.button
                     onClick={handleLogout}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-red-200 hover:bg-red-50 hover:text-[var(--red)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--slate)]"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-100 bg-red-50/50 hover:bg-red-50 text-[9px] font-black uppercase tracking-[0.15em] text-[var(--red)] transition-all"
                   >
-                    <LogOut className="w-4 h-4" /> {language === "fr" ? "Déconnexion" : "Logout"}
+                    <LogOut className="w-3.5 h-3.5" /> {language === "fr" ? "Déconnexion" : "Logout"}
                   </motion.button>
                 </>
               ) : (
                 <>
                   <Link href="/account">
                     <motion.span
-                      whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
-                      className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
+                      whileHover={{ y: -2 }}
+                      className="text-[9px] font-black uppercase tracking-[0.15em] flex items-center gap-2 px-4 py-2.5 text-[var(--slate)] hover:text-[var(--charcoal)] transition-colors"
                     >
-                      <User className="w-4 h-4" /> {t.nav.account}
+                      <User className="w-4 h-4 text-[var(--red)]" /> {t.nav.account}
                     </motion.span>
                   </Link>
                   <Link href="/booking">
                     <MagneticButton className="flex items-center">
-                      <span className="btn btn-red text-[10px] px-6 py-2.5 flex items-center gap-2 shadow-[var(--shadow-red)]">
-                        {t.nav.cta} <ChevronRight className="w-4 h-4" />
+                      <span className="btn-premium btn-red text-[9px] px-8 py-3 shadow-red">
+                        {t.nav.cta} <ChevronRight className="w-3.5 h-3.5" />
                       </span>
                     </MagneticButton>
                   </Link>
