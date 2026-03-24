@@ -452,7 +452,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 p-1 bg-white/80 backdrop-blur-md rounded-full border border-[var(--border)] mb-12 w-fit mx-auto md:mx-0 shadow-sm zero-jank">
+        <div className="flex gap-3 p-1.5 bg-white border border-[var(--border)] mb-16 w-fit mx-auto md:mx-0 shadow-sm rounded-2xl zero-jank">
           {[
             { id: "projects", label: t.dashboard.tabs.projects, icon: FileText },
             { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
@@ -461,8 +461,8 @@ export default function DashboardPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
-              className={`flex items-center gap-3 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 zero-jank ${
-                activeTab === tab.id ? "bg-[var(--red)] text-white shadow-[0_8px_20px_rgba(230,0,0,0.2)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"
+              className={`flex items-center gap-3 px-6 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-500 zero-jank ${
+                activeTab === tab.id ? "bg-[var(--charcoal)] text-white shadow-xl" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -473,14 +473,16 @@ export default function DashboardPage() {
 
         {/* Requests Section */}
         {activeTab === "projects" && (
-          <FadeUp delay={0.2} className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[var(--red-light)] flex items-center justify-center border border-red-100 shadow-sm"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
-                {t.dashboard.projects.title}
-              </h2>
-              <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest rounded-full zero-jank shadow-sm hover:shadow-[0_10px_30px_rgba(230,0,0,0.2)]">
-                {t.dashboard.projects.new}
+          <FadeUp delay={0.2} className="mb-24">
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--charcoal)] flex items-center justify-center shadow-lg"><FileText className="w-5 h-5 text-white" /></div>
+                <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase">{t.dashboard.projects.title}</h2>
+              </div>
+              <Link href="/booking">
+                <button className="btn-premium btn-red px-8 py-3.5 text-[10px]">
+                  {t.dashboard.projects.new}
+                </button>
               </Link>
             </div>
 
