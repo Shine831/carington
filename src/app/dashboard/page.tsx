@@ -451,8 +451,8 @@ export default function DashboardPage() {
           </FadeIn>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex gap-2 p-1 bg-white/80 backdrop-blur-md rounded-full border border-[var(--border)] mb-12 w-fit mx-auto md:mx-0 shadow-sm zero-jank">
+        {/* Tab Switcher (Spatial Glass) */}
+        <div className="flex gap-3 p-1.5 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 mb-16 w-fit mx-auto md:mx-0 shadow-xl zero-jank">
           {[
             { id: "projects", label: t.dashboard.tabs.projects, icon: FileText },
             { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
@@ -461,11 +461,13 @@ export default function DashboardPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
-              className={`flex items-center gap-3 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 zero-jank ${
-                activeTab === tab.id ? "bg-[var(--red)] text-white shadow-[0_8px_20px_rgba(230,0,0,0.2)]" : "text-[var(--muted)] hover:text-[var(--charcoal)] hover:bg-[var(--off-white)]"
+              className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 zero-jank ${
+                activeTab === tab.id
+                  ? "bg-[var(--red)] text-white shadow-[0_12px_30px_rgba(230,0,0,0.25)] scale-105"
+                  : "text-[var(--slate)] hover:text-[var(--charcoal)] hover:bg-white/50"
               }`}
             >
-              <tab.icon className="w-4 h-4" />
+              <tab.icon className={`w-4 h-4 transition-transform duration-500 ${activeTab === tab.id ? "scale-110" : ""}`} />
               <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
@@ -484,48 +486,54 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {/* Mobile Cards View */}
-            <div className="md:hidden space-y-6">
+            {/* Mobile Bento Cards View */}
+            <div className="md:hidden space-y-8">
               {loading ? (
                 <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
               ) : bookings.length === 0 ? (
-                <div className="py-20 text-center rounded-[2.5rem] bg-[var(--off-white)] border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)] zero-jank">{t.dashboard.projects.empty}</div>
+                <div className="py-24 text-center rounded-[2.5rem] bg-white border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)] shadow-sm zero-jank">{t.dashboard.projects.empty}</div>
               ) : bookings.map((req: any) => {
                 const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                 const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
                 const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
                 
                 return (
-                  <div key={req.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] zero-jank">
+                  <div key={req.id} className="relative overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/80 backdrop-blur-xl p-8 shadow-xl zero-jank">
+                    {/* Interior Glow */}
+                    <div className={`absolute top-0 right-0 w-32 h-32 blur-[40px] opacity-[0.08] -mr-10 -mt-10 ${accentColor}`} />
                     <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
-                    <div className="space-y-4 pl-2">
+
+                    <div className="space-y-6 relative z-10">
                       <div className="flex justify-between items-start">
-                        <div className="space-y-1">
-                           <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
-                           <h3 className="text-[var(--charcoal)] font-black text-xl tracking-tight leading-tight uppercase">{req.serviceId}</h3>
+                        <div className="space-y-1.5">
+                           <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.3em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
+                           <h3 className="text-[var(--charcoal)] font-black text-2xl tracking-tight leading-none uppercase">{req.serviceId}</h3>
                         </div>
-                        <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
+                        <span className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--off-white)] rounded-2xl border border-slate-100">
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">{t.dashboard.projects.date}</p>
-                          <p className="text-xs font-bold text-[var(--charcoal)] tracking-widest">{date}</p>
+
+                      <div className="grid grid-cols-2 gap-4 p-5 bg-white/50 rounded-2xl border border-white/60">
+                        <div className="border-r border-slate-100 pr-2">
+                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-1.5">{t.dashboard.projects.date}</p>
+                          <p className="text-xs font-black text-[var(--charcoal)] tracking-widest">{date}</p>
                         </div>
-                        <div>
-                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-widest mb-1">Budget</p>
-                          <p className="text-xs font-black text-[var(--red)] italic">Devis Client</p>
+                        <div className="pl-2">
+                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-1.5">Budget</p>
+                          <p className="text-xs font-black text-[var(--red)] italic tracking-tight">Analyse en cours</p>
                         </div>
                       </div>
+
                       {req.adminNote && (
-                        <div className="p-4 bg-[var(--red-light)] border border-red-100 rounded-2xl italic text-[11px] text-[var(--slate)] leading-relaxed">
-                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-1 not-italic">{t.dashboard.projects.admin_note}</span>
+                        <div className="p-5 bg-red-50/50 border border-red-100/50 rounded-2xl text-[12px] text-[var(--slate)] leading-relaxed font-medium">
+                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-2 tracking-[0.25em]">{t.dashboard.projects.admin_note}</span>
                           "{req.adminNote}"
                         </div>
                       )}
+
                       {req.status === "PENDING" && (
                         <button 
                           onClick={() => handleDeleteRequest(req.id)}
-                          className="w-full py-4 bg-white border border-slate-200 rounded-full text-[var(--charcoal)] text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:border-[var(--red)] hover:text-[var(--red)] hover:shadow-sm transition-all mt-4 zero-jank"
+                          className="w-full py-5 bg-white border border-slate-200 rounded-full text-[var(--charcoal)] text-[10px] font-black uppercase tracking-[0.25em] flex items-center justify-center gap-3 hover:border-red-200 hover:text-[var(--red)] transition-all shadow-sm active:scale-95 zero-jank"
                         >
                           <AlertTriangle className="w-4 h-4" /> {t.dashboard.projects.cancel}
                         </button>

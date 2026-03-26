@@ -675,17 +675,53 @@ export default function AdminDashboard() {
 
         <div className="p-4 md:p-8 lg:p-12 flex-1 relative overflow-hidden z-10 w-full overflow-x-hidden">
           
-          {/* Stats Bento */}
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-            {STATS.map(({ label, val, icon: Icon, color }) => (
+          {/* Stats Bento (Data Storytelling) */}
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12 md:mb-16">
+            {STATS.map(({ label, val, icon: Icon, color, bg, border }) => (
               <StaggerItem key={label}>
-                <div className="card p-5 md:p-8 bg-white border border-[var(--border)] relative h-full flex flex-col justify-between rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(230,0,0,0.05)] transition-all duration-300 zero-jank group">
-                  <div className="relative z-10 mb-4">
-                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.1em]">{label}</p>
-                    <p className={`text-4xl md:text-5xl font-black ${color} tracking-tighter italic mt-1 drop-shadow-sm`}>{val}</p>
+                <div className="relative group overflow-hidden rounded-[2.5rem] p-8 border border-white/60 bg-white/70 backdrop-blur-xl shadow-xl transition-all duration-700 hover:shadow-2xl hover:border-[var(--red)]/20 zero-jank">
+                  {/* Micro-Graphic Background */}
+                  <div className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700 pointer-events-none">
+                    <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <motion.path
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 2, ease: "easeInOut" }}
+                        d="M0,80 Q25,20 50,80 T100,20"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className={color}
+                      />
+                    </svg>
                   </div>
-                  <div className={`absolute bottom-4 right-4 md:bottom-5 md:right-5 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border ${color.replace("text-", "bg-").replace("-500", "-50")} ${color.replace("text-", "border-").replace("-500", "-100")} shadow-sm group-hover:scale-110 transition-transform duration-300 zero-jank`}>
-                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
+
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-8">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${bg} ${border} shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                        <Icon className={`w-6 h-6 ${color}`} />
+                      </div>
+                      <div className="h-1 w-12 bg-slate-100 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: "70%" }}
+                          transition={{ duration: 1.5, delay: 0.5 }}
+                          className={`h-full ${color.replace("text-", "bg-")}`}
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-[0.25em] mb-2">{label}</p>
+                    <div className="flex items-baseline gap-2">
+                      <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`text-5xl font-black ${color} tracking-tighter leading-none italic`}
+                      >
+                        {val}
+                      </motion.span>
+                      <span className="text-[10px] font-bold text-emerald-500 uppercase">+12%</span>
+                    </div>
                   </div>
                 </div>
               </StaggerItem>

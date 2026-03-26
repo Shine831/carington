@@ -59,14 +59,18 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${
           scrolled
-            ? "bg-white/95 backdrop-blur-sm shadow-[var(--shadow-sm)] border-b border-[var(--border)]"
-            : "bg-white border-b border-[var(--border)]"
+            ? "py-2"
+            : "py-0"
         }`}
       >
         <div className="container-xl">
-          <div className="flex items-center justify-between h-[68px] md:h-[80px]">
+          <div className={`flex items-center justify-between h-[68px] md:h-[80px] transition-all duration-500 px-6 md:px-8 ${
+            scrolled
+              ? "bg-white/80 backdrop-blur-xl shadow-lg border border-white/40 rounded-[2rem]"
+              : "bg-white border-b border-[var(--border)]"
+          }`}>
             
             {/* Logo */}
             <Logo />
@@ -96,46 +100,50 @@ export default function Navbar() {
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-4">
               {/* Language Switcher */}
-              <button 
-                onClick={toggleLanguage}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-[var(--red)]/20 hover:bg-[var(--off-white)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)]"
-              >
-                <Globe className="w-4 h-4 text-[var(--red)]" />
-                {language === "fr" ? "EN" : "FR"}
-              </button>
+              <MagneticButton>
+                <button
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-[var(--border)] hover:border-[var(--red)]/40 hover:bg-white transition-all text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)] shadow-sm"
+                >
+                  <Globe className="w-3.5 h-3.5 text-[var(--red)]" />
+                  {language === "fr" ? "EN" : "FR"}
+                </button>
+              </MagneticButton>
 
               {user ? (
                 <>
                   <Link href={role === "ADMIN" ? "/admin" : "/dashboard"}>
-                    <motion.span
-                      whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
-                      className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
-                    >
-                      <User className="w-4 h-4" /> {user.displayName?.split(" ")[0] || t.nav.account}
-                    </motion.span>
+                    <MagneticButton>
+                      <motion.span
+                        className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
+                      >
+                        <User className="w-4 h-4" /> {user.displayName?.split(" ")[0] || t.nav.account}
+                      </motion.span>
+                    </MagneticButton>
                   </Link>
-                  <motion.button
-                    onClick={handleLogout}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-[var(--border)] hover:border-red-200 hover:bg-red-50 hover:text-[var(--red)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--slate)]"
-                  >
-                    <LogOut className="w-4 h-4" /> {language === "fr" ? "Déconnexion" : "Logout"}
-                  </motion.button>
+                  <MagneticButton>
+                    <motion.button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border)] hover:border-red-200 hover:bg-red-50 hover:text-[var(--red)] transition-all text-[10px] font-black uppercase tracking-widest text-[var(--slate)] shadow-sm"
+                    >
+                      <LogOut className="w-4 h-4" /> {language === "fr" ? "Sortie" : "Logout"}
+                    </motion.button>
+                  </MagneticButton>
                 </>
               ) : (
                 <>
                   <Link href="/account">
-                    <motion.span
-                      whileHover={{ backgroundColor: "rgba(0,0,0,0.04)" }}
-                      className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
-                    >
-                      <User className="w-4 h-4" /> {t.nav.account}
-                    </motion.span>
+                    <MagneticButton>
+                      <motion.span
+                        className="btn btn-ghost text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-4 py-2.5"
+                      >
+                        <User className="w-4 h-4" /> {t.nav.account}
+                      </motion.span>
+                    </MagneticButton>
                   </Link>
                   <Link href="/booking">
-                    <MagneticButton className="flex items-center">
-                      <span className="btn btn-red text-[10px] px-6 py-2.5 flex items-center gap-2 shadow-[var(--shadow-red)]">
+                    <MagneticButton>
+                      <span className="btn btn-red text-[10px] px-7 py-3 flex items-center gap-2 shadow-[var(--shadow-red)]">
                         {t.nav.cta} <ChevronRight className="w-4 h-4" />
                       </span>
                     </MagneticButton>

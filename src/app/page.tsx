@@ -103,18 +103,46 @@ export default function Home() {
             <FadeUp delay={0.2}>
               <motion.h1 
                 style={{ scale: textScale }}
-                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95]"
+                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.9] overflow-hidden"
               >
-                {t.hero.title_v2.split("Informatique")[0]}<br/>
+                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[0].split(" ").map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ y: "100%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                    className="kinetic-text mr-[0.2em]"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+                <br/>
                 <motion.span 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  className="text-[var(--red)]"
+                  transition={{ duration: 1.2, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-[var(--red)] relative"
                 >
                   {language === "fr" ? "Informatique" : "IT"}
-                </motion.span><br/>
-                {t.hero.title_v2.split("Informatique")[1] || t.hero.title_v2.split("IT")[1]}
+                  <motion.span
+                    initial={{ width: 0 }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 1, delay: 1.2, ease: "circOut" }}
+                    className="absolute -bottom-2 left-0 h-1 bg-[var(--red)]/20 rounded-full"
+                  />
+                </motion.span>
+                <br/>
+                {(t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[1] || "").split(" ").map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ y: "100%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 1 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                    className="kinetic-text mr-[0.2em]"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
               </motion.h1>
             </FadeUp>
 
@@ -256,45 +284,50 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* ── SERVICES BENTO (Pure Tech Refactor) ───────────────── */}
-      <section className="section-py relative">
+      {/* ── SERVICES BENTO (Spatial UI Refactor) ───────────────── */}
+      <section className="section-py relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="top-[10%] right-[-10%] w-[600px] h-[600px] opacity-[0.04]" />
+
         <div className="container-xl relative z-10">
           <FadeUp className="mb-16">
-            <span className="tag-red mb-4 inline-flex tracking-widest">{t.services.tag}</span>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-8 h-px bg-[var(--red)]" />
+              <span className="tag-red tracking-widest">{t.services.tag}</span>
+            </div>
             <h2 className="display-lg text-[var(--charcoal)]">{t.services.title}</h2>
           </FadeUp>
 
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SERVICES.map(({ id, tag, icon: Icon, title, desc, span, highlight }) => (
               <StaggerItem key={id} className={span}>
-                <Link href="/booking" className="block h-full">
-                  <BentoCard highlight={false} className="h-full group border-2">
-                    {/* Floating Aura for Bento */}
-                    <AuraGradient 
-                      color={highlight ? "var(--red)" : "var(--slate)"} 
-                      className={`bottom-[-20%] right-[-10%] w-40 h-40 opacity-[0.05] group-hover:opacity-[0.15] transition-opacity`} 
-                    />
+                <Link href="/booking" className="block h-full group">
+                  <BentoCard highlight={false} className="h-full border border-white/40 shadow-xl transition-all duration-700 hover:shadow-2xl hover:border-[var(--red)]/20">
+                    {/* Interior Glow Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                     <div className="relative z-10 flex flex-col h-full">
-                      <div className={`w-14 h-14 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border transition-all duration-500 ${
+                      <div className={`w-16 h-16 rounded-[1.25rem] flex items-center justify-center mb-8 border-2 transition-all duration-700 ${
                         highlight 
-                          ? "bg-[var(--red)] border-[var(--red)] shadow-[0_10px_30px_rgba(200,16,46,0.2)]" 
-                          : "bg-white/10 border-white/20 group-hover:bg-[var(--red)] group-hover:border-[var(--red)]"
+                          ? "bg-[var(--red)] border-[var(--red)] shadow-[0_12px_40px_rgba(230,0,0,0.25)]"
+                          : "bg-white border-slate-100 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] group-hover:shadow-[0_12px_40px_rgba(230,0,0,0.2)]"
                       }`}>
-                        <Icon className={`w-6 h-6 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
+                        <Icon className={`w-7 h-7 transition-colors duration-700 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
                       </div>
                       
-                      <span className={`inline-flex py-1 px-3 rounded-full border text-[10px] font-black uppercase tracking-widest mb-3 self-start ${
-                        highlight ? "bg-white/20 border-white/20 text-white" : "bg-black/5 border-black/5 text-[var(--muted)]"
+                      <span className={`inline-flex py-1.5 px-4 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] mb-4 self-start ${
+                        highlight ? "bg-white/10 border-white/20 text-white" : "bg-slate-50 border-slate-100 text-[var(--muted)] group-hover:text-[var(--red)]/80 transition-colors"
                       }`}>{tag}</span>
-                      <h3 className="text-xl font-black mb-3 mt-2 leading-tight text-[var(--charcoal)]">{title}</h3>
-                      <p className="text-sm mb-8 text-[var(--slate)] leading-relaxed">{desc}</p>
                       
-                      <div className="mt-auto pt-6 border-t border-black/5 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-[var(--red)] transition-colors">
+                      <h3 className="text-2xl font-black mb-4 leading-tight text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500">{title}</h3>
+                      <p className="text-base mb-10 text-[var(--slate)] leading-relaxed font-medium">{desc}</p>
+
+                      <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between group-hover:border-[var(--red)]/10 transition-colors">
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] group-hover:text-[var(--red)] transition-colors">
                           {t.services.explore}
                         </span>
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                        <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] transition-all duration-500">
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 group-hover:text-white transition-all duration-500" />
+                        </div>
                       </div>
                     </div>
                   </BentoCard>
