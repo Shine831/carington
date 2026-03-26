@@ -103,46 +103,44 @@ export default function Home() {
             <FadeUp delay={0.2}>
               <motion.h1 
                 style={{ scale: textScale }}
-                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.9] overflow-hidden"
+                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[1.1]"
               >
-                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[0].split(" ").map((word, i) => (
+                <div className="block overflow-hidden py-1">
                   <motion.span
-                    key={i}
-                    initial={{ y: "100%", opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="kinetic-text mr-[0.2em]"
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="block"
                   >
-                    {word}
+                    {t.hero.title_v2.split(language === "fr" ? "Informatique" : "Computing")[0]}
                   </motion.span>
-                ))}
-                <br/>
-                <motion.span 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1.2, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[var(--red)] relative"
-                >
-                  {language === "fr" ? "Informatique" : "IT"}
+                </div>
+                <div className="block overflow-hidden py-1">
                   <motion.span
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 1, delay: 1.2, ease: "circOut" }}
-                    className="absolute -bottom-2 left-0 h-1 bg-[var(--red)]/20 rounded-full"
-                  />
-                </motion.span>
-                <br/>
-                {(t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[1] || "").split(" ").map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ y: "100%", opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 1 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="kinetic-text mr-[0.2em]"
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-[var(--red)] relative inline-block"
                   >
-                    {word}
+                    {language === "fr" ? "Informatique" : "Computing"}
+                    <motion.span
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 1, delay: 1, ease: "circOut" }}
+                      className="absolute -bottom-1 left-0 h-1 bg-[var(--red)]/20 rounded-full"
+                    />
                   </motion.span>
-                ))}
+                </div>
+                <div className="block overflow-hidden py-1">
+                  <motion.span
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="block"
+                  >
+                    {t.hero.title_v2.split(language === "fr" ? "Informatique" : "Computing")[1]}
+                  </motion.span>
+                </div>
               </motion.h1>
             </FadeUp>
 
