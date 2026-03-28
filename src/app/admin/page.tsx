@@ -409,8 +409,19 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-white spatial-bg flex flex-col md:flex-row overflow-hidden">
+    <div className="min-h-screen bg-white spatial-bg flex flex-col md:flex-row overflow-x-hidden pb-24 md:pb-0">
       <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[800px] h-[800px] opacity-[0.03]" />
+
+      {/* Mobile Nav */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-t border-[var(--border)] p-4 flex items-center justify-around shadow-spatial-lg">
+         {NAV.map(item => (
+           <button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex flex-col items-center gap-1 transition-all ${activeTab === item.id ? "text-[var(--red)] scale-110" : "text-[var(--muted)]"}`}>
+             <item.icon className="w-5 h-5" />
+             <span className="text-[8px] font-black uppercase tracking-widest">{item.id.slice(0, 3)}</span>
+           </button>
+         ))}
+         <button onClick={handleLogout} className="text-red-500"><LogOut className="w-5 h-5" /></button>
+      </div>
 
       <aside className="w-80 bg-white border-r border-[var(--border)] hidden md:flex flex-col p-8 z-50">
         <div className="mb-20">
@@ -444,8 +455,8 @@ export default function AdminDashboard() {
            </div>
         </header>
 
-        <div className="p-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+        <div className="p-6 md:p-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16 md:mb-20">
             {STATS.map(stat => (
               <div key={stat.label} className="card-spatial p-8 relative group overflow-hidden">
                 <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-100 transition-opacity duration-700"><stat.icon className={`w-12 h-12 ${stat.color}`} /></div>

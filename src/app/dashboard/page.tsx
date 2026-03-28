@@ -470,13 +470,13 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-12"
+              className="space-y-8 md:space-y-12"
             >
-              <div className="flex items-center justify-between mb-8 px-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-4 gap-6">
                 <h2 className="display-sm text-[var(--charcoal)]">{t.dashboard.projects.title}</h2>
-                <Link href="/booking">
-                   <MagneticButton>
-                     <span className="btn-premium btn-premium-red !px-8 !py-4 text-[10px]">
+                <Link href="/booking" className="w-full sm:w-auto">
+                   <MagneticButton className="w-full sm:w-auto">
+                     <span className="btn-premium btn-premium-red !px-8 !py-4 text-[10px] w-full sm:w-auto">
                        {t.dashboard.projects.new}
                      </span>
                    </MagneticButton>
@@ -486,11 +486,11 @@ export default function DashboardPage() {
               {loading ? (
                 <div className="py-40 flex justify-center"><Activity className="w-12 h-12 text-[var(--red)] animate-spin" /></div>
               ) : bookings.length === 0 ? (
-                <div className="py-40 text-center rounded-[3rem] border-2 border-dashed border-[var(--border)] bg-white/50">
+                <div className="py-20 md:py-40 text-center rounded-[2rem] md:rounded-[3rem] border-2 border-dashed border-[var(--border)] bg-white/50 px-6">
                   <p className="label text-[var(--muted)]">{t.dashboard.projects.empty}</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
                   {bookings.map((req: any, i: number) => {
                     const status = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                     const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
@@ -502,9 +502,9 @@ export default function DashboardPage() {
                         transition={{ delay: i * 0.1 }}
                         className={`${i === 0 ? "lg:col-span-8" : "lg:col-span-4"} group`}
                       >
-                        <div className="card-spatial p-12 h-full flex flex-col justify-between hover:border-[var(--red)]/20">
+                        <div className="card-spatial p-8 md:p-12 h-full flex flex-col justify-between hover:border-[var(--red)]/20">
                           <div>
-                            <div className="flex justify-between items-start mb-12">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8 md:mb-12">
                                <div className="space-y-2">
                                   <span className="label text-[var(--red)]">#{req.id.slice(0, 8).toUpperCase()}</span>
                                   <h3 className="display-sm !text-4xl group-hover:italic transition-all duration-700">{req.serviceId}</h3>
@@ -514,7 +514,7 @@ export default function DashboardPage() {
                                </span>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-8 border-t border-[var(--border)] pt-8 mb-12">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-[var(--border)] pt-8 mb-8 md:mb-12">
                                <div>
                                   <p className="label text-[var(--muted)] mb-2">Request Date</p>
                                   <p className="text-xl font-black italic">{date}</p>
@@ -528,7 +528,7 @@ export default function DashboardPage() {
 
                           <div className="space-y-8">
                             {req.adminNote && (
-                              <div className="p-8 bg-[var(--red-light)] border border-red-100 rounded-3xl">
+                              <div className="p-6 md:p-8 bg-[var(--red-light)] border border-red-100 rounded-2xl md:rounded-3xl">
                                  <span className="label text-[var(--red)] block mb-4">Official Update</span>
                                  <p className="text-sm font-bold text-[var(--charcoal)] leading-relaxed italic">"{req.adminNote}"</p>
                               </div>
@@ -679,8 +679,8 @@ export default function DashboardPage() {
         </AnimatePresence>
 
         {/* Global Support Area (Asymmetric Bento) */}
-        <div className="mt-40 grid grid-cols-1 lg:grid-cols-12 gap-8">
-           <div className="lg:col-span-8 card-spatial p-16 flex flex-col md:flex-row gap-16 group hover:border-emerald-400/20">
+        <div className="mt-24 md:mt-40 grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 md:px-0">
+           <div className="lg:col-span-8 card-spatial p-8 md:p-16 flex flex-col md:flex-row gap-12 md:gap-16 group hover:border-emerald-400/20">
               <div className="w-24 h-24 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-700">
                 <Activity className="w-12 h-12" />
               </div>
@@ -692,7 +692,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <p className="text-body mb-12 max-w-xl">Supervision proactive et maintenance automatisée de vos infrastructures. Disponibilité globale : 99.99%.</p>
-                <div className="flex gap-12 border-t border-[var(--border)] pt-12">
+                <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 border-t border-[var(--border)] pt-12">
                    <div>
                       <p className="label text-[var(--muted)] mb-2">Systems</p>
                       <p className="text-xl font-black italic">Operational</p>
@@ -705,7 +705,7 @@ export default function DashboardPage() {
               </div>
            </div>
 
-           <div className="lg:col-span-4 card-spatial p-16 bg-[var(--charcoal)] text-white group overflow-hidden">
+           <div className="lg:col-span-4 card-spatial p-8 md:p-16 bg-[var(--charcoal)] text-white group overflow-hidden">
               <AuraGradient color="var(--red)" className="top-0 right-0 w-80 h-80 opacity-[0.2]" />
               <div className="relative z-10 flex flex-col justify-between h-full">
                 <div>
