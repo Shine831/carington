@@ -11,7 +11,7 @@
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://vercel.com)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-success?logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
-[**→ Accéder à la plateforme**](https://ejarnauld-soft.vercel.app)
+[**→ Accéder à la plateforme**](https://carington.vercel.app)
 
 </div>
 
