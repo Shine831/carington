@@ -1,11 +1,12 @@
 "use client";
 
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, ArrowRight, Instagram, Linkedin, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import { useI18n } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
 import { AuraGradient } from '@/components/ui/AuraGradient';
 import { Logo } from '@/components/Logo';
+import { motion } from 'framer-motion';
 
 export default function Footer() {
   const { t, language } = useI18n();
@@ -15,102 +16,123 @@ export default function Footer() {
   if (isAdmin) return null;
 
   return (
-    <footer className="bg-[var(--charcoal)] text-white mt-auto relative overflow-hidden border-t border-white/5">
-      {/* High-Impact Aura for Footer */}
-      <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-[600px] h-[600px] opacity-[0.08]" />
-      <AuraGradient color="var(--slate)" className="top-[-10%] right-[-5%] w-[400px] h-[400px] opacity-[0.04]" />
+    <footer className="bg-white border-t border-[var(--border)] mt-auto relative overflow-hidden">
+      {/* High-Impact Aura for Footer (White Mode Premium) */}
+      <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-[800px] h-[800px] opacity-[0.03]" />
+      <AuraGradient color="var(--slate)" className="top-[-10%] right-[-5%] w-[600px] h-[600px] opacity-[0.02]" />
       
-      <div className="container-xl pt-32 pb-20 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-20">
+      <div className="container-xl pt-32 pb-16 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-20 lg:gap-32">
           
-          {/* Brand — Logo + Contact rapide */}
-          <div className="lg:col-span-1">
-            {/* Logo white variant for dark footer */}
-            <div className="mb-10 [&_span]:!text-white [&_.text-\[var\(--slate\)\]]:!text-slate-400">
+          {/* Brand — Logo + Mission */}
+          <div className="lg:col-span-5 flex flex-col items-start">
+            <div className="mb-12 transform hover:scale-105 transition-transform duration-700">
               <Logo />
             </div>
-            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-10 max-w-xs border-l border-white/10 pl-6">
-              {t.footer.desc}
+
+            <p className="display-sm text-[var(--charcoal)] mb-12 max-w-lg tracking-tight leading-tight">
+              {language === "fr" ? "L'élite de l'infogérance en Afrique Centrale." : "Elite IT services in Central Africa."}
             </p>
-            {/* Contact rapide : WhatsApp + Appel seulement */}
-            <div className="flex flex-col gap-3">
-              <a href="https://wa.me/237654749357" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 text-slate-400 hover:text-[var(--red)] transition-colors group">
-                <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 group-hover:border-[var(--red)]/20 flex items-center justify-center shrink-0">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.137.559 4.146 1.534 5.884L0 24l6.266-1.504A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.002-1.371l-.36-.214-3.719.892.951-3.62-.234-.373A9.818 9.818 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
-                  </svg>
-                </span>
-                <span className="text-xs font-bold">WhatsApp</span>
-              </a>
-              <a href="mailto:cust_care@ejs-cm.com"
-                className="flex items-center gap-3 text-slate-400 hover:text-[var(--red)] transition-colors group">
-                <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 group-hover:border-[var(--red)]/20 flex items-center justify-center shrink-0">
-                  <Mail className="w-4 h-4" />
-                </span>
-                <span className="text-xs font-bold">cust_care@ejs-cm.com</span>
+
+            <div className="flex gap-4 mb-16">
+              {[Instagram, Linkedin, Twitter].map((Icon, i) => (
+                <motion.a
+                  key={i}
+                  href="#"
+                  whileHover={{ y: -4, backgroundColor: "var(--charcoal)", color: "white" }}
+                  className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center text-[var(--slate)] transition-colors"
+                >
+                  <Icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <span className="label text-[var(--red)] tracking-[0.3em]">Direct Line</span>
+              <a href="tel:+237654749357" className="text-3xl font-black text-[var(--charcoal)] block hover:text-[var(--red)] transition-colors tracking-tighter italic">
+                +237 654 74 93 57
               </a>
             </div>
           </div>
           
-          {/* Solutions (i18n) */}
-          <div className="mt-12 lg:mt-0">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.footer.cols.solutions}</h4>
-            <ul className="space-y-4 text-sm font-bold">
-              <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.it.title}</Link></li>
-              <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.cyber.title}</Link></li>
-              <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.network.title}</Link></li>
-              <li><Link href="/services" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.services_page.items.video.title}</Link></li>
-            </ul>
-          </div>
-          
-          {/* Agency (i18n) */}
-          <div className="mt-12 lg:mt-0">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.footer.cols.agency}</h4>
-            <ul className="space-y-4 text-sm font-bold">
-              <li><Link href="/about" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.nav.about}</Link></li>
-              <li><Link href="/contact" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.nav.contact}</Link></li>
-              <li><Link href="/booking" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.nav.cta}</Link></li>
-              <li><Link href="/account" className="text-slate-400 hover:text-[var(--red)] transition-colors">{t.nav.account}</Link></li>
-            </ul>
-          </div>
+          {/* Menu Sections (Layout Bento Style) */}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-12 sm:gap-16">
 
-          {/* Contact (i18n) */}
-          <div className="mt-12 lg:mt-0">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">{t.contact.info_title}</h4>
-            <ul className="space-y-6 text-sm font-bold">
-              <li className="flex items-start gap-4 group">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[var(--red)]/20 transition-colors">
-                  <MapPin className="w-4 h-4 text-[var(--red)]" />
-                </div>
-                <span className="text-slate-400 leading-relaxed font-medium">Marché NDOPASSI, Douala</span>
-              </li>
-              <li className="flex items-center gap-4 group">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[var(--red)]/20 transition-colors">
-                  <Phone className="w-4 h-4 text-[var(--red)]" />
-                </div>
-                <div className="flex flex-col gap-1 text-slate-400 font-medium">
-                  <span>+237 654 74 93 57</span>
-                  <span>+237 697 16 72 59</span>
-                </div>
-              </li>
-              <li className="flex items-center gap-4 group">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[var(--red)]/20 transition-colors">
-                  <Mail className="w-4 h-4 text-[var(--red)]" />
-                </div>
-                <span className="text-slate-400 font-medium">cust_care@ejs-cm.com</span>
-              </li>
-            </ul>
-          </div>
+            <div className="space-y-10">
+              <h4 className="label tracking-[0.25em] text-[var(--muted)]">{t.footer.cols.solutions}</h4>
+              <ul className="space-y-6">
+                {[
+                  { label: t.services_page.items.it.title, href: "/services" },
+                  { label: t.services_page.items.cyber.title, href: "/services" },
+                  { label: t.services_page.items.network.title, href: "/services" },
+                  { label: t.services_page.items.video.title, href: "/services" }
+                ].map((link, i) => (
+                  <li key={i}>
+                    <Link href={link.href} className="text-sm font-bold text-[var(--slate)] hover:text-[var(--red)] transition-colors group flex items-center gap-2">
+                      {link.label}
+                      <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
+            <div className="space-y-10">
+              <h4 className="label tracking-[0.25em] text-[var(--muted)]">{t.footer.cols.agency}</h4>
+              <ul className="space-y-6">
+                {[
+                  { label: t.nav.about, href: "/about" },
+                  { label: t.nav.contact, href: "/contact" },
+                  { label: t.nav.cta, href: "/booking" },
+                  { label: t.nav.account, href: "/account" }
+                ].map((link, i) => (
+                  <li key={i}>
+                    <Link href={link.href} className="text-sm font-bold text-[var(--slate)] hover:text-[var(--red)] transition-colors group flex items-center gap-2">
+                      {link.label}
+                      <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="col-span-2 sm:col-span-1 space-y-10">
+              <h4 className="label tracking-[0.25em] text-[var(--muted)]">{t.contact.info_title}</h4>
+              <ul className="space-y-10">
+                <li className="group">
+                  <div className="flex items-center gap-3 mb-3">
+                    <MapPin className="w-4 h-4 text-[var(--red)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)]">HQ</span>
+                  </div>
+                  <span className="text-xs font-bold text-[var(--slate)] leading-relaxed">Marché NDOPASSI, <br/> Douala, Cameroun</span>
+                </li>
+                <li>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Mail className="w-4 h-4 text-[var(--red)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--charcoal)]">Email</span>
+                  </div>
+                  <span className="text-xs font-bold text-[var(--slate)]">cust_care@ejs-cm.com</span>
+                </li>
+              </ul>
+            </div>
+
+          </div>
         </div>
 
-        <div className="border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-500">
-          <p>&copy; {new Date().getFullYear()} E-JARNAULD SOFT. {t.footer.copyright}</p>
-          <div className="flex gap-10">
-            <Link href="/privacy" className="hover:text-white transition-colors">{language === "fr" ? "Confidentialité" : "Privacy"}</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">{language === "fr" ? "CGV / CGU" : "Terms"}</Link>
+        {/* Bottom Bar — Ultra Minimalist */}
+        <div className="mt-32 pt-12 border-t border-[var(--border)] flex flex-col md:flex-row justify-between items-center gap-10">
+          <div className="flex items-center gap-6">
+             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--muted)]">Systems Operational</p>
+          </div>
+
+          <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[var(--muted)]">
+            &copy; {new Date().getFullYear()} E-JARNAULD SOFT. {t.footer.copyright}
+          </p>
+
+          <div className="flex gap-12 text-[10px] font-black uppercase tracking-widest text-[var(--slate)]">
+            <Link href="/privacy" className="hover:text-[var(--red)] transition-colors">{language === "fr" ? "Confidentialité" : "Privacy"}</Link>
+            <Link href="/terms" className="hover:text-[var(--red)] transition-colors">{language === "fr" ? "Conditions" : "Terms"}</Link>
           </div>
         </div>
       </div>

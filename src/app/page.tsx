@@ -1,12 +1,11 @@
 "use client";
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import { ShieldCheck, Server, Network, ShieldAlert, ArrowRight, ChevronRight, Star, Zap, PhoneCall } from "lucide-react";
+import { useRef, useState } from "react";
+import { ShieldCheck, Server, Network, ShieldAlert, ArrowRight, Star, Zap, PhoneCall, ChevronRight, Activity, Target, Cpu } from "lucide-react";
 import Link from "next/link";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
 import { TiltCard, MagneticButton, BentoCard, SpatialLayer } from "@/components/ui/InteractiveEffects";
-import { ParticleBackground } from "@/components/ui/ParticleBackground";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { TestimonialsSection } from "@/components/ui/Testimonials";
@@ -16,10 +15,8 @@ export default function Home() {
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   
-  // Scrollytelling & Kinetic Typography
-  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const textScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.05]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
 
   const SERVICES = [
     { 
@@ -28,8 +25,8 @@ export default function Home() {
       icon: ShieldAlert, 
       title: t.services_page.items.cyber.title, 
       desc: t.services_page.items.cyber.desc,
-      span: "md:col-span-2 lg:col-span-2",
-      highlight: true
+      span: "lg:col-span-8",
+      color: "var(--red)"
     },
     { 
       id: "infog", 
@@ -37,7 +34,8 @@ export default function Home() {
       icon: Server, 
       title: t.services_page.items.it.title, 
       desc: t.services_page.items.it.desc,
-      span: "md:col-span-1 lg:col-span-1"
+      span: "lg:col-span-4",
+      color: "var(--slate)"
     },
     { 
       id: "voip", 
@@ -45,7 +43,8 @@ export default function Home() {
       icon: PhoneCall, 
       title: t.services_page.items.voip.title, 
       desc: t.services_page.items.voip.desc,
-      span: "md:col-span-1 lg:col-span-1"
+      span: "lg:col-span-4",
+      color: "var(--slate)"
     },
     {
       id: "cable",
@@ -53,284 +52,137 @@ export default function Home() {
       icon: Network,
       title: t.services_page.items.network_cable.title,
       desc: t.services_page.items.network_cable.desc,
-      span: "md:col-span-2 lg:col-span-1"
+      span: "lg:col-span-8",
+      color: "var(--red)"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--off-white)] overflow-hidden">
+    <div className="min-h-screen bg-white overflow-hidden spatial-bg">
 
-      {/* ── ELITE HERO (White/Red 2026 Premium) ───────────────────── */}
-      <section ref={heroRef} className="relative min-h-[90svh] flex items-center pt-24 md:pt-32 overflow-hidden bg-white">
+      {/* ── ELITE HERO 2026 (Kinetic & Spatial) ───────────────────── */}
+      <section ref={heroRef} className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+
+        {/* Spatial Elements */}
+        <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.04]" />
+        <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:64px_64px] opacity-[0.3]" />
         
-        {/* Aura Gradients (Bright clean style) */}
-        <AuraGradient color="var(--red)" className="top-[-10%] right-[-5%] w-[800px] h-[800px] opacity-[0.06]" delay={0} />
-        <AuraGradient color="var(--slate)" className="bottom-[10%] left-[5%] w-[600px] h-[600px] opacity-[0.03]" delay={2} />
-
-        {/* Minimal Grid Overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(#EAEAEA_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.4] pointer-events-none" />
-
-        {/* Spatial Depth Layers */}
-        <SpatialLayer speed={0.4} className="top-1/4 left-[10%] opacity-20">
-          <div className="w-12 h-12 border border-[var(--red)]/20 blur-[1px] rotate-12" />
-        </SpatialLayer>
-        <SpatialLayer speed={-0.6} className="bottom-1/4 right-[5%] opacity-10">
-          <div className="w-24 h-24 border-2 border-[var(--red)] rounded-full blur-[4px]" />
-        </SpatialLayer>
-
         <motion.div 
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="container-xl relative z-10 grid lg:grid-cols-2 gap-12 xl:gap-24 items-center py-20"
+          style={{ opacity: heroOpacity, scale: heroScale }}
+          className="container-xl relative z-10"
         >
-          
-          <div className="max-w-2xl">
+          <div className="max-w-5xl">
             <FadeUp delay={0.1}>
-              <div className="flex flex-wrap items-center gap-3 mb-8">
-                <span className="tag-red py-1.5 px-4 backdrop-blur-md bg-white/40 border-white/60 shadow-sm">
-                  <span className="relative flex h-2 w-2 mr-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--red)] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--red)]"></span>
-                  </span>
-                  E-JARNAULD SOFT
-                </span>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--charcoal)] rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-wider">{t.hero.location}</span>
-                </div>
+              <div className="flex items-center gap-4 mb-12">
+                <span className="label text-[var(--red)] tracking-[0.4em]">Elite Architecture</span>
+                <div className="h-px w-12 bg-[var(--red)]/30" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--slate)]">EST. 2024</span>
               </div>
             </FadeUp>
             
             <FadeUp delay={0.2}>
-              <motion.h1 
-                style={{ scale: textScale }}
-                className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.9] overflow-hidden"
-              >
-                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[0].split(" ").map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ y: "100%", opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="kinetic-text mr-[0.2em]"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-                <br/>
-                <motion.span 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1.2, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[var(--red)] relative"
-                >
+              <h1 className="display-2xl text-[var(--charcoal)] mb-12 tracking-[-0.07em]">
+                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[0]}
+                <span className="text-[var(--red)] italic relative inline-block">
                   {language === "fr" ? "Informatique" : "IT"}
                   <motion.span
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
-                    transition={{ duration: 1, delay: 1.2, ease: "circOut" }}
-                    className="absolute -bottom-2 left-0 h-1 bg-[var(--red)]/20 rounded-full"
+                    transition={{ duration: 1.2, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute -bottom-2 left-0 h-2 bg-[var(--red)]/10 rounded-full"
                   />
-                </motion.span>
-                <br/>
-                {(t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[1] || "").split(" ").map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ y: "100%", opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 1 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="kinetic-text mr-[0.2em]"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </motion.h1>
+                </span>
+                <br />
+                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[1]}
+              </h1>
             </FadeUp>
 
-            <FadeUp delay={0.3}>
-              <p className="text-body-lg mb-12 text-[var(--slate)] leading-relaxed max-w-lg border-l-2 border-[var(--red)]/20 pl-6">
-                {t.hero.desc}
-              </p>
-            </FadeUp>
-
-            <FadeUp delay={0.4}>
-              <div className="w-full max-w-md bg-white border border-[var(--border)] rounded-2xl p-2 mb-10 flex items-center shadow-sm relative group overflow-hidden focus-within:border-[var(--red)] focus-within:shadow-[0_4px_20px_rgba(230,0,0,0.1)] transition-all duration-300 zero-jank">
-                <div className="pl-4 pr-2 text-[var(--muted)] group-focus-within:text-[var(--red)] transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <input 
-                  type="text" 
-                  placeholder={t.hero.search_placeholder} 
-                  className="w-full py-3 px-2 bg-transparent outline-none text-sm font-bold text-[var(--charcoal)] placeholder:text-slate-400 placeholder:font-medium"
-                />
-                <Link href="/services">
-                  <button className="bg-[var(--red)] text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[var(--red-dark)] transition-colors shadow-sm">
-                    {t.hero.btn_discover}
-                  </button>
-                </Link>
-              </div>
-            </FadeUp>
-
-            <FadeUp delay={0.5}>
-              <div className="flex flex-wrap gap-5 items-center">
-                <Link href="/booking">
-                  <MagneticButton>
-                    <motion.span
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="btn btn-red px-10 py-5 text-lg group relative flex items-center shadow-[var(--shadow-red)]"
-                    >
-                      <div className="flex items-center">
-                        {t.hero.btn_audit_main}
-                        <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                          <ArrowRight className="w-5 h-5 ml-2" />
-                        </motion.span>
-                      </div>
-                    </motion.span>
-                  </MagneticButton>
-                </Link>
-              </div>
-            </FadeUp>
-
-
-            <FadeIn delay={0.6} className="mt-16 pt-8 border-t border-[var(--border)] max-w-sm">
-              <div className="flex items-center gap-4">
-                <div className="flex -space-x-3">
-                  {[1,2,3,4].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400">
-                      USER
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full border-2 border-white bg-[var(--charcoal)] flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                    500+
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-1 mb-0.5">
-                    {[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-                  </div>
-                  <p className="text-[11px] font-bold text-[var(--slate)] uppercase tracking-wider">
-                    {t.hero.stats}
+            <div className="grid lg:grid-cols-12 gap-16 items-end">
+              <div className="lg:col-span-7">
+                <FadeUp delay={0.3}>
+                  <p className="text-body-lg mb-16 text-[var(--slate)] max-w-xl leading-snug">
+                    {t.hero.desc}
                   </p>
+                </FadeUp>
+
+                <div className="flex flex-wrap gap-8 items-center">
+                  <FadeUp delay={0.4}>
+                    <Link href="/booking">
+                      <MagneticButton>
+                        <span className="btn-premium btn-premium-red text-base px-12 py-6">
+                          {t.hero.btn_audit_main}
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </span>
+                      </MagneticButton>
+                    </Link>
+                  </FadeUp>
+
+                  <FadeUp delay={0.5}>
+                    <Link href="/services" className="group flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.3em] text-[var(--charcoal)]">
+                      <span className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:bg-[var(--charcoal)] group-hover:text-white transition-all duration-500">
+                        <Activity className="w-5 h-5" />
+                      </span>
+                      {t.hero.btn_discover}
+                    </Link>
+                  </FadeUp>
                 </div>
               </div>
-            </FadeIn>
+
+              <div className="lg:col-span-5 hidden lg:block">
+                <FadeIn delay={0.6}>
+                  <div className="p-10 rounded-[3rem] border border-[var(--border)] bg-white/50 backdrop-blur-xl shadow-spatial-lg relative overflow-hidden group">
+                     <div className="absolute top-0 right-0 p-8">
+                        <Target className="w-12 h-12 text-[var(--red)] opacity-20 group-hover:opacity-100 transition-opacity duration-700" />
+                     </div>
+                     <p className="label mb-6">{language === 'fr' ? 'Performance Réseau' : 'Network Performance'}</p>
+                     <div className="text-6xl font-black italic tracking-tighter mb-4 text-[var(--charcoal)]">99.9%</div>
+                     <p className="text-xs font-bold text-[var(--slate)] uppercase tracking-widest">{language === 'fr' ? 'Disponibilité Garantie' : 'Guaranteed Uptime'}</p>
+                  </div>
+                </FadeIn>
+              </div>
+            </div>
           </div>
-
-          <SlideRight delay={0.2} className="hidden lg:block relative">
-            <TiltCard intensity={12} className="relative z-10">
-              <div className="card backdrop-blur-xl bg-white/80 border-white/20 p-10 rounded-[2.5rem] shadow-[var(--shadow-xl)] overflow-hidden group min-h-[500px] flex flex-col border-2">
-                {/* Pure Tech Background (No images) */}
-                <div className="absolute inset-0 z-0">
-                  <AuraGradient color="var(--red)" className="top-[20%] left-[20%] w-full h-full opacity-[0.08]" delay={1} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-                </div>
-                
-                <div className="relative z-10 flex flex-col h-full">
-                  <div className="flex items-center justify-between mb-auto">
-                    <div className="p-3 bg-[var(--red)] rounded-2xl shadow-lg">
-                      <ShieldCheck className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="text-right">
-                      <p className="label mb-1 uppercase tracking-widest text-[10px]">Security Engine</p>
-                      <p className="text-xs font-black text-emerald-600 flex items-center gap-1 justify-end">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        ACTIVE MONITORING
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-8 mt-12">
-                    {[
-                      { label: "Infrastructure Integrity", val: "99.9%" },
-                      { label: "Encryption Layers", val: "Quantum-Safe" },
-                      { label: "Response Priority", val: "Elite" },
-                    ].map((item) => (
-                      <div key={item.label}>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-[10px] font-black uppercase text-[var(--charcoal)] tracking-wider">{item.label}</span>
-                          <span className="text-[10px] font-bold text-[var(--red)]">{item.val}</span>
-                        </div>
-                        <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: "100%" }}
-                            transition={{ duration: 1.5, ease: "circOut" }}
-                            className="h-full bg-gradient-to-r from-[var(--red)] to-[#FF5C78] rounded-full" 
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-12 p-6 bg-[var(--charcoal)] rounded-2xl flex items-center gap-4 text-white">
-                    <div className="flex-1">
-                      <p className="text-[8px] text-red-500 font-black uppercase tracking-[0.3em] mb-1">Status Report</p>
-                      <p className="text-sm font-bold tracking-tight">Zero Threats Detected</p>
-                    </div>
-                    <motion.div 
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                      className="w-10 h-10 border border-dashed border-white/20 rounded-full flex items-center justify-center shrink-0"
-                    >
-                      <Zap className="w-5 h-5 text-white" />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </TiltCard>
-          </SlideRight>
         </motion.div>
       </section>
 
-      {/* ── SERVICES BENTO (Spatial UI Refactor) ───────────────── */}
-      <section className="section-py relative overflow-hidden">
-        <AuraGradient color="var(--red)" className="top-[10%] right-[-10%] w-[600px] h-[600px] opacity-[0.04]" />
+      {/* ── BENTO SERVICES (Refactored) ───────────────── */}
+      <section className="section-py relative">
+        <div className="container-xl">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+            <FadeUp>
+              <span className="label text-[var(--red)] block mb-6">{t.services.tag}</span>
+              <h2 className="display-xl tracking-tight leading-none text-[var(--charcoal)]">{t.services.title}</h2>
+            </FadeUp>
+            <FadeUp delay={0.2}>
+              <p className="text-body max-w-md text-[var(--slate)] border-l-2 border-[var(--red)] pl-8">
+                {language === 'fr' ? 'Une infrastructure robuste est le socle de votre croissance digitale.' : 'A robust infrastructure is the foundation of your digital growth.'}
+              </p>
+            </FadeUp>
+          </div>
 
-        <div className="container-xl relative z-10">
-          <FadeUp className="mb-16">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-px bg-[var(--red)]" />
-              <span className="tag-red tracking-widest">{t.services.tag}</span>
-            </div>
-            <h2 className="display-lg text-[var(--charcoal)]">{t.services.title}</h2>
-          </FadeUp>
-
-          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {SERVICES.map(({ id, tag, icon: Icon, title, desc, span, highlight }) => (
-              <StaggerItem key={id} className={span}>
-                <Link href="/booking" className="block h-full group">
-                  <BentoCard highlight={false} className="h-full border border-white/40 shadow-xl transition-all duration-700 hover:shadow-2xl hover:border-[var(--red)]/20">
-                    {/* Interior Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                    <div className="relative z-10 flex flex-col h-full">
-                      <div className={`w-16 h-16 rounded-[1.25rem] flex items-center justify-center mb-8 border-2 transition-all duration-700 ${
-                        highlight 
-                          ? "bg-[var(--red)] border-[var(--red)] shadow-[0_12px_40px_rgba(230,0,0,0.25)]"
-                          : "bg-white border-slate-100 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] group-hover:shadow-[0_12px_40px_rgba(230,0,0,0.2)]"
-                      }`}>
-                        <Icon className={`w-7 h-7 transition-colors duration-700 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
-                      </div>
-                      
-                      <span className={`inline-flex py-1.5 px-4 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] mb-4 self-start ${
-                        highlight ? "bg-white/10 border-white/20 text-white" : "bg-slate-50 border-slate-100 text-[var(--muted)] group-hover:text-[var(--red)]/80 transition-colors"
-                      }`}>{tag}</span>
-                      
-                      <h3 className="text-2xl font-black mb-4 leading-tight text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500">{title}</h3>
-                      <p className="text-base mb-10 text-[var(--slate)] leading-relaxed font-medium">{desc}</p>
-
-                      <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between group-hover:border-[var(--red)]/10 transition-colors">
-                        <span className="text-[10px] font-black uppercase tracking-[0.25em] group-hover:text-[var(--red)] transition-colors">
-                          {t.services.explore}
-                        </span>
-                        <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] transition-all duration-500">
-                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 group-hover:text-white transition-all duration-500" />
-                        </div>
-                      </div>
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {SERVICES.map((srv, i) => (
+              <StaggerItem key={srv.id} className={srv.span}>
+                <Link href="/services" className="group block h-full">
+                  <div className="h-full rounded-[3rem] border border-[var(--border)] bg-white p-10 md:p-14 transition-all duration-700 hover:shadow-spatial-xl hover:border-[var(--red)]/20 relative overflow-hidden flex flex-col justify-between">
+                    <div className="relative z-10">
+                       <div className="w-16 h-16 rounded-2xl bg-[var(--off-white)] flex items-center justify-center mb-12 group-hover:bg-[var(--red)] group-hover:text-white transition-all duration-700">
+                          <srv.icon className="w-8 h-8" />
+                       </div>
+                       <h3 className="display-sm mb-6 text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500">{srv.title}</h3>
+                       <p className="text-body max-w-md">{srv.desc}</p>
                     </div>
-                  </BentoCard>
+
+                    <div className="mt-20 flex items-center justify-between relative z-10">
+                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--muted)] group-hover:text-[var(--charcoal)] transition-colors">{t.services.explore}</span>
+                       <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:border-[var(--red)] group-hover:bg-[var(--red)] group-hover:text-white transition-all duration-700">
+                          <ArrowRight className="w-5 h-5" />
+                       </div>
+                    </div>
+
+                    {/* Background Aura */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--red)]/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                  </div>
                 </Link>
               </StaggerItem>
             ))}
@@ -338,145 +190,115 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── WHY US (Pure Tech Refactor) ────────────────────────── */}
-      <section className="section-py bg-white">
-        <div className="container-xl">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
+      {/* ── WHY E-JARNAULD (Spatial Depth) ────────────────────────── */}
+      <section className="section-py bg-[var(--charcoal)] text-white relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="bottom-[-20%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.1]" />
+
+        <div className="container-xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-32 items-center">
             <SlideLeft>
-              <span className="tag-red mb-4 inline-flex">{language === "fr" ? "Pourquoi E-Jarnauld ?" : "Why E-Jarnauld?"}</span>
-              <h2 className="display-lg text-[var(--charcoal)] mb-8">
-                {t.why.title.split("d'excellence")[0]}{t.why.title.split("excellence")[0]} <span className="text-[var(--red)] italic font-serif">{language === "fr" ? "d'excellence" : "excellence"}</span>.
+              <span className="label text-[var(--red)] mb-8 block">Carington Expertise</span>
+              <h2 className="display-xl mb-12 tracking-tighter">
+                {language === 'fr' ? 'La cybersécurité à un niveau' : 'Cybersecurity at a'} <span className="italic opacity-40">supérieur.</span>
               </h2>
-              <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">
-                {t.why.desc}
-              </p>
               
-              <div className="grid sm:grid-cols-1 gap-8">
+              <div className="space-y-12">
                 {[
-                  { icon: ShieldCheck, title: t.why.items.certs, text: t.why.items.certs_desc },
-                  { icon: Zap, title: t.why.items.speed, text: t.why.items.speed_desc },
-                  { icon: Server, title: t.why.items.sov, text: t.why.items.sov_desc },
+                  { icon: ShieldCheck, title: t.why.items.certs, desc: t.why.items.certs_desc },
+                  { icon: Zap, title: t.why.items.speed, desc: t.why.items.speed_desc },
+                  { icon: Cpu, title: t.why.items.sov, desc: t.why.items.sov_desc },
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-6 group items-start border-b border-slate-100 pb-6 last:border-0">
-                    <div className="w-14 h-14 rounded-2xl bg-[var(--off-white)] border border-transparent group-hover:border-[var(--red)]/20 group-hover:bg-red-50 flex items-center justify-center shrink-0 transition-colors shadow-sm">
-                      <item.icon className="w-6 h-6 text-[var(--red)]" />
+                  <div key={i} className="flex gap-8 group">
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-all duration-500">
+                      <item.icon className="w-7 h-7" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-black text-[var(--charcoal)] mb-2 uppercase tracking-wide group-hover:text-[var(--red)] transition-colors">{item.title}</h4>
-                      <p className="text-xs text-[var(--slate)] font-medium leading-relaxed max-w-sm">{item.text}</p>
+                      <h4 className="text-xl font-black mb-3 tracking-tight">{item.title}</h4>
+                      <p className="text-slate-400 font-medium leading-relaxed max-w-md">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </SlideLeft>
-            
+
             <SlideRight className="relative">
-              <div className="relative aspect-square max-w-sm mx-auto">
-                <AuraGradient color="var(--red)" className="inset-0 w-full h-full opacity-[0.1]" />
-                <BentoCard highlight className="h-full flex flex-col justify-center items-center text-center p-12 border-2">
-                  <div className="w-20 h-20 bg-[var(--charcoal)] rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
-                    <ShieldCheck className="w-10 h-10 text-white" />
+               <div className="aspect-square rounded-[4rem] bg-white p-16 flex flex-col justify-center items-center text-center shadow-spatial-xl relative group">
+                  <div className="w-24 h-24 rounded-3xl bg-[var(--charcoal)] text-white flex items-center justify-center mb-12 shadow-2xl group-hover:rotate-12 transition-transform duration-700">
+                    <Activity className="w-10 h-10" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-[var(--charcoal)]">{t.why.support_title}</h3>
-                  <p className="text-sm text-[var(--slate)] mb-8 leading-relaxed">{t.why.support_desc}</p>
-                  <div className="flex -space-x-3">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400 shadow-sm">
-                        EJS
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-6 text-[var(--red)]">{t.why.team}</p>
-                </BentoCard>
-              </div>
+                  <h3 className="display-sm text-[var(--charcoal)] mb-6">{t.why.support_title}</h3>
+                  <p className="text-body text-[var(--slate)] mb-12">{t.why.support_desc}</p>
+
+                  <Link href="/contact">
+                    <MagneticButton>
+                      <span className="btn-premium btn-premium-red">
+                        Contact Support
+                      </span>
+                    </MagneticButton>
+                  </Link>
+               </div>
             </SlideRight>
           </div>
         </div>
       </section>
 
-
-      {/* ── TESTIMONIALS (Premium 2026) ────────────────────────── */}
+      {/* ── TESTIMONIALS ────────────────────────── */}
       <TestimonialsSection language={language} />
 
       {/* ── FAQ ────────────────────────────────────────────────── */}
-      <section className="section-py bg-[var(--off-white)]">
+      <section className="section-py">
         <div className="container-xl">
-          <div className="grid lg:grid-cols-12 gap-12">
-            <SlideLeft className="lg:col-span-5">
-              <span className="tag-red mb-4 inline-flex tracking-widest">{t.faq.tag}</span>
-              <h2 className="display-lg text-[var(--charcoal)] mb-6">{t.faq.title}</h2>
-              <p className="text-body mb-8 text-[var(--slate)] leading-relaxed">
-                {t.faq.desc}
-              </p>
-              
-              <div className="p-8 bg-white rounded-[2rem] border-2 border-[var(--border)] shadow-sm">
-                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-3">{t.faq.question_placeholder}</p>
-                <Link href="/contact" className="text-sm font-black text-[var(--red)] flex items-center gap-2 group">
-                  {t.faq.contact_eng} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </SlideLeft>
+          <div className="max-w-4xl mx-auto text-center mb-24">
+            <FadeUp>
+              <span className="label text-[var(--red)] mb-8 block">{t.faq.tag}</span>
+              <h2 className="display-lg tracking-tight mb-8 text-[var(--charcoal)]">{t.faq.title}</h2>
+              <p className="text-body-lg text-[var(--slate)]">{t.faq.desc}</p>
+            </FadeUp>
+          </div>
 
-            <SlideRight className="lg:col-span-7">
-              <div className="space-y-4">
-                {[
-                  { 
-                    q: language === "fr" ? "Quels sont vos délais d'intervention à Douala ?" : "What are your intervention times in Douala?", 
-                    a: language === "fr" 
-                      ? "Pour nos clients sous contrat d'infogérance, nous garantissons une intervention sur site en moins de 2 heures pour les urgences critiques." 
-                      : "For our managed services clients, we guarantee on-site intervention in less than 2 hours for critical emergencies." 
-                  },
-                  { 
-                    q: language === "fr" ? "Comment garantissez-vous la sécurité ?" : "How do you guarantee security?", 
-                    a: language === "fr" 
-                      ? "Nous appliquons les protocoles ISO 27001. Chaque infrastructure est protégée par des firewalls de nouvelle génération." 
-                      : "We apply ISO 27001 protocols. Every infrastructure is protected by next-generation firewalls." 
-                  },
-                ].map((item, i) => (
-                  <FAQItem key={i} question={item.q} answer={item.a} />
-                ))}
-              </div>
-            </SlideRight>
+          <div className="max-w-3xl mx-auto space-y-4">
+            {[
+              {
+                q: language === "fr" ? "Quels sont vos délais d'intervention à Douala ?" : "What are your intervention times in Douala?",
+                a: language === "fr"
+                  ? "Pour nos clients sous contrat d'infogérance, nous garantissons une intervention sur site en moins de 2 heures pour les urgences critiques."
+                  : "For our managed services clients, we guarantee on-site intervention in less than 2 hours for critical emergencies."
+              },
+              {
+                q: language === "fr" ? "Comment garantissez-vous la sécurité ?" : "How do you guarantee security?",
+                a: language === "fr"
+                  ? "Nous appliquons les protocoles ISO 27001. Chaque infrastructure est protégée par des firewalls de nouvelle génération."
+                  : "We apply ISO 27001 protocols. Every infrastructure is protected by next-generation firewalls."
+              },
+            ].map((item, i) => (
+              <FAQItem key={i} question={item.q} answer={item.a} />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA BAND (Bright premium style) ────────────────────── */}
-      <section className="bg-white py-28 mt-24 relative overflow-hidden border-t border-[var(--border)]">
-        <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.05]" />
-        
-        <div className="container-xl relative z-10 flex flex-col items-center">
+      {/* ── FINAL CTA ────────────────────── */}
+      <section className="section-py relative overflow-hidden">
+        <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1200px] h-[1200px] opacity-[0.05]" />
+        <div className="container-xl relative z-10 text-center">
           <FadeUp>
-            <div className="text-center max-w-2xl mx-auto">
-              <span className="inline-flex items-center gap-2 bg-[var(--red-light)] text-[var(--red)] border border-red-100 rounded-full px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] mb-8 shadow-sm">
-                {t.cta.tag}
-              </span>
-              <h2 className="display-lg text-[var(--charcoal)] mb-6">
-                {t.cta.title}
-              </h2>
-              <p className="text-[var(--slate)] text-lg mb-12 leading-relaxed font-medium">
-                {t.cta.desc}
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <div className="max-w-4xl mx-auto">
+              <span className="label text-[var(--red)] mb-12 block">{t.cta.tag}</span>
+              <h2 className="display-2xl tracking-tighter mb-16 text-[var(--charcoal)]">{t.cta.title}</h2>
+
+              <div className="flex flex-col sm:flex-row justify-center gap-8">
                 <Link href="/booking">
                   <MagneticButton>
-                    <motion.span
-                      whileHover={{ scale: 1.03 }}
-                      transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.8 }}
-                      className="btn btn-red px-12 py-5 text-lg font-black shadow-[0_10px_40px_rgba(230,0,0,0.2)] rounded-full zero-jank"
-                    >
+                    <span className="btn-premium btn-premium-red text-lg px-16 py-8">
                       {t.nav.cta}
-                    </motion.span>
+                    </span>
                   </MagneticButton>
                 </Link>
                 <Link href="/contact">
                   <MagneticButton>
-                    <motion.span 
-                      whileHover={{ scale: 1.03 }}
-                      className="btn px-12 py-5 text-lg font-black bg-white text-[var(--charcoal)] border-2 border-[var(--border)] shadow-sm hover:border-[var(--charcoal)] rounded-full zero-jank transition-all"
-                    >
+                    <span className="btn-premium btn-premium-outline text-lg px-16 py-8">
                       {t.cta.btn_contact}
-                    </motion.span>
+                    </span>
                   </MagneticButton>
                 </Link>
               </div>
@@ -487,21 +309,22 @@ export default function Home() {
     </div>
   );
 }
+
 function FAQItem({ question, answer }: { question: string, answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
-    <div className="border-b border-slate-200 last:border-0">
+    <div className="border-b border-[var(--border)] overflow-hidden">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-6 flex items-center justify-between text-left group"
+        className="w-full py-10 flex items-center justify-between text-left group"
       >
-        <span className="font-bold text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors">{question}</span>
+        <span className="text-xl font-black text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors tracking-tight">{question}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-[var(--red)] text-white' : 'bg-slate-100 text-[var(--muted)]'}`}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isOpen ? 'bg-[var(--red)] text-white shadow-red' : 'bg-white border border-[var(--border)] text-[var(--slate)]'}`}
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5" />
         </motion.div>
       </button>
       <AnimatePresence>
@@ -510,9 +333,9 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <p className="pb-6 text-sm text-[var(--slate)] leading-relaxed font-medium">
+            <p className="pb-10 text-body leading-relaxed max-w-2xl">
               {answer}
             </p>
           </motion.div>

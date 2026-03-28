@@ -1,31 +1,32 @@
 "use client";
 
-import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key, Users, Eye, EyeOff } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key, Users, Eye, EyeOff, LayoutGrid, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
+import { MagneticButton } from "@/components/ui/InteractiveEffects";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase/config";
-import { updateProfile, verifyBeforeUpdateEmail, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from "firebase/auth";
+import { updateProfile, verifyBeforeUpdateEmail, sendPasswordResetEmail } from "firebase/auth";
 import { updateUserDoc, updateReview, getReviewsByUserId, getBookings, setUserPin, getUserById, deleteBooking, createReview } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
   fr: {
-    PENDING:   { label: "En attente", cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
-    ACTIVE:    { label: "En cours",   cls: "bg-blue-50 text-blue-800 border-blue-200" },
-    COMPLETED: { label: "Terminé",    cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-    REJECTED:  { label: "Rejeté",     cls: "bg-red-50 text-red-800 border-red-200" },
+    PENDING:   { label: "En attente", cls: "bg-amber-50 text-amber-600 border-amber-100" },
+    ACTIVE:    { label: "En cours",   cls: "bg-blue-50 text-blue-600 border-blue-100" },
+    COMPLETED: { label: "Terminé",    cls: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+    REJECTED:  { label: "Rejeté",     cls: "bg-red-50 text-red-600 border-red-100" },
   },
   en: {
-    PENDING:   { label: "Pending", cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
-    ACTIVE:    { label: "Active",   cls: "bg-blue-50 text-blue-800 border-blue-200" },
-    COMPLETED: { label: "Completed",    cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-    REJECTED:  { label: "Rejected",     cls: "bg-red-50 text-red-800 border-red-200" },
+    PENDING:   { label: "Pending", cls: "bg-amber-50 text-amber-600 border-amber-100" },
+    ACTIVE:    { label: "Active",   cls: "bg-blue-50 text-blue-600 border-blue-100" },
+    COMPLETED: { label: "Completed",    cls: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+    REJECTED:  { label: "Rejected",     cls: "bg-red-50 text-red-600 border-red-100" },
   }
 };
 
@@ -256,7 +257,8 @@ export default function DashboardPage() {
 
       // 1. Update Display Name if changed
       if (profileForm.name !== user.displayName) {
-        await updateProfile(user, { displayName: profileForm.name });
+        const { updateProfile: fbUpdateProfile } = await import("firebase/auth");
+        await fbUpdateProfile(user, { displayName: profileForm.name });
         await updateUserDoc(user.uid, { displayName: profileForm.name });
         profileUpdates.displayName = profileForm.name;
       }
@@ -347,45 +349,49 @@ export default function DashboardPage() {
   // Loading Screen
   if (authLoading || !user || checkingPin) {
     return (
-      <div className="min-h-[100svh] bg-[var(--off-white)] flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 rounded-2xl border-2 border-[var(--red)] border-t-transparent"
+        />
       </div>
     );
   }
 
   if (!isPinVerified) {
     return (
-      <div className="min-h-[100svh] bg-[var(--off-white)] flex flex-col items-center justify-center p-4 relative overflow-hidden">
-        <AuraGradient color="var(--red)" className="w-[800px] h-[800px] opacity-[0.03]" />
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden spatial-bg">
+        <AuraGradient color="var(--red)" className="w-[1000px] h-[1000px] opacity-[0.05]" />
         
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10 zero-jank">
-          <div className="bg-white/80 backdrop-blur-3xl border border-[var(--border)] p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.05)] flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] text-[var(--red)] flex items-center justify-center mb-6 border border-red-100 shadow-sm">
-              <Lock className="w-8 h-8" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md relative z-10">
+          <div className="card-spatial p-12 flex flex-col items-center text-center">
+            <div className="w-20 h-20 rounded-[2rem] bg-[var(--red-light)] text-[var(--red)] flex items-center justify-center mb-8 border border-red-100 shadow-spatial-sm">
+              <Lock className="w-10 h-10" />
             </div>
-            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">
+            <h1 className="display-sm text-[var(--charcoal)] mb-4">
               {hasPinConfigured ? t.dashboard.security.pin_verify_title : t.dashboard.security.pin_setup_title}
             </h1>
-            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed font-medium">
+            <p className="text-body-sm mb-12">
               {hasPinConfigured 
                 ? t.dashboard.security.pin_verify_desc 
                 : t.dashboard.security.pin_setup_desc}
             </p>
             
-            <form onSubmit={handlePinSubmit} className="w-full space-y-6">
+            <form onSubmit={handlePinSubmit} className="w-full space-y-8">
               <div>
                 <input 
                   type="password"
                   value={pinInput}
                   onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
-                  placeholder={t.dashboard.security.pin_placeholder}
+                  placeholder="••••"
                   maxLength={4}
                   autoFocus
-                  className={`w-full bg-[var(--off-white)] border ${pinError ? "border-red-500 text-red-500" : "border-[var(--border)] text-[var(--charcoal)] focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all placeholder:text-[var(--muted)]/50 zero-jank`}
+                  className={`w-full bg-[var(--off-white)] border ${pinError ? "border-red-500 text-red-500" : "border-[var(--border)] text-[var(--charcoal)] focus:border-[var(--red)]"} p-6 rounded-3xl text-center text-4xl font-black tracking-[1em] outline-none transition-all placeholder:text-[var(--muted)]/50 zero-jank`}
                 />
                 <AnimatePresence>
                   {pinError && (
-                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] text-red-500 font-bold mt-3 uppercase tracking-widest zero-jank">
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="label text-red-500 mt-6 tracking-widest">
                       {t.dashboard.security.pin_error}
                     </motion.p>
                   )}
@@ -397,7 +403,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 disabled={pinInput.length < 4}
-                className="w-full py-4 bg-[var(--red)] text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(230,0,0,0.2)] disabled:opacity-50 zero-jank"
+                className="btn-premium btn-premium-red w-full text-base py-6"
               >
                 {hasPinConfigured ? t.dashboard.security.pin_submit_verify : t.dashboard.security.pin_submit_setup}
               </motion.button>
@@ -411,442 +417,327 @@ export default function DashboardPage() {
   const langKey = language as "fr" | "en";
 
   return (
-    <div className="min-h-[100svh] pt-32 pb-40 bg-[var(--off-white)] text-[var(--charcoal)] relative overflow-hidden">
-      {/* Background Ambience */}
-      <AuraGradient color="var(--red)" className="top-0 right-0 w-[800px] h-[800px] opacity-[0.04]" />
+    <div className="min-h-screen pt-40 pb-40 bg-white spatial-bg overflow-hidden">
+      <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.04]" />
 
-      <div className="container-xl relative z-10 max-w-6xl">
+      <div className="container-xl relative z-10">
         
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8 border-b border-[var(--border)] pb-10">
+        {/* Header Section (Kinetic Typography) */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-24 gap-12 border-b border-[var(--border)] pb-20">
           <FadeUp>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-2 w-8 bg-[var(--red)] rounded-full shadow-[0_0_15px_rgba(230,0,0,0.3)]" />
-              <span className="text-[10px] font-black text-[var(--red)] uppercase tracking-[0.25em]">
-                {t.dashboard.title}
-              </span>
+            <div className="flex items-center gap-4 mb-8">
+              <span className="label text-[var(--red)]">{t.dashboard.title}</span>
+              <div className="h-px w-12 bg-[var(--red)]/20" />
+              <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Quantum-Secure</span>
+              </div>
             </div>
-            <h1 className="text-4xl lg:text-6xl font-black text-[var(--charcoal)] tracking-tighter mb-4 leading-tight">
-              {t.dashboard.welcome} <span className="text-[var(--red)]">{firstName}.</span>
+            <h1 className="display-xl text-[var(--charcoal)] tracking-tighter leading-none italic">
+              {t.dashboard.welcome} <span className="text-[var(--red)] not-italic">{firstName}.</span>
             </h1>
-            <p className="text-sm font-medium text-[var(--slate)] max-w-lg leading-relaxed">
-              {language === "fr" 
-                ? "Ravi de vous revoir. Suivez l'avancement de vos projets en temps réel." 
-                : "Glad to see you back. Track your project progress in real-time."}
-            </p>
           </FadeUp>
           
           <FadeIn delay={0.3}>
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md border border-[var(--border)] px-6 py-5 rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.02)] zero-jank">
-                <ShieldCheck className="w-5 h-5 text-[var(--red)]" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] text-[var(--charcoal)] font-black uppercase tracking-[0.2em]">
-                    {t.dashboard.secure}
-                  </span>
-                  <span className="text-[9px] text-[var(--muted)] font-bold uppercase tracking-widest">Connecté en AES-256</span>
-                </div>
-              </div>
-          </div>
+            <div className="flex gap-4 p-2 bg-[var(--off-white)] rounded-full border border-[var(--border)] shadow-spatial-sm">
+              {[
+                { id: "projects", label: t.dashboard.tabs.projects, icon: LayoutGrid },
+                { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
+                { id: "profile", label: t.dashboard.tabs.profile, icon: Users }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
+                  className={`flex items-center gap-3 px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
+                    activeTab === tab.id
+                      ? "bg-white text-[var(--charcoal)] shadow-spatial-md scale-105"
+                      : "text-[var(--slate)] hover:text-[var(--charcoal)]"
+                  }`}
+                >
+                  <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? "text-[var(--red)]" : ""}`} />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
+            </div>
           </FadeIn>
         </div>
 
-        {/* Tab Switcher (Spatial Glass) */}
-        <div className="flex gap-3 p-1.5 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 mb-16 w-fit mx-auto md:mx-0 shadow-xl zero-jank">
-          {[
-            { id: "projects", label: t.dashboard.tabs.projects, icon: FileText },
-            { id: "reviews", label: t.dashboard.tabs.reviews, icon: Star },
-            { id: "profile", label: t.dashboard.tabs.profile, icon: Users }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as "projects" | "reviews" | "profile")}
-              className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 zero-jank ${
-                activeTab === tab.id
-                  ? "bg-[var(--red)] text-white shadow-[0_12px_30px_rgba(230,0,0,0.25)] scale-105"
-                  : "text-[var(--slate)] hover:text-[var(--charcoal)] hover:bg-white/50"
-              }`}
+        {/* Dynamic Bento Grid Content */}
+        <AnimatePresence mode="wait">
+          {activeTab === "projects" && (
+            <motion.div
+              key="projects"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-12"
             >
-              <tab.icon className={`w-4 h-4 transition-transform duration-500 ${activeTab === tab.id ? "scale-110" : ""}`} />
-              <span className="hidden sm:inline">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Requests Section */}
-        {activeTab === "projects" && (
-          <FadeUp delay={0.2} className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[var(--red-light)] flex items-center justify-center border border-red-100 shadow-sm"><FileText className="w-5 h-5 text-[var(--red)]" /></div>
-                {t.dashboard.projects.title}
-              </h2>
-              <Link href="/booking" className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest rounded-full zero-jank shadow-sm hover:shadow-[0_10px_30px_rgba(230,0,0,0.2)]">
-                {t.dashboard.projects.new}
-              </Link>
-            </div>
-
-            {/* Mobile Bento Cards View */}
-            <div className="md:hidden space-y-8">
-              {loading ? (
-                <div className="py-20 flex justify-center"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin" /></div>
-              ) : bookings.length === 0 ? (
-                <div className="py-24 text-center rounded-[2.5rem] bg-white border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)] shadow-sm zero-jank">{t.dashboard.projects.empty}</div>
-              ) : bookings.map((req: any) => {
-                const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-                const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
-                const accentColor = req.status === "PENDING" ? "bg-yellow-500" : req.status === "ACTIVE" ? "bg-blue-500" : req.status === "COMPLETED" ? "bg-emerald-500" : "bg-red-500";
-                
-                return (
-                  <div key={req.id} className="relative overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/80 backdrop-blur-xl p-8 shadow-xl zero-jank">
-                    {/* Interior Glow */}
-                    <div className={`absolute top-0 right-0 w-32 h-32 blur-[40px] opacity-[0.08] -mr-10 -mt-10 ${accentColor}`} />
-                    <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${accentColor}`} />
-
-                    <div className="space-y-6 relative z-10">
-                      <div className="flex justify-between items-start">
-                        <div className="space-y-1.5">
-                           <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.3em]">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span>
-                           <h3 className="text-[var(--charcoal)] font-black text-2xl tracking-tight leading-none uppercase">{req.serviceId}</h3>
-                        </div>
-                        <span className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 p-5 bg-white/50 rounded-2xl border border-white/60">
-                        <div className="border-r border-slate-100 pr-2">
-                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-1.5">{t.dashboard.projects.date}</p>
-                          <p className="text-xs font-black text-[var(--charcoal)] tracking-widest">{date}</p>
-                        </div>
-                        <div className="pl-2">
-                          <p className="text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-1.5">Budget</p>
-                          <p className="text-xs font-black text-[var(--red)] italic tracking-tight">Analyse en cours</p>
-                        </div>
-                      </div>
-
-                      {req.adminNote && (
-                        <div className="p-5 bg-red-50/50 border border-red-100/50 rounded-2xl text-[12px] text-[var(--slate)] leading-relaxed font-medium">
-                          <span className="text-[9px] font-black uppercase text-[var(--red)] block mb-2 tracking-[0.25em]">{t.dashboard.projects.admin_note}</span>
-                          "{req.adminNote}"
-                        </div>
-                      )}
-
-                      {req.status === "PENDING" && (
-                        <button 
-                          onClick={() => handleDeleteRequest(req.id)}
-                          className="w-full py-5 bg-white border border-slate-200 rounded-full text-[var(--charcoal)] text-[10px] font-black uppercase tracking-[0.25em] flex items-center justify-center gap-3 hover:border-red-200 hover:text-[var(--red)] transition-all shadow-sm active:scale-95 zero-jank"
-                        >
-                          <AlertTriangle className="w-4 h-4" /> {t.dashboard.projects.cancel}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Desktop Table View */}
-            <div className="bg-white backdrop-blur-md rounded-[2.5rem] overflow-hidden shadow-sm border border-[var(--border)] relative group/table hidden md:block zero-jank">
-              <div className="overflow-x-auto custom-scrollbar">
-                <table className="w-full text-left text-sm border-collapse min-w-[800px]">
-                  <thead>
-                    <tr className="bg-[var(--off-white)] border-b border-slate-100">
-                      {[t.dashboard.projects.id, t.dashboard.projects.date, language === "fr" ? "Service" : "Service", language === "fr" ? "Statut" : "Status", t.dashboard.projects.admin_note, "Action"].map(h => (
-                        <th key={h} className="py-6 px-8 text-[10px] font-black uppercase tracking-[0.25em] text-[var(--muted)]">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    <AnimatePresence>
-                      {loading ? (
-                         <tr><td colSpan={6} className="text-center py-20"><div className="w-10 h-10 rounded-full border-2 border-[var(--red)] border-t-transparent animate-spin mx-auto shadow-[0_0_20px_rgba(238,28,37,0.3)]" /></td></tr>
-                      ) : bookings.length === 0 ? (
-                        <tr><td colSpan={6} className="text-center py-24 text-[var(--muted)] font-black uppercase tracking-[0.2em] text-xs leading-relaxed">{t.dashboard.projects.empty}</td></tr>
-                      ) : bookings.map((req, i) => {
-                        const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
-                        const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : 'N/A';
-                        return (
-                          <motion.tr key={req.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className="hover:bg-slate-50 transition-all group zero-jank">
-                            <td className="py-6 px-8 font-mono font-black text-[10px] text-[var(--red)] tracking-widest">#{req.id.slice(0, 8).toUpperCase()}</td>
-                            <td className="py-6 px-8 font-black text-[var(--muted)] text-[11px] tracking-widest">{date}</td>
-                            <td className="py-6 px-8 font-black text-[var(--charcoal)] text-sm tracking-tight uppercase">{req.serviceId}</td>
-                            <td className="py-6 px-8">
-                              <span className={`inline-flex items-center px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls} bg-transparent`}>
-                                {mapObj.label}
-                              </span>
-                            </td>
-                            <td className="py-6 px-8 font-bold text-[var(--slate)] text-xs italic leading-relaxed max-w-xs truncate">
-                              {req.adminNote || "-"}
-                            </td>
-                            <td className="py-6 px-8">
-                              {req.status === "PENDING" && (
-                                <button onClick={() => handleDeleteRequest(req.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-[var(--red)] hover:bg-[var(--red-light)] tracking-widest border border-red-200 px-4 py-2 rounded-full transition-all bg-white zero-jank">
-                                  {t.dashboard.projects.cancel}
-                                </button>
-                              )}
-                            </td>
-                          </motion.tr>
-                        );
-                      })}
-                    </AnimatePresence>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </FadeUp>
-        )}
-
-        {/* Reviews Tab */}
-        {activeTab === "reviews" && (
-          <FadeUp delay={0.2} className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight flex items-center gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center border border-amber-100 shadow-sm"><Star className="w-5 h-5 text-amber-500 fill-current" /></div>
-                {t.dashboard.reviews.title}
-              </h2>
-              <button onClick={() => { setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true); }} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-[0_10px_30px_rgba(230,0,0,0.2)] active:scale-95 transition-transform zero-jank">
-                {t.dashboard.reviews.new}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {userReviews.length === 0 ? (
-                <div className="col-span-full py-20 text-center rounded-[2.5rem] bg-white border border-dashed border-slate-200 uppercase font-black text-[10px] tracking-widest text-[var(--muted)]">
-                  {language === "fr" ? "Vous n'avez pas encore laissé d'avis." : "You haven't left any reviews yet."}
-                </div>
-              ) : userReviews.map((rev: any) => (
-                <div key={rev.id} className="relative overflow-hidden rounded-[2rem] border border-[var(--border)] bg-white backdrop-blur-md p-6 shadow-sm flex flex-col justify-between zero-jank">
-                  <div>
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map(s => (
-                          <Star key={s} className={`w-3 h-3 ${s <= rev.rating ? "text-amber-400 fill-amber-400" : "text-slate-100"}`} />
-                        ))}
-                      </div>
-                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-[0.2em]">{rev.createdAt ? new Date(rev.createdAt.seconds * 1000).toLocaleDateString() : "Récemment"}</span>
-                    </div>
-                    <p className="text-sm font-medium text-[var(--slate)] leading-relaxed mb-6 italic">{'"'}{rev.comment}{'"'}</p>
-                  </div>
-                  <div className="flex gap-4 border-t border-slate-100 pt-4">
-                    <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[9px] font-black uppercase text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors tracking-widest">{t.dashboard.reviews.edit}</button>
-                    <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[9px] font-black uppercase text-red-500/80 hover:text-red-600 transition-colors tracking-widest">{t.dashboard.reviews.delete}</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </FadeUp>
-        )}
-
-        {/* Profile Tab */}
-        {activeTab === "profile" && (
-          <FadeUp delay={0.2} className="mb-16">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-sm"><Users className="w-5 h-5 text-blue-500" /></div>
-              <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight">
-                {t.dashboard.profile.title}
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Profile Meta Cards */}
-              <div className="lg:col-span-1 space-y-6">
-                <div className="p-8 bg-white border border-[var(--border)] rounded-[2rem] flex flex-col items-center text-center shadow-sm zero-jank">
-                  <div className="w-20 h-20 rounded-full bg-[var(--red)] flex items-center justify-center text-2xl font-black text-white mb-4 shadow-[0_10px_30px_rgba(230,0,0,0.3)]">
-                    {firstName[0]}
-                  </div>
-                  <h3 className="text-xl font-black text-[var(--charcoal)] tracking-tight">{user.displayName || "Sans Nom"}</h3>
-                  <p className="text-xs font-black uppercase text-[var(--muted)] tracking-[0.2em] mt-1">{user.email}</p>
-                </div>
-
-                <div className="p-8 bg-white border border-[var(--border)] rounded-[2rem] space-y-4 shadow-sm zero-jank">
-                   <div className="flex items-center justify-between">
-                     <span className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest">{t.dashboard.profile.security}</span>
-                     <button onClick={() => setShowPinChangeModal(true)} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest hover:underline">{t.dashboard.profile.change_pin}</button>
-                   </div>
-                   <div className="flex items-center justify-between">
-                     <span className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest">{language === "fr" ? "Mot de passe" : "Password"}</span>
-                     <button onClick={handlePasswordReset} className="text-[9px] font-black text-[var(--red)] uppercase tracking-widest hover:underline">{t.dashboard.profile.reset_password}</button>
-                   </div>
-                </div>
-              </div>
-
-              {/* Edit Form */}
-              <div className="lg:col-span-2">
-                <div className="p-8 md:p-10 bg-white border border-[var(--border)] rounded-[2.5rem] relative overflow-hidden shadow-sm zero-jank">
-                  <AuraGradient color="var(--red)" className="bottom-0 right-0 w-64 h-64 opacity-[0.03]" />
-                  <form onSubmit={handleProfileUpdate} className="space-y-6 relative z-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">{t.dashboard.profile.full_name}</label>
-                        <input 
-                          type="text" 
-                          value={profileForm.name}
-                          onChange={(e) => setProfileForm(p => ({ ...p, name: e.target.value }))}
-                          className="w-full bg-[var(--off-white)] border border-[var(--border)] text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all zero-jank"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">{t.dashboard.profile.email}</label>
-                        <input 
-                          type="email" 
-                          value={profileForm.email}
-                          onChange={(e) => setProfileForm(p => ({ ...p, email: e.target.value }))}
-                          className="w-full bg-[var(--off-white)] border border-[var(--border)] text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all zero-jank"
-                        />
-                      </div>
-                    </div>
-
-
-                    <AnimatePresence>
-                      {profileForm.error && (
-                        <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{profileForm.error}</motion.p>
-                      )}
-                      {profileForm.success && (
-                        <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">{profileForm.success}</motion.p>
-                      )}
-                    </AnimatePresence>
-
-                    <div className="pt-4">
-                      <motion.button 
-                        type="submit" 
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        disabled={isUpdatingProfile}
-                        className="relative group overflow-hidden px-8 py-4 bg-[var(--charcoal)] text-white font-black text-[11px] uppercase tracking-[0.25em] rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.15)] disabled:opacity-50 zero-jank"
-                      >
-                        <span className="relative z-10 flex items-center gap-2">
-                          {isUpdatingProfile ? t.dashboard.profile.updating : t.dashboard.profile.save}
-                        </span>
-                      </motion.button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </FadeUp>
-        )}
-             {/* Support Grid */}
-        <StaggerContainer className="grid md:grid-cols-2 gap-8">
-          <StaggerItem>
-            <div className="relative overflow-hidden p-10 border border-slate-200 rounded-[2.5rem] bg-white shadow-sm flex items-start flex-col sm:flex-row gap-8 group transition-all duration-500 hover:border-red-200 hover:shadow-[0_20px_40px_rgba(230,0,0,0.06)] zero-jank">
-              <AuraGradient color="var(--red)" className="top-[-20%] left-[-10%] w-64 h-64 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity" />
-              <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] border border-red-100 flex items-center justify-center shrink-0 group-hover:bg-[var(--red)] transition-all duration-500 shadow-sm">
-                <AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white transition-colors" />
-              </div>
-              <div className="flex-1 text-[var(--charcoal)]">
-                <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-2xl font-black tracking-tight leading-none">Support <span className="text-[var(--red)]">Prioritaire.</span></h3>
-                  <span className="px-2 py-0.5 rounded-full bg-[var(--red-light)] text-[var(--red)] text-[8px] font-black uppercase tracking-widest border border-red-100 shadow-sm">Active SLA</span>
-                </div>
-                <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Expertise critique à votre service. Intervention garantie en moins de 120min pour tous vos actifs numériques.</p>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center justify-between py-3 border-y border-slate-100">
-                    <div className="flex flex-col">
-                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Canaux Actifs</span>
-                      <div className="flex gap-2 mt-1">
-                        {["WhatsApp", "Email", "Ticket"].map(c => <span key={c} className="text-[8px] font-bold text-[var(--slate)] bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">{c}</span>)}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest block">Agent Dédié</span>
-                      <span className="text-[10px] font-bold text-[var(--red)] tracking-tight uppercase">Support Premium</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-8 px-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
-                      <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Dispo 24/7/365</span><span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">OPÉRATIONNEL</span></div>
-                    </div>
-                    <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Latence Ticketing</span><span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">87ms AVG</span></div>
-                  </div>
-                </div>
-
-                <Link href="/contact" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-full bg-[var(--off-white)] border border-slate-200 text-[10px] font-black text-[var(--charcoal)] hover:bg-white hover:border-red-200 uppercase tracking-[0.2em] transition-all group/btn shadow-sm">
-                  Ouvrir un ticket <ArrowRight className="w-4 h-4 text-[var(--red)] group-hover/btn:translate-x-1 transition-transform" />
+              <div className="flex items-center justify-between mb-8 px-4">
+                <h2 className="display-sm text-[var(--charcoal)]">{t.dashboard.projects.title}</h2>
+                <Link href="/booking">
+                   <MagneticButton>
+                     <span className="btn-premium btn-premium-red !px-8 !py-4 text-[10px]">
+                       {t.dashboard.projects.new}
+                     </span>
+                   </MagneticButton>
                 </Link>
               </div>
-            </div>
-          </StaggerItem>
-          
-          <StaggerItem>
-             <div className="relative overflow-hidden p-10 border border-slate-200 rounded-[2.5rem] bg-white shadow-sm flex items-start flex-col sm:flex-row gap-8 group hover:border-emerald-200 hover:shadow-[0_20px_40px_rgba(16,185,129,0.06)] transition-all duration-500 zero-jank">
-               <AuraGradient color="emerald" className="bottom-[-20%] right-[-10%] w-64 h-64 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity" />
-               <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 relative z-10 transition-all duration-500 group-hover:bg-emerald-500 shadow-sm">
-                 <Cpu className="w-8 h-8 text-emerald-500 group-hover:text-white transition-colors" />
-               </div>
-               <div className="relative z-10 flex-1 text-[var(--charcoal)]">
-                 <div className="flex items-center gap-3 mb-3">
-                   <h3 className="text-2xl font-black tracking-tight">Cloud & <span className="text-emerald-500">Infra.</span></h3>
-                   <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm">Live Monitor</span>
-                 </div>
-                 <p className="text-sm text-[var(--slate)] font-medium leading-relaxed mb-6">Supervision proactive et maintenance automatisée. Maîtrisez la croissance de votre infrastructure.</p>
-                 
-                 <div className="space-y-4 mb-8">
-                   <div className="flex items-center justify-between py-3 border-y border-slate-100">
-                     <div className="flex flex-col">
-                       <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest">Localisations Nodes</span>
-                       <div className="flex gap-2 mt-1">
-                          {["Douala-C1", "Paris-V1"].map(l => <span key={l} className="text-[8px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">{l}</span>)}
-                       </div>
-                     </div>
-                     <div className="text-right">
-                       <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest block">Backups Actifs</span>
-                       <span className="text-[10px] font-bold text-[var(--charcoal)] uppercase tabular-nums tracking-widest">14 / 30 Jours</span>
-                     </div>
-                   </div>
-                   
-                   <div className="flex items-center gap-8 px-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
-                        <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Global Uptime</span><span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">99.99%</span></div>
-                      </div>
-                      <div className="flex flex-col"><span className="text-[8px] font-black text-[var(--muted)] uppercase">Resource Load</span><span className="text-[10px] font-bold text-emerald-600 tracking-widest uppercase">Excellent</span></div>
-                   </div>
-                 </div>
 
-                 <Link href="/services" className="relative z-10 inline-flex items-center gap-3 px-6 py-4 rounded-full bg-[var(--off-white)] border border-slate-200 text-[10px] font-black text-[var(--charcoal)] hover:bg-white hover:border-emerald-200 uppercase tracking-[0.2em] transition-all group/btn2 shadow-sm">
-                   Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-500 group-hover/btn2:translate-x-1 transition-transform" />
-                 </Link>
-               </div>
-             </div>
-          </StaggerItem>
-        </StaggerContainer>
+              {loading ? (
+                <div className="py-40 flex justify-center"><Activity className="w-12 h-12 text-[var(--red)] animate-spin" /></div>
+              ) : bookings.length === 0 ? (
+                <div className="py-40 text-center rounded-[3rem] border-2 border-dashed border-[var(--border)] bg-white/50">
+                  <p className="label text-[var(--muted)]">{t.dashboard.projects.empty}</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  {bookings.map((req: any, i: number) => {
+                    const status = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
+                    const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
+                    return (
+                      <motion.div
+                        key={req.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                        className={`${i === 0 ? "lg:col-span-8" : "lg:col-span-4"} group`}
+                      >
+                        <div className="card-spatial p-12 h-full flex flex-col justify-between hover:border-[var(--red)]/20">
+                          <div>
+                            <div className="flex justify-between items-start mb-12">
+                               <div className="space-y-2">
+                                  <span className="label text-[var(--red)]">#{req.id.slice(0, 8).toUpperCase()}</span>
+                                  <h3 className="display-sm !text-4xl group-hover:italic transition-all duration-700">{req.serviceId}</h3>
+                               </div>
+                               <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border ${status.cls}`}>
+                                 {status.label}
+                               </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-8 border-t border-[var(--border)] pt-8 mb-12">
+                               <div>
+                                  <p className="label text-[var(--muted)] mb-2">Request Date</p>
+                                  <p className="text-xl font-black italic">{date}</p>
+                               </div>
+                               <div>
+                                  <p className="label text-[var(--muted)] mb-2">Budget Range</p>
+                                  <p className="text-xl font-black italic">{req.budget}</p>
+                               </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-8">
+                            {req.adminNote && (
+                              <div className="p-8 bg-[var(--red-light)] border border-red-100 rounded-3xl">
+                                 <span className="label text-[var(--red)] block mb-4">Official Update</span>
+                                 <p className="text-sm font-bold text-[var(--charcoal)] leading-relaxed italic">"{req.adminNote}"</p>
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between gap-4">
+                               {req.status === "PENDING" && (
+                                  <button
+                                    onClick={() => handleDeleteRequest(req.id)}
+                                    className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 hover:text-red-700 transition-colors"
+                                  >
+                                    {t.dashboard.projects.cancel}
+                                  </button>
+                               )}
+                               <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:bg-[var(--charcoal)] group-hover:text-white transition-all duration-500 ml-auto">
+                                  <ArrowRight className="w-5 h-5" />
+                               </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {activeTab === "reviews" && (
+            <motion.div
+              key="reviews"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-12"
+            >
+              <div className="flex items-center justify-between mb-8 px-4">
+                <h2 className="display-sm text-[var(--charcoal)]">{t.dashboard.reviews.title}</h2>
+                <MagneticButton>
+                  <button onClick={() => { setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true); }} className="btn-premium btn-premium-red !px-8 !py-4 text-[10px]">
+                    {t.dashboard.reviews.new}
+                  </button>
+                </MagneticButton>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {userReviews.length === 0 ? (
+                  <div className="col-span-full py-40 text-center rounded-[3rem] border-2 border-dashed border-[var(--border)] bg-white/50">
+                    <p className="label text-[var(--muted)]">{language === "fr" ? "Aucun avis laissé" : "No reviews left yet"}</p>
+                  </div>
+                ) : userReviews.map((rev: any) => (
+                  <div key={rev.id} className="card-spatial p-10 flex flex-col justify-between group hover:border-amber-400/30">
+                    <div>
+                      <div className="flex justify-between items-center mb-8">
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} className={`w-4 h-4 ${s <= rev.rating ? "text-amber-400 fill-amber-400" : "text-slate-100"}`} />
+                          ))}
+                        </div>
+                        <span className="label text-[var(--muted)]">{rev.createdAt ? new Date(rev.createdAt.seconds * 1000).toLocaleDateString() : "New"}</span>
+                      </div>
+                      <p className="display-sm !text-2xl italic leading-tight mb-12">"{rev.comment}"</p>
+                    </div>
+                    <div className="flex gap-8 pt-8 border-t border-[var(--border)]">
+                      <button onClick={() => { setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true); }} className="text-[10px] font-black uppercase tracking-widest text-[var(--slate)] hover:text-[var(--charcoal)]">{t.dashboard.reviews.edit}</button>
+                      <button onClick={() => handleDeleteUserReview(rev.id)} className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700">{t.dashboard.reviews.delete}</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "profile" && (
+            <motion.div
+              key="profile"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-12"
+            >
+              <div className="lg:col-span-4">
+                 <div className="card-spatial p-12 text-center flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-[var(--charcoal)] flex items-center justify-center text-3xl font-black text-white mb-8 shadow-spatial-lg">
+                      {firstName[0]}
+                    </div>
+                    <h3 className="display-sm !text-3xl mb-2">{user.displayName || "Client"}</h3>
+                    <p className="label text-[var(--red)] mb-12 tracking-[0.3em] italic">{user.email}</p>
+
+                    <div className="w-full space-y-4 pt-12 border-t border-[var(--border)]">
+                       <button onClick={() => setShowPinChangeModal(true)} className="w-full py-4 rounded-2xl bg-[var(--off-white)] border border-[var(--border)] flex items-center justify-between px-6 group transition-all hover:bg-white">
+                          <span className="label !text-[10px] group-hover:text-[var(--red)] transition-colors">{t.dashboard.profile.change_pin}</span>
+                          <Key className="w-4 h-4 text-[var(--slate)]" />
+                       </button>
+                       <button onClick={handlePasswordReset} className="w-full py-4 rounded-2xl bg-[var(--off-white)] border border-[var(--border)] flex items-center justify-between px-6 group transition-all hover:bg-white">
+                          <span className="label !text-[10px] group-hover:text-[var(--red)] transition-colors">{t.dashboard.profile.reset_password}</span>
+                          <Lock className="w-4 h-4 text-[var(--slate)]" />
+                       </button>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="lg:col-span-8">
+                 <div className="card-spatial p-12 relative overflow-hidden">
+                    <AuraGradient color="var(--red)" className="bottom-0 right-0 w-80 h-80 opacity-[0.03]" />
+                    <h3 className="display-sm mb-12 italic">{t.dashboard.profile.title}</h3>
+
+                    <form onSubmit={handleProfileUpdate} className="space-y-12 relative z-10">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-4">
+                          <label className="label text-[var(--muted)]">{t.dashboard.profile.full_name}</label>
+                          <input
+                            type="text"
+                            value={profileForm.name}
+                            onChange={(e) => setProfileForm(p => ({ ...p, name: e.target.value }))}
+                            className="form-input-spatial"
+                          />
+                        </div>
+                        <div className="space-y-4">
+                          <label className="label text-[var(--muted)]">{t.dashboard.profile.email}</label>
+                          <input
+                            type="email"
+                            value={profileForm.email}
+                            onChange={(e) => setProfileForm(p => ({ ...p, email: e.target.value }))}
+                            className="form-input-spatial"
+                          />
+                        </div>
+                      </div>
+
+                      <AnimatePresence>
+                        {profileForm.error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="label text-red-500">{profileForm.error}</motion.p>}
+                        {profileForm.success && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="label text-emerald-500">{profileForm.success}</motion.p>}
+                      </AnimatePresence>
+
+                      <motion.button 
+                        type="submit" 
+                        disabled={isUpdatingProfile}
+                        whileHover={{ scale: 1.02 }}
+                        className="btn-premium btn-premium-red px-12 py-5"
+                      >
+                        {isUpdatingProfile ? t.dashboard.profile.updating : t.dashboard.profile.save}
+                      </motion.button>
+                    </form>
+                 </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Global Support Area (Asymmetric Bento) */}
+        <div className="mt-40 grid grid-cols-1 lg:grid-cols-12 gap-8">
+           <div className="lg:col-span-8 card-spatial p-16 flex flex-col md:flex-row gap-16 group hover:border-emerald-400/20">
+              <div className="w-24 h-24 rounded-3xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-700">
+                <Activity className="w-12 h-12" />
+              </div>
+              <div>
+                <div className="flex items-center gap-4 mb-6">
+                  <h3 className="display-sm italic">Live Monitoring</h3>
+                  <div className="px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100">
+                     <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Active SLA</span>
+                  </div>
+                </div>
+                <p className="text-body mb-12 max-w-xl">Supervision proactive et maintenance automatisée de vos infrastructures. Disponibilité globale : 99.99%.</p>
+                <div className="flex gap-12 border-t border-[var(--border)] pt-12">
+                   <div>
+                      <p className="label text-[var(--muted)] mb-2">Systems</p>
+                      <p className="text-xl font-black italic">Operational</p>
+                   </div>
+                   <div>
+                      <p className="label text-[var(--muted)] mb-2">Network Load</p>
+                      <p className="text-xl font-black italic text-emerald-600">Perfect</p>
+                   </div>
+                </div>
+              </div>
+           </div>
+
+           <div className="lg:col-span-4 card-spatial p-16 bg-[var(--charcoal)] text-white group overflow-hidden">
+              <AuraGradient color="var(--red)" className="top-0 right-0 w-80 h-80 opacity-[0.2]" />
+              <div className="relative z-10 flex flex-col justify-between h-full">
+                <div>
+                   <Zap className="w-12 h-12 text-[var(--red)] mb-8 group-hover:scale-125 transition-transform duration-700" />
+                   <h3 className="display-sm !text-3xl mb-6">Support <br/> Prioritaire.</h3>
+                   <p className="text-sm font-medium text-slate-400 leading-relaxed mb-12">Intervention garantie en moins de 120min pour tous vos actifs numériques.</p>
+                </div>
+                <Link href="/contact" className="btn-premium btn-premium-red w-full !text-[10px]">
+                  Ouvrir un Ticket
+                </Link>
+              </div>
+           </div>
+        </div>
 
       </div>
 
       {/* Review Modal */}
       <AnimatePresence>
         {showReviewModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowReviewModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md zero-jank" />
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowReviewModal(false)} className="absolute inset-0 bg-black/40 backdrop-blur-md" />
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-white border border-[var(--border)] shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden zero-jank"
+              initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-lg card-spatial p-12 bg-white"
             >
-              <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
-              <button onClick={() => setShowReviewModal(false)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[var(--off-white)] border border-slate-200 flex items-center justify-center text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors hover:bg-slate-100">
-                <X className="w-5 h-5" />
-              </button>
-              
-              <div className="mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] border border-red-100 flex items-center justify-center mb-6 shadow-sm">
-                  <Star className="w-8 h-8 text-[var(--red)] fill-current" />
-                </div>
-                <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">
-                  {t.dashboard.reviews.modal_title}
-                </h3>
-                <p className="text-sm font-medium text-[var(--slate)] leading-relaxed">
-                  {t.dashboard.reviews.modal_desc}
-                </p>
-              </div>
+              <h3 className="display-sm !text-3xl mb-4 italic">{t.dashboard.reviews.modal_title}</h3>
+              <p className="text-body-sm mb-12">{t.dashboard.reviews.modal_desc}</p>
 
-              <form onSubmit={editingReview ? handleUpdateReview : handleSubmitReview} className="space-y-6 relative z-10">
-                <div>
-                  <label className="block text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-4">
-                    {t.dashboard.reviews.rating}
-                  </label>
-                  <div className="flex gap-2">
+              <form onSubmit={editingReview ? handleUpdateReview : handleSubmitReview} className="space-y-12">
+                <div className="space-y-4">
+                  <label className="label">{t.dashboard.reviews.rating}</label>
+                  <div className="flex gap-4">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -854,134 +745,34 @@ export default function DashboardPage() {
                         onClick={() => setReviewRating(star)}
                         onMouseEnter={() => setHoverRating(star)}
                         onMouseLeave={() => setHoverRating(0)}
-                        className="p-2 -m-2 group transition-transform hover:scale-110 active:scale-95"
+                        className="transition-transform hover:scale-125 active:scale-90"
                       >
-                        <Star className={`w-8 h-8 transition-colors ${
-                          (hoverRating || reviewRating) >= star ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" : "text-slate-200"
+                        <Star className={`w-8 h-8 ${
+                          (hoverRating || reviewRating) >= star ? "text-amber-400 fill-amber-400" : "text-slate-100"
                         }`} />
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {editingReview && (
-                  <div className="p-4 bg-[var(--off-white)] border border-slate-200 rounded-xl shadow-sm">
-                    <span className="text-[9px] font-black text-[var(--muted)] uppercase tracking-widest block mb-1">Modification de l'avis du</span>
-                    <span className="text-[10px] font-bold text-[var(--charcoal)] tracking-widest">{new Date(editingReview.createdAt?.seconds * 1000).toLocaleDateString()}</span>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-4">
-                    {t.dashboard.reviews.comment}
-                  </label>
-                  <div className="relative">
-                    <MessageSquare className="absolute top-4 left-4 w-5 h-5 text-[var(--muted)]" />
-                    <textarea 
-                      required
-                      value={reviewComment}
-                      onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder={language === "fr" ? "Votre expérience..." : "Your experience..."}
-                      className="w-full h-32 pl-12 pr-4 py-4 bg-[var(--off-white)] border border-slate-200 rounded-2xl text-[var(--charcoal)] outline-none focus:border-[var(--red)] focus:ring-4 ring-red-100 transition-all resize-none shadow-sm zero-jank"
-                    />
-                  </div>
+                <div className="space-y-4">
+                  <label className="label">{t.dashboard.reviews.comment}</label>
+                  <textarea
+                    required
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    className="form-input-spatial h-32 resize-none"
+                    placeholder={language === "fr" ? "Dites-nous tout..." : "Your experience..."}
+                  />
                 </div>
 
-                <div className="pt-2">
-                  <button 
-                    type="submit" 
-                    disabled={isSubmittingReview || reviewRating === 0}
-                    className="w-full py-5 bg-[var(--red)] text-white rounded-full font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(230,0,0,0.2)] active:scale-95 transition-all disabled:opacity-50 zero-jank flex justify-center items-center gap-2"
-                  >
-                    {isSubmittingReview ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (
-                      editingReview ? (language === "fr" ? "Mettre à jour" : "Update") : t.dashboard.reviews.submit
-                    )}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-
-        {/* PIN Change Modal */}
-        {showPinChangeModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isChangingPin && setShowPinChangeModal(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md zero-jank" />
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-sm bg-white border border-[var(--border)] shadow-2xl rounded-[2.5rem] p-8 md:p-10 z-10 overflow-hidden zero-jank"
-            >
-              <AuraGradient color="emerald" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
-              <button disabled={isChangingPin} onClick={() => { setShowPinChangeModal(false); setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "" }); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[var(--off-white)] border border-slate-200 flex items-center justify-center text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors hover:bg-slate-100">
-                <X className="w-5 h-5" />
-              </button>
-              
-              <div className="mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4 shadow-sm">
-                  <Key className="w-6 h-6 text-emerald-600" />
-                </div>
-                <h3 className="text-xl font-black text-[var(--charcoal)] tracking-tight mb-1">Modifier mon PIN</h3>
-                <p className="text-[11px] font-medium text-[var(--slate)] leading-relaxed">Saisissez votre ancien PIN puis le nouveau (4 chiffres). Limité à 1 changement par 24h.</p>
-              </div>
-
-              <form onSubmit={handlePinChangeSubmit} className="space-y-4 relative z-10">
-                {/* Old PIN */}
-                <div>
-                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Ancien Code PIN</label>
-                  <div className="relative">
-                    <input 
-                      type={showOldPin ? "text" : "password"}
-                      value={pinChangeForm.oldPin}
-                      onChange={(e) => setPinChangeForm(prev => ({ ...prev, oldPin: e.target.value, error: "" }))}
-                      placeholder="••••"
-                      maxLength={4}
-                      required
-                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none placeholder:text-[var(--muted)]/50 transition-all shadow-sm zero-jank"
-                    />
-                    <button type="button" onClick={() => setShowOldPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
-                      {showOldPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                {/* New PIN */}
-                <div>
-                  <label className="block text-[9px] font-black uppercase text-[var(--muted)] tracking-[0.2em] mb-2">Nouveau Code PIN (4 chiffres)</label>
-                  <div className="relative">
-                    <input 
-                      type={showNewPin ? "text" : "password"}
-                      value={pinChangeForm.newPin}
-                      onChange={(e) => setPinChangeForm(prev => ({ ...prev, newPin: e.target.value, error: "" }))}
-                      placeholder="••••"
-                      maxLength={4}
-                      required
-                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] rounded-2xl text-center text-lg font-black tracking-[0.5em] pr-12 p-4 focus:border-[var(--red)] focus:ring-4 ring-red-100 outline-none placeholder:text-[var(--muted)]/50 transition-all shadow-sm zero-jank"
-                    />
-                    <button type="button" onClick={() => setShowNewPin(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors">
-                      {showNewPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                
-                <AnimatePresence>
-                  {pinChangeForm.error && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl zero-jank">
-                      <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-                      <p className="text-[11px] text-red-500 font-bold">{pinChangeForm.error}</p>
-                    </motion.div>
-                  )}
-                  {pinChangeForm.success && (
-                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl zero-jank">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <p className="text-[11px] text-emerald-600 font-bold">{pinChangeForm.success}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <div className="pt-2">
-                  <button type="submit" disabled={isChangingPin || pinChangeForm.newPin.length !== 4 || pinChangeForm.oldPin.length < 4} className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 rounded-full text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(16,185,129,0.3)] active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2 zero-jank">
-                    {isChangingPin ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Key className="w-4 h-4" />Confirmer</>}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReview || reviewRating === 0}
+                  className="btn-premium btn-premium-red w-full"
+                >
+                  {isSubmittingReview ? <Activity className="w-5 h-5 animate-spin" /> : t.dashboard.reviews.submit}
+                </button>
               </form>
             </motion.div>
           </div>
