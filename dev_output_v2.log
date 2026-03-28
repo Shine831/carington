@@ -1,0 +1,20 @@
+
+> carington@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.7 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 3.3s
+ GET / 200 in 4.3s (compile: 3.3s, render: 1007ms)
+ GET /admin 200 in 200ms (compile: 94ms, render: 105ms)
+ GET /account 200 in 107ms (compile: 72ms, render: 35ms)
+ GET /services 200 in 2.4s (compile: 2.3s, render: 148ms)
+ HEAD / 200 in 133ms (compile: 7ms, render: 126ms)
+ GET / 200 in 160ms (compile: 5ms, render: 154ms)
+ GET /admin 200 in 95ms (compile: 5ms, render: 90ms)
+ GET /account 200 in 37ms (compile: 5ms, render: 32ms)
+ GET /services 200 in 144ms (compile: 9ms, render: 136ms)
+✓ Compiled in 363ms

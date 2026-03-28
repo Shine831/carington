@@ -17,19 +17,20 @@ export default function Footer() {
 
   return (
     <footer className="bg-[var(--charcoal)] text-white mt-auto relative overflow-hidden border-t border-white/5 spatial-ui-layer">
-      {/* Subtle Aura for Footer */}
-      <AuraGradient color="var(--red)" className="bottom-[-10%] left-[-5%] w-96 h-96 opacity-[0.08]" />
+      {/* High-Impact Aura for Footer */}
+      <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-[600px] h-[600px] opacity-[0.08]" />
+      <AuraGradient color="var(--slate)" className="top-[-10%] right-[-5%] w-[400px] h-[400px] opacity-[0.04]" />
       
       <div className="container-xl pt-32 pb-20 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-20">
           
           {/* Brand — Logo + Contact rapide */}
           <div className="lg:col-span-1">
             {/* Logo white variant for dark footer */}
-            <div className="mb-8 [&_span]:!text-white [&_.text-\[var\(--slate\)\]]:!text-slate-400">
+            <div className="mb-10 [&_span]:!text-white [&_.text-\[var\(--slate\)\]]:!text-slate-400">
               <Logo />
             </div>
-            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-8 max-w-xs">
+            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-10 max-w-xs border-l border-white/10 pl-6">
               {t.footer.desc}
             </p>
             {/* Contact rapide : WhatsApp + Appel seulement */}

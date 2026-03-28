@@ -1,20 +1,17 @@
 "use client";
 
-import { Activity, ShieldCheck, Cpu, Star, X, MessageSquare, Lock, Key, Users, RefreshCw, AlertCircle, ArrowRight, FileText } from "lucide-react";
+import { Activity, ShieldAlert, ShieldCheck, Cpu, Server, CheckCircle2, Clock, AlertTriangle, ArrowRight, LogOut, FileText, Star, X, MessageSquare, Lock, Key, Users, Eye, EyeOff, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { updateProfile } from "firebase/auth";
-import {
-  updateUserDoc, updateReview, getReviewsByUserId, getBookings,
-  setUserPin, getUserById, deleteBooking, createReview,
-  canAttemptPin, trackPinFailure, resetPinAttempts
-} from "@/lib/firebase/db";
+import { auth } from "@/lib/firebase/config";
+import { updateProfile, verifyBeforeUpdateEmail, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from "firebase/auth";
+import { updateUserDoc, updateReview, getReviewsByUserId, getBookings, setUserPin, getUserById, deleteBooking, createReview } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
 
 const STATUS_MAP = {
@@ -32,17 +29,15 @@ const STATUS_MAP = {
   }
 };
 
-const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 minutes
-
 export default function DashboardPage() {
   const { t, language } = useI18n();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  
+
   const [bookings, setBookings] = useState<any[]>([]);
   const [userReviews, setUserReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -54,39 +49,13 @@ export default function DashboardPage() {
   const [hasPinConfigured, setHasPinConfigured] = useState(false);
   const [isPinVerified, setIsPinVerified] = useState(false);
   const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState("");
-  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
-  
+  const [pinError, setPinError] = useState(false);
+
   const [activeTab, setActiveTab] = useState<"projects" | "reviews" | "profile">("projects");
   const [profileForm, setProfileForm] = useState({ name: "", email: "", currentPassword: "", error: "", success: "" });
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Client";
-
-  // Auto-logout logic
-  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const resetLogoutTimer = useCallback(() => {
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    if (isPinVerified) {
-      logoutTimerRef.current = setTimeout(() => {
-        sessionStorage.removeItem("client_pin_verified");
-        setIsPinVerified(false);
-        router.refresh();
-      }, AUTO_LOGOUT_TIME);
-    }
-  }, [isPinVerified, router]);
-
-  useEffect(() => {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    const handler = () => resetLogoutTimer();
-    events.forEach(e => window.addEventListener(e, handler));
-    resetLogoutTimer();
-    return () => {
-      events.forEach(e => window.removeEventListener(e, handler));
-      if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    };
-  }, [resetLogoutTimer]);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -122,40 +91,20 @@ export default function DashboardPage() {
   const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || pinInput.length < 4) return;
-
-    if (!canAttemptPin(user.uid)) {
-      setPinError(language === "fr" ? "Compte verrouillé (15 min). Trop de tentatives." : "Account locked (15 min). Too many attempts.");
-      return;
-    }
-
     const hashed = await hashPin(pinInput);
     if (!hasPinConfigured) {
       await setUserPin(user.uid, hashed); setHasPinConfigured(true); setIsPinVerified(true);
       sessionStorage.setItem("client_pin_verified", "true");
-      resetPinAttempts(user.uid);
     } else {
       const userData = await getUserById(user.uid);
       if (userData?.pin === hashed) {
         setIsPinVerified(true); sessionStorage.setItem("client_pin_verified", "true");
-        resetPinAttempts(user.uid);
-      } else {
-        const rem = trackPinFailure(user.uid);
-        setRemainingAttempts(rem);
-        setPinError(t.dashboard.security.pin_error);
-        setPinInput("");
-      }
+      } else { setPinError(true); setPinInput(""); }
     }
   };
 
-  const handleLogout = async () => {
-    if (!confirm(language === "fr" ? "Voulez-vous vraiment vous déconnecter ?" : "Do you really want to log out?")) return;
-    sessionStorage.removeItem("client_pin_verified");
-    await logoutUser();
-    router.push("/");
-  };
-
   const handleDeleteRequest = async (id: string) => {
-    if (confirm(t.dashboard.projects.cancel + " ?")) { await deleteBooking(id); fetchData(); }
+    if (confirm("Annuler cette demande ?")) { await deleteBooking(id); fetchData(); }
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
@@ -166,10 +115,10 @@ export default function DashboardPage() {
         await updateProfile(user, { displayName: profileForm.name });
         await updateUserDoc(user.uid, { displayName: profileForm.name });
       }
-      setProfileForm(p => ({ ...p, success: t.dashboard.profile.success }));
+      setProfileForm(p => ({ ...p, success: "Profil mis à jour !" }));
     } catch (err: any) { setProfileForm(p => ({ ...p, error: err.message })); }
     finally { setIsUpdatingProfile(false); }
-  }
+  };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,7 +136,7 @@ export default function DashboardPage() {
   };
 
   const handleDeleteReview = async (id: string) => {
-    if (confirm(t.dashboard.reviews.delete + " ?")) {
+    if (confirm("Supprimer ce témoignage ?")) {
       const { deleteReview } = await import("@/lib/firebase/db");
       await deleteReview(id); fetchData();
     }
@@ -208,18 +157,12 @@ export default function DashboardPage() {
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10">
           <div className="bg-white/80 backdrop-blur-3xl border border-[var(--border)] p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] text-[var(--red)] flex items-center justify-center mb-6 shadow-sm border border-red-100"><Lock className="w-8 h-8" /></div>
-            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">{hasPinConfigured ? t.dashboard.security.pin_verify_title : t.dashboard.security.pin_setup_title}</h1>
-            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed">{hasPinConfigured ? t.dashboard.security.pin_verify_desc : t.dashboard.security.pin_setup_desc}</p>
+            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">Espace Sécurisé</h1>
+            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed">Veuillez entrer votre Code PIN pour accéder à votre tableau de bord.</p>
             <form onSubmit={handlePinSubmit} className="w-full space-y-6">
-              <input type="password" value={pinInput} onChange={e=>{setPinInput(e.target.value); setPinError("");}} placeholder={t.dashboard.security.pin_placeholder} maxLength={4} autoFocus className={`w-full bg-[var(--off-white)] border ${pinError ? 'border-red-500':'border-[var(--border)] focus:border-[var(--red)]'} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all`} />
-              {pinError && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 text-red-500 text-[10px] font-bold uppercase">
-                  <AlertCircle className="w-3 h-3" /> {pinError} {remainingAttempts !== null && `(${remainingAttempts} restants)`}
-                </motion.div>
-              )}
-              <button type="submit" disabled={pinInput.length < 4} className="w-full py-4 bg-[var(--red)] rounded-2xl text-white font-black text-[11px] uppercase tracking-widest shadow-lg transition-all">{hasPinConfigured ? t.dashboard.security.pin_submit_verify : t.dashboard.security.pin_submit_setup}</button>
+              <input type="password" value={pinInput} onChange={e=>{setPinInput(e.target.value); setPinError(false);}} placeholder="••••" maxLength={4} autoFocus className={`w-full bg-[var(--off-white)] border ${pinError ? 'border-red-500':'border-[var(--border)] focus:border-[var(--red)]'} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all`} />
+              <button type="submit" disabled={pinInput.length < 4} className="w-full py-4 bg-[var(--red)] rounded-2xl text-white font-black text-[11px] uppercase tracking-widest shadow-lg transition-all">Déverrouiller</button>
             </form>
-            <button onClick={handleLogout} className="mt-8 text-[10px] text-[var(--muted)] hover:text-red-500 font-black uppercase tracking-widest transition-colors">{t.dashboard.security.logout}</button>
           </div>
         </motion.div>
       </div>
@@ -235,11 +178,11 @@ export default function DashboardPage() {
           <FadeUp>
             <div className="flex items-center gap-3 mb-6"><div className="h-2 w-8 bg-[var(--red)] rounded-full shadow-md" /><span className="text-[10px] font-black text-[var(--red)] uppercase tracking-widest">{t.dashboard.title}</span></div>
             <h1 className="text-4xl lg:text-6xl font-black text-[var(--charcoal)] tracking-tighter mb-4 leading-tight">{t.dashboard.welcome} <span className="text-[var(--red)]">{firstName}.</span></h1>
-            <p className="text-sm font-medium text-[var(--slate)] max-w-lg leading-relaxed">{t.account.desc}</p>
+            <p className="text-sm font-medium text-[var(--slate)] max-w-lg leading-relaxed">Suivez l{"'"}avancement de vos demandes et gérez vos actifs numériques en toute sécurité.</p>
           </FadeUp>
           <FadeIn delay={0.3}>
             <div className="bg-white/80 backdrop-blur-md border border-[var(--border)] px-8 py-6 rounded-[2.5rem] shadow-sm flex items-center gap-4">
-              <ShieldCheck className="w-6 h-6 text-[var(--red)]" /><div className="flex flex-col"><span className="text-[10px] font-black uppercase tracking-widest">{t.dashboard.secure}</span><span className="text-[9px] text-[var(--muted)] font-bold uppercase tracking-widest italic">{t.dashboard.stats.zero_breach}</span></div>
+              <ShieldCheck className="w-6 h-6 text-[var(--red)]" /><div className="flex flex-col"><span className="text-[10px] font-black uppercase tracking-widest">Compte Vérifié</span><span className="text-[9px] text-[var(--muted)] font-bold uppercase tracking-widest italic">Actif • SLA Premium</span></div>
             </div>
           </FadeIn>
         </div>
@@ -270,12 +213,12 @@ export default function DashboardPage() {
                   <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: req.status === "COMPLETED" ? "#10B981" : req.status === "ACTIVE" ? "#3B82F6" : "var(--red)" }} />
                   <div className="space-y-6">
                     <div className="flex justify-between items-start">
-                      <div className="space-y-1"><span className="text-[9px] font-black text-[var(--muted)] uppercase">{t.dashboard.projects.id}{req.id.slice(0, 8).toUpperCase()}</span><h3 className="display-sm text-[var(--charcoal)] line-clamp-2 uppercase">{req.serviceId}</h3></div>
+                      <div className="space-y-1"><span className="text-[9px] font-black text-[var(--muted)] uppercase">ID #{req.id.slice(0, 8).toUpperCase()}</span><h3 className="display-sm text-[var(--charcoal)] line-clamp-2 uppercase">{req.serviceId}</h3></div>
                       <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                     </div>
-                    <div className="p-5 bg-[var(--off-white)] rounded-2xl border border-slate-100"><p className="text-[8px] font-black text-[var(--muted)] uppercase mb-1">{t.dashboard.projects.date}</p><p className="text-xs font-bold">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p></div>
+                    <div className="p-5 bg-[var(--off-white)] rounded-2xl border border-slate-100"><p className="text-[8px] font-black text-[var(--muted)] uppercase mb-1">Date de demande</p><p className="text-xs font-bold">{req.createdAt ? new Date(req.createdAt.seconds*1000).toLocaleDateString() : 'N/A'}</p></div>
                     {req.adminNote && <div className="p-5 bg-red-50/50 border border-red-100 rounded-2xl text-[11px] text-[var(--slate)] leading-relaxed italic">"{req.adminNote}"</div>}
-                    {req.status === "PENDING" && <button onClick={() => handleDeleteRequest(req.id)} className="w-full py-4 bg-white border border-slate-200 rounded-full text-[9px] font-black uppercase text-red-500 hover:bg-red-50 transition-all shadow-sm">{t.dashboard.projects.cancel}</button>}
+                    {req.status === "PENDING" && <button onClick={() => handleDeleteRequest(req.id)} className="w-full py-4 bg-white border border-slate-200 rounded-full text-[9px] font-black uppercase text-red-500 hover:bg-red-50 transition-all shadow-sm">Annuler la demande</button>}
                   </div>
                 </motion.div>
               );
@@ -285,10 +228,10 @@ export default function DashboardPage() {
 
         {activeTab === "reviews" && (
           <div className="space-y-12 mb-16">
-            <div className="flex justify-between items-center"><h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight">{t.dashboard.reviews.title}</h2><button onClick={()=>{setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true);}} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-md">+ {t.dashboard.reviews.new}</button></div>
+            <div className="flex justify-between items-center"><h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight">Mes Témoignages</h2><button onClick={()=>{setEditingReview(null); setReviewRating(0); setReviewComment(""); setShowReviewModal(true);}} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black tracking-widest shadow-md">+ Nouveau</button></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {userReviews.length === 0 ? (
-                <div className="col-span-full py-20 text-center rounded-[3rem] bg-white border border-dashed border-slate-200 font-black text-xs text-[var(--muted)]">{t.dashboard.reviews.empty}</div>
+                <div className="col-span-full py-20 text-center rounded-[3rem] bg-white border border-dashed border-slate-200 font-black text-xs text-[var(--muted)]">Aucun témoignage envoyé.</div>
               ) : userReviews.map((rev) => (
                 <motion.div key={rev.id} whileHover={{ y: -5 }} className="bento-item p-8 glass-morphism relative overflow-hidden flex flex-col justify-between">
                   <div className="absolute top-0 left-0 w-full h-1 bg-amber-400" />
@@ -300,8 +243,8 @@ export default function DashboardPage() {
                     <p className="text-sm font-medium text-[var(--slate)] leading-relaxed mb-6 italic">"{rev.comment}"</p>
                   </div>
                   <div className="flex gap-4 pt-6 border-t border-slate-100">
-                    <button onClick={()=>{setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true);}} className="text-[9px] font-black uppercase text-[var(--muted)] hover:text-[var(--charcoal)] transition-all">{t.dashboard.reviews.edit}</button>
-                    <button onClick={()=>handleDeleteReview(rev.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-red-700 transition-all">{t.dashboard.reviews.delete}</button>
+                    <button onClick={()=>{setEditingReview(rev); setReviewRating(rev.rating); setReviewComment(rev.comment); setShowReviewModal(true);}} className="text-[9px] font-black uppercase text-[var(--muted)] hover:text-[var(--charcoal)] transition-all">Éditer</button>
+                    <button onClick={()=>handleDeleteReview(rev.id)} className="text-[9px] font-black uppercase text-red-500 hover:text-red-700 transition-all">Supprimer</button>
                   </div>
                 </motion.div>
               ))}
@@ -315,19 +258,17 @@ export default function DashboardPage() {
                <div className="w-24 h-24 rounded-full bg-[var(--red)] flex items-center justify-center text-3xl font-black text-white mb-6 shadow-xl">{(user.displayName || "C")[0]}</div>
                <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tight">{user.displayName}</h3>
                <p className="text-xs font-bold text-[var(--muted)] mt-1">{user.email}</p>
-               <button onClick={handleLogout} className="mt-8 text-[10px] font-black uppercase text-red-500 hover:text-red-700 transition-all tracking-widest">{t.dashboard.security.logout}</button>
             </div>
             <div className="lg:col-span-2 p-10 bg-white border border-[var(--border)] rounded-[3rem] shadow-lg relative overflow-hidden">
                <AuraGradient color="var(--red)" className="bottom-[-10%] right-[-10%] w-64 h-64 opacity-[0.03]" />
-               <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tighter mb-10">{t.dashboard.profile.title}</h3>
+               <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tighter mb-10">Informations du compte</h3>
                <form onSubmit={handleProfileUpdate} className="space-y-8">
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                   <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)]">{t.dashboard.profile.full_name}</label><input type="text" value={profileForm.name} onChange={e=>setProfileForm({...profileForm, name: e.target.value})} className="w-full bg-[var(--off-white)] border border-slate-200 p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none" /></div>
-                   <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)]">{t.dashboard.profile.email}</label><input type="email" value={profileForm.email} disabled className="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl text-sm font-bold opacity-60" /></div>
+                   <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)]">Nom Complet</label><input type="text" value={profileForm.name} onChange={e=>setProfileForm({...profileForm, name: e.target.value})} className="w-full bg-[var(--off-white)] border border-slate-200 p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none" /></div>
+                   <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)]">Email</label><input type="email" value={profileForm.email} disabled className="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl text-sm font-bold opacity-60" /></div>
                  </div>
                  {profileForm.success && <p className="text-[10px] font-black text-emerald-600 uppercase">{profileForm.success}</p>}
-                 {profileForm.error && <p className="text-[10px] font-black text-red-500 uppercase">{profileForm.error}</p>}
-                 <button type="submit" disabled={isUpdatingProfile} className="px-10 py-5 bg-[var(--charcoal)] text-white rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl">{isUpdatingProfile ? t.dashboard.profile.updating : t.dashboard.profile.save}</button>
+                 <button type="submit" disabled={isUpdatingProfile} className="px-10 py-5 bg-[var(--charcoal)] text-white rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl">{isUpdatingProfile ? "Action..." : "Sauvegarder"}</button>
                </form>
             </div>
           </div>
@@ -336,7 +277,7 @@ export default function DashboardPage() {
         <StaggerContainer className="grid md:grid-cols-2 gap-8">
           <StaggerItem>
             <div className="p-10 border border-slate-200 rounded-[3rem] bg-white shadow-sm flex flex-col sm:flex-row gap-8 group hover:border-red-200 transition-all">
-              <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center group-hover:bg-[var(--red)] transition-all"><RefreshCw className="w-8 h-8 text-[var(--red)] group-hover:text-white" /></div>
+              <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center group-hover:bg-[var(--red)] transition-all"><AlertTriangle className="w-8 h-8 text-[var(--red)] group-hover:text-white" /></div>
               <div className="flex-1">
                 <h3 className="text-2xl font-black tracking-tight mb-2">Support Prioritaire</h3>
                 <p className="text-sm text-[var(--slate)] font-medium mb-6 leading-relaxed">Intervention garantie en moins de 120min pour tous vos actifs.</p>
@@ -349,7 +290,7 @@ export default function DashboardPage() {
               <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-500 transition-all"><Cpu className="w-8 h-8 text-emerald-500 group-hover:text-white" /></div>
               <div className="flex-1">
                 <h3 className="text-2xl font-black tracking-tight mb-2">Cloud & Infra</h3>
-                <p className="text-sm text-[var(--slate)] font-medium mb-6 leading-relaxed">{t.dashboard.stats.scheduled}</p>
+                <p className="text-sm text-[var(--slate)] font-medium mb-6 leading-relaxed">Surveillance proactive de votre infrastructure 24/7.</p>
                 <Link href="/services" className="inline-flex items-center gap-3 px-6 py-4 rounded-full bg-[var(--off-white)] border border-slate-200 text-[10px] font-black uppercase hover:bg-white hover:border-emerald-200 transition-all shadow-sm">Explorer le catalogue <ArrowRight className="w-4 h-4 text-emerald-500" /></Link>
               </div>
             </div>
@@ -364,17 +305,17 @@ export default function DashboardPage() {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative w-full max-w-lg bg-white border border-[var(--border)] shadow-2xl rounded-[3rem] p-10 z-10 overflow-hidden">
                <AuraGradient color="var(--red)" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
                <button onClick={()=>setShowReviewModal(false)} className="absolute top-8 right-8 p-2 text-[var(--muted)] hover:text-[var(--charcoal)]"><X className="w-6 h-6" /></button>
-               <div className="mb-8"><div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-6"><Star className="w-8 h-8 text-[var(--red)] fill-current" /></div><h3 className="text-2xl font-black text-[var(--charcoal)]">{editingReview ? t.dashboard.reviews.edit : t.dashboard.reviews.new}</h3><p className="text-sm font-medium text-[var(--slate)] mt-2">{t.dashboard.reviews.modal_desc}</p></div>
+               <div className="mb-8"><div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-6"><Star className="w-8 h-8 text-[var(--red)] fill-current" /></div><h3 className="text-2xl font-black text-[var(--charcoal)]">{editingReview ? "Modifier mon avis" : "Laisser un témoignage"}</h3><p className="text-sm font-medium text-[var(--slate)] mt-2">Votre retour d{"'"}expérience nous est précieux.</p></div>
                <form onSubmit={handleSubmitReview} className="space-y-8 relative z-10">
                  <div>
-                   <label className="block text-[10px] font-black uppercase text-[var(--muted)] mb-4">{t.dashboard.reviews.rating}</label>
+                   <label className="block text-[10px] font-black uppercase text-[var(--muted)] mb-4">Votre note</label>
                    <div className="flex gap-2">{[1,2,3,4,5].map(star=>(<button key={star} type="button" onClick={()=>setReviewRating(star)} onMouseEnter={()=>setHoverRating(star)} onMouseLeave={()=>setHoverRating(0)} className="transition-transform hover:scale-110 active:scale-95"><Star className={`w-10 h-10 transition-colors ${(hoverRating||reviewRating)>=star ? 'text-amber-400 fill-amber-400 drop-shadow-md':'text-slate-100'}`} /></button>))}</div>
                  </div>
                  <div>
-                   <label className="block text-[10px] font-black uppercase text-[var(--muted)] mb-4">{t.dashboard.reviews.comment}</label>
+                   <label className="block text-[10px] font-black uppercase text-[var(--muted)] mb-4">Votre commentaire</label>
                    <div className="relative"><MessageSquare className="absolute top-5 left-5 w-5 h-5 text-[var(--muted)]" /><textarea required value={reviewComment} onChange={e=>setReviewComment(e.target.value)} placeholder="Partagez votre expérience..." className="w-full h-32 pl-14 pr-5 py-5 bg-[var(--off-white)] border border-slate-200 rounded-3xl text-[var(--charcoal)] outline-none focus:border-[var(--red)] transition-all resize-none shadow-inner" /></div>
                  </div>
-                 <button type="submit" disabled={isSubmittingReview || reviewRating === 0} className="w-full py-5 bg-[var(--red)] text-white rounded-full font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-95 transition-all">{isSubmittingReview ? t.dashboard.profile.updating : (editingReview ? t.dashboard.reviews.edit : t.dashboard.reviews.submit)}</button>
+                 <button type="submit" disabled={isSubmittingReview || reviewRating === 0} className="w-full py-5 bg-[var(--red)] text-white rounded-full font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-95 transition-all">{isSubmittingReview ? "Envoi..." : (editingReview ? "Mettre à jour" : "Publier mon avis")}</button>
                </form>
             </motion.div>
           </div>

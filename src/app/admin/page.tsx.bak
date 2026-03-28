@@ -1,21 +1,17 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, EyeOff, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert, Activity, Filter, RefreshCw, AlertCircle } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, EyeOff, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert, Activity, Filter, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  getServices, getBookings, getUsers, getMessages, getReviews,
-  updateBookingStatus, updateMessageStatus, updateService,
-  deleteBooking, deleteService, createService, deleteReview,
-  deleteUserDoc, getUserById, setUserPin, markAllReviewsAsRead,
-  updateUserDoc, canAttemptPin, trackPinFailure, resetPinAttempts
-} from "@/lib/firebase/db";
+import { getServices, getBookings, getUsers, getMessages, getReviews, updateBookingStatus, updateMessageStatus, updateService, deleteBooking, deleteService, createService, deleteReview, deleteUserDoc, BookingData, getUserById, setUserPin, markAllReviewsAsRead, updateUserDoc } from "@/lib/firebase/db";
 import { logoutUser } from "@/lib/firebase/auth";
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 
 const STATUS_MAP = {
   fr: {
@@ -38,21 +34,19 @@ const STATUS_MAP = {
   }
 };
 
-const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 10 minutes
-
 export default function AdminDashboard() {
   const { t, language } = useI18n();
   const router = useRouter();
   const { user, role, loading: authLoading } = useAuth();
-  
+
   const [activeTab, setActiveTab] = useState("requests");
   const [searchTerm, setSearchTerm] = useState("");
-  const [data, setData] = useState<{ requests: any[], clients: any[], services: any[], messages: any[], reviews: any[] }>({ 
-    requests: [], 
-    clients: [], 
-    services: [], 
-    messages: [], 
-    reviews: [] 
+  const [data, setData] = useState<{ requests: any[], clients: any[], services: any[], messages: any[], reviews: any[] }>({
+    requests: [],
+    clients: [],
+    services: [],
+    messages: [],
+    reviews: []
   });
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -68,42 +62,35 @@ export default function AdminDashboard() {
   const [hasPinConfigured, setHasPinConfigured] = useState(false);
   const [isPinVerified, setIsPinVerified] = useState(false);
   const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState("");
-  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+  const [pinError, setPinError] = useState(false);
 
   // Security Modals
   const [showPinChangeModal, setShowPinChangeModal] = useState(false);
   const [pinChangeForm, setPinChangeForm] = useState({ oldPin: "", newPin: "", error: "", success: "" });
   const [isChangingPin, setIsChangingPin] = useState(false);
+  const [showOldPin, setShowOldPin] = useState(false);
+  const [showNewPin, setShowNewPin] = useState(false);
+
+  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
+  const [passwordChangeForm, setPasswordChangeForm] = useState({ oldPassword: "", newPassword: "", error: "", success: "" });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Profile State
   const [profileForm, setProfileForm] = useState({ name: "", email: "", currentPassword: "", error: "", success: "" });
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
-  // Auto-logout Logic
-  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const resetLogoutTimer = useCallback(() => {
-    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    if (isPinVerified) {
-      logoutTimerRef.current = setTimeout(() => {
-        sessionStorage.removeItem("admin_pin_verified");
-        setIsPinVerified(false);
-        router.refresh();
-      }, AUTO_LOGOUT_TIME);
-    }
-  }, [isPinVerified, router]);
-
-  useEffect(() => {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    const handler = () => resetLogoutTimer();
-    events.forEach(e => window.addEventListener(e, handler));
-    resetLogoutTimer();
-    return () => {
-      events.forEach(e => window.removeEventListener(e, handler));
-      if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+  const friendlyFirebaseError = (code: string | undefined, fallback?: string): string => {
+    const map: Record<string, string> = {
+      "auth/wrong-password": "Mot de passe actuel incorrect.",
+      "auth/invalid-credential": "Identifiants incorrects. Veuillez réessayer.",
+      "auth/requires-recent-login": "Session expirée. Déconnectez-vous et reconnectez-vous.",
+      "auth/email-already-in-use": "Email déjà utilisé.",
+      "auth/weak-password": "Mot de passe trop faible.",
     };
-  }, [resetLogoutTimer]);
+    return map[code || ""] || fallback || "Une erreur s'est produite.";
+  };
 
   useEffect(() => {
     if (!authLoading) {
@@ -171,7 +158,7 @@ export default function AdminDashboard() {
   }, [activeTab]);
 
   const handleLogout = async () => {
-    if (!confirm(language === "fr" ? "Voulez-vous vraiment vous déconnecter ?" : "Do you really want to log out?")) return;
+    if (!confirm(language === "fr" ? "Déconnexion ?" : "Log out?")) return;
     sessionStorage.removeItem("admin_pin_verified");
     await logoutUser();
     router.push("/");
@@ -196,7 +183,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteBooking = async (id: string) => {
-    if (confirm(t.admin.modals.delete_confirm)) { await deleteBooking(id); fetchData(); }
+    if (confirm("Supprimer définitivement ?")) { await deleteBooking(id); fetchData(); }
   };
 
   const handleCreateService = async (e: React.FormEvent) => {
@@ -218,7 +205,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteService = async (id: string) => {
-    if (confirm(t.admin.modals.delete_confirm)) { await deleteService(id); fetchData(); }
+    if (confirm("Supprimer ce service ?")) { await deleteService(id); fetchData(); }
   };
 
   const handlePinChangeSubmit = async (e: React.FormEvent) => {
@@ -230,11 +217,11 @@ export default function AdminDashboard() {
       const userData = await getUserById(user.uid);
       if (!userData) throw new Error("Erreur serveur.");
       const oldHashed = await hashPin(pinChangeForm.oldPin);
-      if (oldHashed !== userData.pin) throw new Error(language === "fr" ? "Ancien PIN incorrect." : "Old PIN incorrect.");
-      if (pinChangeForm.newPin.length < 4) throw new Error(language === "fr" ? "Le PIN doit faire au moins 4 chiffres." : "PIN must be at least 4 digits.");
+      if (oldHashed !== userData.pin) throw new Error("Ancien PIN incorrect.");
+      if (pinChangeForm.newPin.length !== 6) throw new Error("Le PIN doit faire 6 chiffres.");
       const newHashed = await hashPin(pinChangeForm.newPin);
       await setUserPin(user.uid, newHashed);
-      setPinChangeForm({ oldPin: "", newPin: "", error: "", success: language === "fr" ? "PIN modifié !" : "PIN updated!" });
+      setPinChangeForm({ oldPin: "", newPin: "", error: "", success: "PIN modifié !" });
       setTimeout(() => setShowPinChangeModal(false), 2000);
     } catch (err: any) {
       setPinChangeForm(p => ({ ...p, error: err.message }));
@@ -246,26 +233,26 @@ export default function AdminDashboard() {
     if (!user) return;
     setIsUpdatingProfile(true);
     try {
-      const { updateProfile: fbUpdateProfile } = await import("firebase/auth");
+      const { updateProfile: fbUpdateProfile, updateEmail: fbUpdateEmail } = await import("firebase/auth");
       if (profileForm.name !== user.displayName) {
         await fbUpdateProfile(user, { displayName: profileForm.name });
         await updateUserDoc(user.uid, { displayName: profileForm.name });
       }
-      setProfileForm(p => ({ ...p, success: t.dashboard.profile.success }));
+      setProfileForm(p => ({ ...p, success: "Profil mis à jour !" }));
     } catch (err: any) {
       setProfileForm(p => ({ ...p, error: err.message }));
     } finally { setIsUpdatingProfile(false); }
   };
 
   const handleDeleteClient = async (uid: string) => {
-    if (confirm(t.admin.modals.delete_confirm)) {
+    if (confirm("Supprimer ce compte client ?")) {
       try { await deleteUserDoc(uid); fetchData(); }
       catch (err) { alert("Erreur."); }
     }
   };
 
   const handleDeleteReview = async (id: string) => {
-    if (confirm(t.admin.modals.delete_confirm)) { await deleteReview(id); fetchData(); }
+    if (confirm("Supprimer ce témoignage ?")) { await deleteReview(id); fetchData(); }
   };
 
   if (authLoading || role !== "ADMIN" || checkingPin) {
@@ -280,42 +267,23 @@ export default function AdminDashboard() {
     const handlePinSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!user || pinInput.length < 4) return;
-
-      if (!canAttemptPin(user.uid)) {
-        setPinError(language === "fr" ? "Compte verrouillé (15 min). Trop de tentatives." : "Account locked (15 min). Too many attempts.");
-        return;
-      }
-
       const hashed = await hashPin(pinInput);
       if (!hasPinConfigured) {
         await setUserPin(user.uid, hashed);
         setHasPinConfigured(true);
         setIsPinVerified(true);
         sessionStorage.setItem("admin_pin_verified", "true");
-        resetPinAttempts(user.uid);
         fetchData();
       } else {
         const userData = await getUserById(user.uid);
         if (userData?.pin === hashed) {
           setIsPinVerified(true);
           sessionStorage.setItem("admin_pin_verified", "true");
-          resetPinAttempts(user.uid);
           fetchData();
         } else {
-          const rem = trackPinFailure(user.uid);
-          setRemainingAttempts(rem);
-          setPinError(t.admin.security.pin_error);
+          setPinError(true);
           setPinInput("");
         }
-      }
-    };
-
-    // Emergency Master Key Bypass (Internal Only)
-    const handleEmergencyBypass = async () => {
-      if (pinInput === process.env.NEXT_PUBLIC_ADMIN_MASTER_PIN) {
-        setIsPinVerified(true);
-        sessionStorage.setItem("admin_pin_verified", "true");
-        fetchData();
       }
     };
 
@@ -325,18 +293,13 @@ export default function AdminDashboard() {
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm relative z-10">
           <div className="bg-white/80 backdrop-blur-3xl border border-[var(--border)] p-10 rounded-[2.5rem] shadow-xl flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-2xl bg-[var(--red-light)] text-[var(--red)] flex items-center justify-center mb-6 border border-red-100 shadow-sm"><Lock className="w-8 h-8" /></div>
-            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">{hasPinConfigured ? t.admin.security.pin_title : t.admin.security.pin_setup}</h1>
-            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed">{t.admin.security.pin_desc}</p>
+            <h1 className="text-2xl font-black text-[var(--charcoal)] tracking-tight mb-2">{hasPinConfigured ? "Accès Restreint" : "Initier Code Admin"}</h1>
+            <p className="text-[var(--slate)] text-[11px] mb-8 leading-relaxed">Veuillez entrer le Code PIN Maître pour débloquer l{"'"}interface.</p>
             <form onSubmit={handlePinSubmit} className="w-full space-y-6">
-              <input type="password" value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(""); }} placeholder="••••" maxLength={6} autoFocus className={`w-full bg-[var(--off-white)] border ${pinError ? "border-red-500" : "border-[var(--border)] focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all`} />
-              {pinError && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 text-red-500 text-[10px] font-bold uppercase">
-                  <AlertCircle className="w-3 h-3" /> {pinError} {remainingAttempts !== null && `(${remainingAttempts} restants)`}
-                </motion.div>
-              )}
-              <button type="submit" disabled={pinInput.length < 4} className="w-full py-4 bg-[var(--red)] rounded-2xl text-white font-black text-[11px] uppercase tracking-widest shadow-lg disabled:opacity-50 transition-all">{hasPinConfigured ? t.admin.security.pin_unlock : t.admin.security.pin_setup}</button>
+              <input type="password" value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} placeholder="••••" maxLength={6} autoFocus className={`w-full bg-[var(--off-white)] border ${pinError ? "border-red-500" : "border-[var(--border)] focus:border-[var(--red)]"} p-4 rounded-2xl text-center text-2xl font-black tracking-[1em] outline-none transition-all`} />
+              <button type="submit" disabled={pinInput.length < 4} className="w-full py-4 bg-[var(--red)] rounded-2xl text-white font-black text-[11px] uppercase tracking-widest shadow-lg disabled:opacity-50 transition-all">{hasPinConfigured ? "Déverrouiller" : "Enregistrer mon PIN"}</button>
             </form>
-            <button onClick={handleLogout} className="mt-8 text-[10px] text-[var(--muted)] hover:text-red-500 font-black uppercase tracking-widest transition-colors">{t.admin.nav.logout}</button>
+            <button onClick={handleLogout} className="mt-8 text-[10px] text-[var(--muted)] hover:text-red-500 font-black uppercase tracking-widest transition-colors">Déconnexion</button>
           </div>
         </motion.div>
       </div>
@@ -401,28 +364,22 @@ export default function AdminDashboard() {
           ))}
         </nav>
         <div className="p-6 border-t border-slate-100">
-          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-5 py-4 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 hover:text-[var(--red)] rounded-xl transition-all"><LogOut className="w-4 h-4" /> {t.admin.nav.logout}</button>
+          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-5 py-4 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 hover:text-[var(--red)] rounded-xl transition-all"><LogOut className="w-4 h-4" /> Déconnexion</button>
         </div>
       </motion.aside>
 
       {/* Main Content */}
       <main className="flex-1 md:ml-64 xl:ml-72 flex flex-col min-h-[100svh] relative z-20">
         <header className="glass-morphism px-8 py-5 flex items-center justify-between sticky top-0 z-50 border-b border-slate-200/50 shadow-sm">
-          <div className="flex-1 max-md hidden md:block">
-             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Core Network: Online</span>
-             </div>
-          </div>
-          <div className="flex-1 max-w-md relative sm:block">
+          <div className="flex-1 max-w-md relative hidden sm:block">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)]" />
             <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Rechercher..." className="w-full pl-11 pr-4 py-2.5 bg-[var(--off-white)] border border-slate-200 rounded-full text-xs font-bold focus:border-[var(--red)] outline-none transition-all" />
           </div>
           <div className="flex items-center gap-6">
             <button onClick={() => fetchData()} title="Actualiser" className="p-2.5 rounded-full bg-[var(--red-light)] text-[var(--red)] hover:bg-[var(--red)] hover:text-white transition-all"><RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /></button>
-            <button onClick={() => setShowPinChangeModal(true)} title="Modifier PIN" className="p-2.5 bg-emerald-50 text-emerald-600 rounded-full hover:bg-emerald-100"><Key className="w-4 h-4" /></button>
+            <button onClick={() => setShowPinChangeModal(true)} className="p-2.5 bg-emerald-50 text-emerald-600 rounded-full hover:bg-emerald-100"><Key className="w-4 h-4" /></button>
             <button onClick={() => setShowNotifications(!showNotifications)} className="relative p-2.5 bg-[var(--off-white)] border border-slate-200 rounded-full"><Bell className="w-4 h-4 text-[var(--slate)]" />{(data.reviews.filter(r=>!r.isRead).length + data.messages.filter(m=>m.status==='UNREAD').length) > 0 && <span className="absolute top-2 right-2 w-2 h-2 bg-[var(--red)] rounded-full border-2 border-white" />}</button>
-            <div className="w-10 h-10 rounded-full bg-[var(--red)] text-white flex items-center justify-center font-black text-xs border-2 border-white shadow-md">{(user?.displayName || "A")[0]}</div>
+            <div className="w-10 h-10 rounded-full bg-[var(--red)] text-white flex items-center justify-center font-black text-xs border-2 border-white shadow-md">SA</div>
           </div>
         </header>
 
@@ -446,8 +403,8 @@ export default function AdminDashboard() {
           </StaggerContainer>
 
           <div className="flex items-center justify-between gap-4 mb-10">
-            <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase">{activeTab}</h2>
-            {activeTab === "services" && <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black">+ {t.admin.modals.new_service}</button>}
+            <h2 className="text-2xl font-black text-[var(--charcoal)] tracking-tight uppercase">Base de données: {activeTab}</h2>
+            {activeTab === "services" && <button onClick={() => setNewServiceModal(true)} className="btn btn-red px-6 py-3 text-[10px] uppercase font-black">+ Nouveau Service</button>}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -455,7 +412,7 @@ export default function AdminDashboard() {
               const mapObj = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
               return (
                 <motion.div key={req.id} whileHover={{ y: -5 }} className="bento-item glass-morphism spatial-ui-layer p-8 group relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: req.status === "COMPLETED" ? "#10B981" : req.status === "ACTIVE" ? "#3B82F6" : "var(--red)" }} />
+                  <div className="absolute top-0 left-0 w-full h-1 bg-[var(--red)]" style={{ backgroundColor: req.status === "COMPLETED" ? "#10B981" : req.status === "ACTIVE" ? "#3B82F6" : "var(--red)" }} />
                   <div className="space-y-6">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
@@ -465,11 +422,11 @@ export default function AdminDashboard() {
                       <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${mapObj.cls}`}>{mapObj.label}</span>
                     </div>
                     <div className="p-5 bg-[var(--off-white)] rounded-2xl border border-slate-100 space-y-3">
-                      <div><p className="text-[8px] font-black uppercase text-[var(--muted)] tracking-widest">{t.admin.table.service}</p><p className="text-xs font-bold text-[var(--charcoal)] truncate uppercase">{req.serviceId}</p></div>
+                      <div><p className="text-[8px] font-black uppercase text-[var(--muted)] tracking-widest">Service</p><p className="text-xs font-bold text-[var(--charcoal)] truncate uppercase">{req.serviceId}</p></div>
                       <div><p className="text-[8px] font-black uppercase text-[var(--muted)] tracking-widest">Budget</p><p className="text-sm font-black text-[var(--red)] italic">{req.budget}</p></div>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-3 bg-[var(--charcoal)] text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all shadow-md"><Eye className="w-3.5 h-3.5" /> {t.admin.table.open}</button>
+                      <button onClick={() => setSelectedBooking(req)} className="flex-[1.5] py-3 bg-[var(--charcoal)] text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black transition-all shadow-md"><Eye className="w-3.5 h-3.5" /> Détails</button>
                       <button onClick={() => handleDeleteBooking(req.id)} className="ml-2 p-3 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-all"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
@@ -588,11 +545,11 @@ export default function AdminDashboard() {
                 <h3 className="text-2xl font-black text-[var(--charcoal)] tracking-tighter mb-8 flex items-center gap-4"><div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center"><Edit3 className="w-5 h-5 text-emerald-600" /></div>Paramètres</h3>
                 <form onSubmit={handleProfileUpdate} className="space-y-8">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                    <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">{t.dashboard.profile.full_name}</label><input type="text" value={profileForm.name} onChange={e => setProfileForm({...profileForm, name: e.target.value})} className="w-full bg-[var(--off-white)] border border-slate-200 p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none" /></div>
-                    <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">{t.dashboard.profile.email}</label><input type="email" value={profileForm.email} disabled className="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl text-sm font-bold opacity-60" /></div>
+                    <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">Nom</label><input type="text" value={profileForm.name} onChange={e => setProfileForm({...profileForm, name: e.target.value})} className="w-full bg-[var(--off-white)] border border-slate-200 p-5 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none" /></div>
+                    <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest">Email</label><input type="email" value={profileForm.email} disabled className="w-full bg-slate-50 border border-slate-200 p-5 rounded-2xl text-sm font-bold opacity-60" /></div>
                   </div>
                   {profileForm.success && <p className="text-[10px] font-black text-emerald-600 uppercase">{profileForm.success}</p>}
-                  <button type="submit" disabled={isUpdatingProfile} className="px-10 py-5 bg-[var(--charcoal)] text-white rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all">{isUpdatingProfile ? "Action..." : t.dashboard.profile.save}</button>
+                  <button type="submit" disabled={isUpdatingProfile} className="px-10 py-5 bg-[var(--charcoal)] text-white rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all">{isUpdatingProfile ? "Action..." : "Sauvegarder"}</button>
                 </form>
               </div>
             </motion.div>
@@ -608,9 +565,9 @@ export default function AdminDashboard() {
               <button onClick={() => setSelectedBooking(null)} className="absolute top-6 right-6 p-2 text-[var(--muted)] hover:text-[var(--charcoal)]"><X className="w-6 h-6" /></button>
               <h2 className="text-2xl font-black text-[var(--charcoal)] uppercase tracking-tighter mb-8">Détails de la demande</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-                <div><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-1">{t.admin.table.client}</span><p className="font-bold text-lg">{selectedBooking.clientName || selectedBooking.entity}</p></div>
+                <div><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-1">Client</span><p className="font-bold text-lg">{selectedBooking.clientName || selectedBooking.entity}</p></div>
                 <div><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-1">Contact</span><p className="font-bold">{selectedBooking.email}<br/>{selectedBooking.phone}</p></div>
-                <div><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-1">{t.admin.table.service}</span><p className="font-bold text-[var(--red)]">{selectedBooking.serviceId}</p></div>
+                <div><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-1">Service</span><p className="font-bold text-[var(--red)]">{selectedBooking.serviceId}</p></div>
                 <div><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-1">Budget</span><p className="font-black text-emerald-600 italic text-lg">{selectedBooking.budget}</p></div>
                 <div className="md:col-span-2"><span className="text-[10px] font-black uppercase text-[var(--muted)] tracking-widest block mb-2">Description</span><div className="p-6 bg-[var(--off-white)] border border-slate-100 rounded-3xl text-xs leading-relaxed whitespace-pre-wrap">{selectedBooking.description}</div></div>
               </div>
@@ -645,12 +602,12 @@ export default function AdminDashboard() {
         {statusPrompt && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl">
             <div className="bg-white p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl border border-[var(--border)]">
-              <h2 className="text-xl font-black text-[var(--charcoal)] uppercase mb-4">{t.admin.modals.status_update}</h2>
+              <h2 className="text-xl font-black text-[var(--charcoal)] uppercase mb-4">Mise à jour statut</h2>
               <p className="text-xs text-[var(--slate)] mb-6 font-medium">Passage à <strong className="text-[var(--red)]">{statusPrompt.status}</strong>. Note pour le client :</p>
               <textarea value={adminNote} onChange={(e) => setAdminNote(e.target.value)} placeholder="Votre commentaire..." className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm h-32 resize-none outline-none focus:border-[var(--red)] mb-6 transition-all shadow-inner" />
               <div className="flex justify-end gap-3">
-                <button onClick={() => setStatusPrompt(null)} className="px-6 py-3 bg-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest">{t.admin.modals.cancel}</button>
-                <button onClick={confirmStatusChange} className="px-6 py-3 bg-[var(--red)] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">{t.admin.modals.save}</button>
+                <button onClick={() => setStatusPrompt(null)} className="px-6 py-3 bg-slate-100 rounded-full text-[10px] font-black uppercase tracking-widest">Annuler</button>
+                <button onClick={confirmStatusChange} className="px-6 py-3 bg-[var(--red)] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Sauvegarder</button>
               </div>
             </div>
           </motion.div>
@@ -661,7 +618,7 @@ export default function AdminDashboard() {
             <div className="bg-white p-10 rounded-[3rem] w-full max-w-sm relative shadow-2xl border border-[var(--border)] overflow-hidden">
               <AuraGradient color="emerald" className="top-0 right-0 w-64 h-64 opacity-[0.05]" />
               <button onClick={() => setShowPinChangeModal(false)} className="absolute top-6 right-6 p-2 text-[var(--muted)] hover:text-[var(--charcoal)]"><X className="w-5 h-5" /></button>
-              <div className="mb-8"><div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4"><Key className="w-7 h-7" /></div><h3 className="text-xl font-black text-[var(--charcoal)]">{t.dashboard.profile.change_pin}</h3><p className="text-[11px] font-medium text-[var(--slate)] mt-1">Ancien PIN + Nouveau PIN (6 chiffres).</p></div>
+              <div className="mb-8"><div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4"><Key className="w-7 h-7" /></div><h3 className="text-xl font-black text-[var(--charcoal)]">Code PIN Maître</h3><p className="text-[11px] font-medium text-[var(--slate)] mt-1">Ancien PIN + Nouveau PIN (6 chiffres).</p></div>
               <form onSubmit={handlePinChangeSubmit} className="space-y-6 relative z-10">
                 <div className="space-y-4">
                   <input type="password" value={pinChangeForm.oldPin} onChange={e=>setPinChangeForm({...pinChangeForm, oldPin: e.target.value})} placeholder="Ancien PIN" maxLength={6} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-center text-xl font-black tracking-widest outline-none focus:border-[var(--red)] transition-all shadow-inner" />
@@ -670,42 +627,6 @@ export default function AdminDashboard() {
                 {pinChangeForm.error && <p className="text-[10px] text-red-500 font-black uppercase text-center">{pinChangeForm.error}</p>}
                 {pinChangeForm.success && <p className="text-[10px] text-emerald-600 font-black uppercase text-center">{pinChangeForm.success}</p>}
                 <button type="submit" disabled={isChangingPin} className="w-full py-4 bg-emerald-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all">{isChangingPin ? "Modification..." : "Confirmer"}</button>
-              </form>
-            </div>
-          </motion.div>
-        )}
-
-        {newServiceModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-            <div className="bg-white p-10 rounded-[3rem] w-full max-w-md relative shadow-2xl border border-[var(--border)]">
-              <button onClick={() => setNewServiceModal(false)} className="absolute top-6 right-6 p-2 text-[var(--muted)] hover:text-[var(--charcoal)]"><X className="w-5 h-5" /></button>
-              <h3 className="text-xl font-black text-[var(--charcoal)] uppercase mb-8">{t.admin.modals.new_service}</h3>
-              <form onSubmit={handleCreateService} className="space-y-6">
-                <input type="text" placeholder={t.admin.modals.title} value={newServiceForm.title} onChange={e=>setNewServiceForm({...newServiceForm, title: e.target.value})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none" />
-                <textarea placeholder={t.admin.modals.desc} value={newServiceForm.description} onChange={e=>setNewServiceForm({...newServiceForm, description: e.target.value})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm h-32 outline-none focus:border-[var(--red)]" />
-                <div className="grid grid-cols-2 gap-4">
-                  <input type="number" placeholder={t.admin.modals.price} value={newServiceForm.priceCFA} onChange={e=>setNewServiceForm({...newServiceForm, priceCFA: Number(e.target.value)})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm font-bold outline-none" />
-                  <input type="text" placeholder={t.admin.modals.category} value={newServiceForm.category} onChange={e=>setNewServiceForm({...newServiceForm, category: e.target.value})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm font-bold outline-none" />
-                </div>
-                <button type="submit" className="w-full py-4 bg-[var(--red)] text-white rounded-full font-black text-[10px] uppercase tracking-widest">{t.admin.modals.save}</button>
-              </form>
-            </div>
-          </motion.div>
-        )}
-
-        {editServiceModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-            <div className="bg-white p-10 rounded-[3rem] w-full max-w-md relative shadow-2xl border border-[var(--border)]">
-              <button onClick={() => setEditServiceModal(null)} className="absolute top-6 right-6 p-2 text-[var(--muted)] hover:text-[var(--charcoal)]"><X className="w-5 h-5" /></button>
-              <h3 className="text-xl font-black text-[var(--charcoal)] uppercase mb-8">{t.admin.modals.edit_service}</h3>
-              <form onSubmit={handleUpdateService} className="space-y-6">
-                <input type="text" placeholder={t.admin.modals.title} value={editServiceModal.title} onChange={e=>setEditServiceModal({...editServiceModal, title: e.target.value})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm font-bold focus:border-[var(--red)] outline-none" />
-                <textarea placeholder={t.admin.modals.desc} value={editServiceModal.description} onChange={e=>setEditServiceModal({...editServiceModal, description: e.target.value})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm h-32 outline-none focus:border-[var(--red)]" />
-                <div className="grid grid-cols-2 gap-4">
-                  <input type="number" placeholder={t.admin.modals.price} value={editServiceModal.priceCFA} onChange={e=>setEditServiceModal({...editServiceModal, priceCFA: Number(e.target.value)})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm font-bold outline-none" />
-                  <input type="text" placeholder={t.admin.modals.category} value={editServiceModal.category} onChange={e=>setEditServiceModal({...editServiceModal, category: e.target.value})} required className="w-full bg-[var(--off-white)] border border-slate-200 p-4 rounded-2xl text-sm font-bold outline-none" />
-                </div>
-                <button type="submit" className="w-full py-4 bg-[var(--red)] text-white rounded-full font-black text-[10px] uppercase tracking-widest">{t.admin.modals.save}</button>
               </form>
             </div>
           </motion.div>

@@ -15,35 +15,35 @@ export default function Home() {
   const { t, language } = useI18n();
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  
+
   // Scrollytelling & Kinetic Typography
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const textScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.05]);
 
   const SERVICES = [
-    { 
-      id: "cyber", 
-      tag: t.services.cyber.tag, 
-      icon: ShieldAlert, 
-      title: t.services_page.items.cyber.title, 
+    {
+      id: "cyber",
+      tag: t.services.cyber.tag,
+      icon: ShieldAlert,
+      title: t.services_page.items.cyber.title,
       desc: t.services_page.items.cyber.desc,
       span: "md:col-span-2 lg:col-span-2",
       highlight: true
     },
-    { 
-      id: "infog", 
-      tag: t.services.it.tag, 
-      icon: Server, 
-      title: t.services_page.items.it.title, 
+    {
+      id: "infog",
+      tag: t.services.it.tag,
+      icon: Server,
+      title: t.services_page.items.it.title,
       desc: t.services_page.items.it.desc,
       span: "md:col-span-1 lg:col-span-1"
     },
-    { 
-      id: "voip", 
-      tag: t.services.infra.tag, 
-      icon: PhoneCall, 
-      title: t.services_page.items.voip.title, 
+    {
+      id: "voip",
+      tag: t.services.infra.tag,
+      icon: PhoneCall,
+      title: t.services_page.items.voip.title,
       desc: t.services_page.items.voip.desc,
       span: "md:col-span-1 lg:col-span-1"
     },
@@ -62,7 +62,7 @@ export default function Home() {
 
       {/* ── ELITE HERO (White/Red 2026 Premium) ───────────────────── */}
       <section ref={heroRef} className="relative min-h-[90svh] flex items-center pt-24 md:pt-32 overflow-hidden bg-white">
-        
+
         {/* Aura Gradients (Bright clean style) */}
         <AuraGradient color="var(--red)" className="top-[-10%] right-[-5%] w-[800px] h-[800px] opacity-[0.06]" delay={0} />
         <AuraGradient color="var(--slate)" className="bottom-[10%] left-[5%] w-[600px] h-[600px] opacity-[0.03]" delay={2} />
@@ -78,11 +78,11 @@ export default function Home() {
           <div className="w-24 h-24 border-2 border-[var(--red)] rounded-full blur-[4px]" />
         </SpatialLayer>
 
-        <motion.div 
+        <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
           className="container-xl relative z-10 grid lg:grid-cols-2 gap-12 xl:gap-24 items-center py-20"
         >
-          
+
           <div className="max-w-2xl">
             <FadeUp delay={0.1}>
               <div className="flex flex-wrap items-center gap-3 mb-8">
@@ -99,9 +99,9 @@ export default function Home() {
                 </div>
               </div>
             </FadeUp>
-            
+
             <FadeUp delay={0.2}>
-              <motion.h1 
+              <motion.h1
                 style={{ scale: textScale }}
                 className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.9] kinetic-text overflow-hidden"
               >
@@ -117,7 +117,7 @@ export default function Home() {
                   </motion.span>
                 ))}
                 <br/>
-                <motion.span 
+                <motion.span
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ type: "spring", damping: 20, stiffness: 100, delay: 0.5 }}
@@ -159,9 +159,9 @@ export default function Home() {
                     <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <input 
-                  type="text" 
-                  placeholder={t.hero.search_placeholder} 
+                <input
+                  type="text"
+                  placeholder={t.hero.search_placeholder}
                   className="w-full py-3 px-2 bg-transparent outline-none text-sm font-bold text-[var(--charcoal)] placeholder:text-slate-400 placeholder:font-medium"
                 />
                 <Link href="/services">
@@ -226,7 +226,7 @@ export default function Home() {
                   <AuraGradient color="var(--red)" className="top-[20%] left-[20%] w-full h-full opacity-[0.08]" delay={1} />
                   <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
                 </div>
-                
+
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="flex items-center justify-between mb-auto">
                     <div className="p-3 bg-[var(--red)] rounded-2xl shadow-lg">
@@ -253,11 +253,11 @@ export default function Home() {
                           <span className="text-[10px] font-bold text-[var(--red)]">{item.val}</span>
                         </div>
                         <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                          <motion.div 
+                          <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: "100%" }}
                             transition={{ duration: 1.5, ease: "circOut" }}
-                            className="h-full bg-gradient-to-r from-[var(--red)] to-[#FF5C78] rounded-full" 
+                            className="h-full bg-gradient-to-r from-[var(--red)] to-[#FF5C78] rounded-full"
                           />
                         </div>
                       </div>
@@ -269,7 +269,7 @@ export default function Home() {
                       <p className="text-[8px] text-red-500 font-black uppercase tracking-[0.3em] mb-1">Status Report</p>
                       <p className="text-sm font-bold tracking-tight">Zero Threats Detected</p>
                     </div>
-                    <motion.div 
+                    <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                       className="w-10 h-10 border border-dashed border-white/20 rounded-full flex items-center justify-center shrink-0"
@@ -307,17 +307,17 @@ export default function Home() {
 
                     <div className="relative z-10 flex flex-col h-full">
                       <div className={`w-16 h-16 rounded-[1.25rem] flex items-center justify-center mb-8 border-2 transition-all duration-700 ${
-                        highlight 
+                        highlight
                           ? "bg-[var(--red)] border-[var(--red)] shadow-[0_12px_40px_rgba(230,0,0,0.25)]"
                           : "bg-white border-slate-100 group-hover:bg-[var(--red)] group-hover:border-[var(--red)] group-hover:shadow-[0_12px_40px_rgba(230,0,0,0.2)]"
                       }`}>
                         <Icon className={`w-7 h-7 transition-colors duration-700 ${highlight ? "text-white" : "text-[var(--charcoal)] group-hover:text-white"}`} />
                       </div>
-                      
+
                       <span className={`inline-flex py-1.5 px-4 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] mb-4 self-start ${
                         highlight ? "bg-white/10 border-white/20 text-white" : "bg-slate-50 border-slate-100 text-[var(--muted)] group-hover:text-[var(--red)]/80 transition-colors"
                       }`}>{tag}</span>
-                      
+
                       <h3 className="text-2xl font-black mb-4 leading-tight text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500">{title}</h3>
                       <p className="text-base mb-10 text-[var(--slate)] leading-relaxed font-medium">{desc}</p>
 
@@ -350,7 +350,7 @@ export default function Home() {
               <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">
                 {t.why.desc}
               </p>
-              
+
               <div className="grid sm:grid-cols-1 gap-8">
                 {[
                   { icon: ShieldCheck, title: t.why.items.certs, text: t.why.items.certs_desc },
@@ -369,7 +369,7 @@ export default function Home() {
                 ))}
               </div>
             </SlideLeft>
-            
+
             <SlideRight className="relative">
               <div className="relative aspect-square max-w-sm mx-auto spatial-ui-layer">
                 <AuraGradient color="var(--red)" className="inset-0 w-full h-full opacity-[0.1]" />
@@ -412,7 +412,7 @@ export default function Home() {
               <p className="text-body mb-8 text-[var(--slate)] leading-relaxed">
                 {t.faq.desc}
               </p>
-              
+
               <div className="p-8 bg-white rounded-[2rem] border-2 border-[var(--border)] shadow-sm">
                 <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-3">{t.faq.question_placeholder}</p>
                 <Link href="/contact" className="text-sm font-black text-[var(--red)] flex items-center gap-2 group">
@@ -424,17 +424,17 @@ export default function Home() {
             <SlideRight className="lg:col-span-7">
               <div className="space-y-4">
                 {[
-                  { 
-                    q: language === "fr" ? "Quels sont vos délais d'intervention à Douala ?" : "What are your intervention times in Douala?", 
-                    a: language === "fr" 
-                      ? "Pour nos clients sous contrat d'infogérance, nous garantissons une intervention sur site en moins de 2 heures pour les urgences critiques." 
-                      : "For our managed services clients, we guarantee on-site intervention in less than 2 hours for critical emergencies." 
+                  {
+                    q: language === "fr" ? "Quels sont vos délais d'intervention à Douala ?" : "What are your intervention times in Douala?",
+                    a: language === "fr"
+                      ? "Pour nos clients sous contrat d'infogérance, nous garantissons une intervention sur site en moins de 2 heures pour les urgences critiques."
+                      : "For our managed services clients, we guarantee on-site intervention in less than 2 hours for critical emergencies."
                   },
-                  { 
-                    q: language === "fr" ? "Comment garantissez-vous la sécurité ?" : "How do you guarantee security?", 
-                    a: language === "fr" 
-                      ? "Nous appliquons les protocoles ISO 27001. Chaque infrastructure est protégée par des firewalls de nouvelle génération." 
-                      : "We apply ISO 27001 protocols. Every infrastructure is protected by next-generation firewalls." 
+                  {
+                    q: language === "fr" ? "Comment garantissez-vous la sécurité ?" : "How do you guarantee security?",
+                    a: language === "fr"
+                      ? "Nous appliquons les protocoles ISO 27001. Chaque infrastructure est protégée par des firewalls de nouvelle génération."
+                      : "We apply ISO 27001 protocols. Every infrastructure is protected by next-generation firewalls."
                   },
                 ].map((item, i) => (
                   <FAQItem key={i} question={item.q} answer={item.a} />
@@ -448,7 +448,7 @@ export default function Home() {
       {/* ── CTA BAND (Bright premium style) ────────────────────── */}
       <section className="bg-white py-28 mt-24 relative overflow-hidden border-t border-[var(--border)]">
         <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.05]" />
-        
+
         <div className="container-xl relative z-10 flex flex-col items-center">
           <FadeUp>
             <div className="text-center max-w-2xl mx-auto">
@@ -475,7 +475,7 @@ export default function Home() {
                 </Link>
                 <Link href="/contact">
                   <MagneticButton>
-                    <motion.span 
+                    <motion.span
                       whileHover={{ scale: 1.03 }}
                       className="btn px-12 py-5 text-lg font-black bg-white text-[var(--charcoal)] border-2 border-[var(--border)] shadow-sm hover:border-[var(--charcoal)] rounded-full zero-jank transition-all"
                     >
@@ -493,10 +493,10 @@ export default function Home() {
 }
 function FAQItem({ question, answer }: { question: string, answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <div className="border-b border-slate-200 last:border-0">
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-6 flex items-center justify-between text-left group"
       >
