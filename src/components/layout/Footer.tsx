@@ -18,8 +18,9 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-[var(--border)] mt-auto relative overflow-hidden">
       {/* High-Impact Aura for Footer (White Mode Premium) */}
-      <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-[800px] h-[800px] opacity-[0.03]" />
+      <AuraGradient color="var(--red)" className="bottom-[-20%] left-[-10%] w-[800px] h-[800px] opacity-[0.04]" />
       <AuraGradient color="var(--slate)" className="top-[-10%] right-[-5%] w-[600px] h-[600px] opacity-[0.02]" />
+      <AuraGradient color="var(--red)" className="top-[20%] right-[15%] w-[400px] h-[400px] opacity-[0.02]" delay={4} />
       
       <div className="container-xl pt-32 pb-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-20 lg:gap-32">

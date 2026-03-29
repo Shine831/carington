@@ -1,5 +1,5 @@
 /* ============================================================
-   E-JARNAULD SOFT — "Écarlate" Elite Design System v4 (2026+)
+   E-JARNAULD SOFT — "Écarlate" Elite Design System v5 (2027+)
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -20,24 +20,24 @@
   --slate:      #666666;      /* Lighter slate for airy feel */
   --muted:      #999999;
 
-  /* Elite Shadow Tokens — 2026+ Spatial UI (Hyper-diffuse) */
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.02);
-  --shadow-md:  0 12px 32px rgba(0,0,0,0.04);
-  --shadow-lg:  0 24px 64px rgba(0,0,0,0.06);
-  --shadow-xl:  0 48px 128px rgba(0,0,0,0.10);
+  /* Elite Shadow Tokens — 2027+ Spatial UI (Hyper-diffuse) */
+  --shadow-sm:  0 4px 12px rgba(0,0,0,0.015);
+  --shadow-md:  0 16px 48px rgba(0,0,0,0.03);
+  --shadow-lg:  0 32px 80px rgba(0,0,0,0.05);
+  --shadow-xl:  0 64px 160px rgba(0,0,0,0.08);
   
   /* Glow Effects */
-  --shadow-red: 0 12px 40px rgba(230,0,0,0.15);
-  --shadow-glow-red: 0 0 60px rgba(230,0,0,0.12);
-  --shadow-glow-white: 0 0 40px rgba(255,255,255,0.8);
+  --shadow-red: 0 12px 40px rgba(230,0,0,0.12);
+  --shadow-glow-red: 0 0 60px rgba(230,0,0,0.1);
+  --shadow-glow-white: 0 0 40px rgba(255,255,255,0.7);
 
-  /* Glassmorphism 2.0 (Multilevel Spatial Depth) */
-  --glass-0: rgba(255, 255, 255, 0.2);
-  --glass-1: rgba(255, 255, 255, 0.4);
-  --glass-2: rgba(255, 255, 255, 0.6);
-  --glass-3: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-blur: blur(32px) saturate(180%);
+  /* Glassmorphism 3.0 (Spatial Depth Layering) */
+  --glass-0: rgba(255, 255, 255, 0.15);
+  --glass-1: rgba(255, 255, 255, 0.35);
+  --glass-2: rgba(255, 255, 255, 0.55);
+  --glass-3: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-blur: blur(40px) saturate(200%);
 
   /* Noise Texture */
   --noise-url: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -61,6 +61,13 @@
   --shadow-spatial-lg: var(--shadow-lg);
   --shadow-spatial-xl: var(--shadow-xl);
   --shadow-glow-red:   var(--shadow-glow-red);
+
+  /* Animation Overrides */
+  --animate-float: float 6s ease-in-out infinite;
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
 }
 
 /* ── Performance Utilities (Zero Jank) ── */
@@ -135,7 +142,7 @@ body {
   pointer-events: none;
 }
 
-/* ── Typography Scale (2026 Kinetic Style) ─────────────────── */
+/* ── Typography Scale (2027 Kinetic Style) ─────────────────── */
 .display-2xl { font-size: clamp(3rem, 10vw, 8.5rem);  font-weight: 950; line-height: 0.9;  letter-spacing: -0.06em; }
 .display-xl  { font-size: clamp(2.5rem, 8vw, 6.5rem); font-weight: 900; line-height: 0.95; letter-spacing: -0.05em; }
 .display-lg  { font-size: clamp(2rem, 6vw, 4.5rem);   font-weight: 900; line-height: 1.0;  letter-spacing: -0.045em; }
@@ -146,6 +153,12 @@ body {
   display: inline-block;
   transform-origin: bottom left;
   will-change: transform, opacity;
+}
+
+.kinetic-title {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
 }
 
 .text-body-lg { font-size: 1.25rem;  line-height: 1.6; color: var(--slate); font-weight: 500; }
