@@ -53,10 +53,10 @@ export default function Navbar() {
         className="fixed top-0 w-full z-[100] transition-all duration-700"
       >
         <div className="container-xl pt-4 md:pt-6">
-          <div className={`flex items-center justify-between h-[72px] md:h-[84px] transition-all duration-700 px-6 md:px-10 rounded-full border border-white/40 shadow-spatial-md ${
+          <div className={`flex items-center justify-between h-[72px] md:h-[84px] transition-all duration-700 px-6 md:px-10 rounded-full border border-white/50 shadow-spatial-md ${
             scrolled
-              ? "bg-white/70 backdrop-blur-3xl saturate-150"
-              : "bg-white/40 backdrop-blur-xl"
+              ? "bg-white/75 backdrop-blur-[40px] saturate-200"
+              : "bg-white/45 backdrop-blur-[32px]"
           }`}>
             
             {/* Logo Section */}

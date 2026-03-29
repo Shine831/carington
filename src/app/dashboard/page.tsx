@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
-import { MagneticButton } from "@/components/ui/InteractiveEffects";
+import { MagneticButton, BentoCard } from "@/components/ui/InteractiveEffects";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
@@ -494,61 +494,88 @@ export default function DashboardPage() {
                   {bookings.map((req: any, i: number) => {
                     const status = STATUS_MAP[langKey][req.status as keyof typeof STATUS_MAP["fr"]] || STATUS_MAP[langKey].PENDING;
                     const date = req.createdAt ? new Date(req.createdAt.seconds * 1000).toLocaleDateString() : "N/A";
+
+                    // Progress Calculation for Gauge
+                    const progress = req.status === "COMPLETED" ? 100 : req.status === "ACTIVE" ? 65 : 15;
+                    const r = 28;
+                    const strokeDasharray = 2 * Math.PI * r;
+                    const strokeDashoffset = strokeDasharray * ((100 - progress) / 100);
+
                     return (
                       <motion.div
                         key={req.id}
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.1 }}
-                        className={`${i === 0 ? "lg:col-span-8" : "lg:col-span-4"} group`}
+                        className={`${i % 3 === 0 ? "lg:col-span-8" : "lg:col-span-4"} group`}
                       >
-                        <div className="card-spatial p-12 h-full flex flex-col justify-between hover:border-[var(--red)]/20">
-                          <div>
-                            <div className="flex justify-between items-start mb-12">
-                               <div className="space-y-2">
+                        <BentoCard delay={i * 0.05} className="h-full !p-0 !border-white/50 !bg-white/60 !backdrop-blur-2xl">
+                          <div className="p-10 md:p-12 h-full flex flex-col justify-between relative z-10">
+                            <div>
+                              <div className="flex justify-between items-start mb-12">
+                                <div className="space-y-2">
                                   <span className="label text-[var(--red)]">#{req.id.slice(0, 8).toUpperCase()}</span>
                                   <h3 className="display-sm !text-4xl group-hover:italic transition-all duration-700">{req.serviceId}</h3>
-                               </div>
-                               <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border ${status.cls}`}>
-                                 {status.label}
-                               </span>
-                            </div>
+                                </div>
+                                <div className="relative w-16 h-16">
+                                  <svg className="w-full h-full -rotate-90">
+                                    <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="4" className="text-slate-100" />
+                                    <motion.circle
+                                      cx="32" cy="32" r={r} fill="none" stroke="currentColor" strokeWidth="4"
+                                      className="text-[var(--red)]"
+                                      strokeDasharray={strokeDasharray}
+                                      initial={{ strokeDashoffset: strokeDasharray }}
+                                      animate={{ strokeDashoffset: strokeDashoffset }}
+                                      transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                                    />
+                                  </svg>
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-[8px] font-black">{progress}%</span>
+                                  </div>
+                                </div>
+                              </div>
 
-                            <div className="grid grid-cols-2 gap-8 border-t border-[var(--border)] pt-8 mb-12">
-                               <div>
+                              <div className="grid grid-cols-2 gap-8 border-t border-[var(--border)] pt-8 mb-12">
+                                <div>
                                   <p className="label text-[var(--muted)] mb-2">Request Date</p>
                                   <p className="text-xl font-black italic">{date}</p>
-                               </div>
-                               <div>
-                                  <p className="label text-[var(--muted)] mb-2">Budget Range</p>
-                                  <p className="text-xl font-black italic">{req.budget}</p>
-                               </div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-8">
-                            {req.adminNote && (
-                              <div className="p-8 bg-[var(--red-light)] border border-red-100 rounded-3xl">
-                                 <span className="label text-[var(--red)] block mb-4">Official Update</span>
-                                 <p className="text-sm font-bold text-[var(--charcoal)] leading-relaxed italic">"{req.adminNote}"</p>
+                                </div>
+                                <div>
+                                  <p className="label text-[var(--muted)] mb-2">SLA Level</p>
+                                  <p className="text-xl font-black italic">Platinum</p>
+                                </div>
                               </div>
-                            )}
+                            </div>
 
-                            <div className="flex items-center justify-between gap-4">
-                               {req.status === "PENDING" && (
+                            <div className="space-y-8">
+                              {req.adminNote && (
+                                <div className="p-6 bg-white border border-[var(--border)] rounded-3xl shadow-spatial-sm">
+                                  <span className="label text-[var(--red)] block mb-4">Official Update</span>
+                                  <p className="text-sm font-bold text-[var(--charcoal)] leading-relaxed italic">"{req.adminNote}"</p>
+                                </div>
+                              )}
+
+                              <div className="flex items-center justify-between gap-4">
+                                <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border ${status.cls}`}>
+                                  {status.label}
+                                </span>
+                                {req.status === "PENDING" && (
                                   <button
                                     onClick={() => handleDeleteRequest(req.id)}
                                     className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 hover:text-red-700 transition-colors"
                                   >
                                     {t.dashboard.projects.cancel}
                                   </button>
-                               )}
-                               <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:bg-[var(--charcoal)] group-hover:text-white transition-all duration-500 ml-auto">
+                                )}
+                                <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:bg-[var(--charcoal)] group-hover:text-white transition-all duration-500 ml-auto">
                                   <ArrowRight className="w-5 h-5" />
-                               </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
+
+                          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--red)]/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
+                        </BentoCard>
                       </motion.div>
                     );
                   })}

@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { ShieldCheck, Server, Network, ShieldAlert, ArrowRight, Star, Zap, PhoneCall, ChevronRight, Activity, Target, Cpu } from "lucide-react";
 import Link from "next/link";
 import { FadeUp, SlideLeft, SlideRight, StaggerContainer, StaggerItem, FadeIn } from "@/components/ui/Motion";
-import { TiltCard, MagneticButton, BentoCard, SpatialLayer } from "@/components/ui/InteractiveEffects";
+import { MagneticButton, BentoCard, SpatialLayer } from "@/components/ui/InteractiveEffects";
 import { AuraGradient } from "@/components/ui/AuraGradient";
 import { useI18n } from "@/context/LanguageContext";
 import { TestimonialsSection } from "@/components/ui/Testimonials";
@@ -25,7 +25,7 @@ export default function Home() {
       icon: ShieldAlert, 
       title: t.services_page.items.cyber.title, 
       desc: t.services_page.items.cyber.desc,
-      span: "lg:col-span-8",
+      span: "lg:col-span-8 lg:row-span-2",
       color: "var(--red)"
     },
     { 
@@ -34,7 +34,7 @@ export default function Home() {
       icon: Server, 
       title: t.services_page.items.it.title, 
       desc: t.services_page.items.it.desc,
-      span: "lg:col-span-4",
+      span: "lg:col-span-4 lg:row-span-1",
       color: "var(--slate)"
     },
     { 
@@ -43,7 +43,7 @@ export default function Home() {
       icon: PhoneCall, 
       title: t.services_page.items.voip.title, 
       desc: t.services_page.items.voip.desc,
-      span: "lg:col-span-4",
+      span: "lg:col-span-4 lg:row-span-2",
       color: "var(--slate)"
     },
     {
@@ -52,7 +52,7 @@ export default function Home() {
       icon: Network,
       title: t.services_page.items.network_cable.title,
       desc: t.services_page.items.network_cable.desc,
-      span: "lg:col-span-8",
+      span: "lg:col-span-8 lg:row-span-1",
       color: "var(--red)"
     }
   ];
@@ -60,13 +60,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white overflow-hidden spatial-bg">
 
-      {/* ── ELITE HERO 2026 (Kinetic & Spatial) ───────────────────── */}
+      {/* ── ELITE HERO 2027 (Kinetic & Spatial) ───────────────────── */}
       <section ref={heroRef} className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
 
         {/* Spatial Elements */}
-        <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.04]" />
+        <AuraGradient color="var(--red)" className="top-[-10%] right-[-10%] w-[1000px] h-[1000px] opacity-[0.06]" />
+        <AuraGradient color="var(--slate)" className="bottom-[-20%] left-[-10%] w-[800px] h-[800px] opacity-[0.03]" delay={2} />
         <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:64px_64px] opacity-[0.3]" />
         
+        <SpatialLayer speed={0.1} className="top-1/4 right-20">
+           <div className="w-64 h-64 rounded-full border border-[var(--red)]/10 blur-xl" />
+        </SpatialLayer>
+
         <motion.div 
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="container-xl relative z-10"
@@ -74,28 +79,53 @@ export default function Home() {
           <div className="max-w-5xl">
             <FadeUp delay={0.1}>
               <div className="flex items-center gap-4 mb-12">
-                <span className="label text-[var(--red)] tracking-[0.4em]">Elite Architecture</span>
+                <span className="label text-[var(--red)] tracking-[0.4em]">Elite Architecture v5</span>
                 <div className="h-px w-12 bg-[var(--red)]/30" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--slate)]">EST. 2024</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--slate)]">FUTURE-READY</span>
               </div>
             </FadeUp>
             
-            <FadeUp delay={0.2}>
-              <h1 className="display-2xl text-[var(--charcoal)] mb-12 tracking-[-0.07em]">
-                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[0]}
-                <span className="text-[var(--red)] italic relative inline-block">
-                  {language === "fr" ? "Informatique" : "IT"}
+            <h1 className="display-2xl text-[var(--charcoal)] mb-12 tracking-[-0.07em]">
+              <span className="kinetic-title">
+                <motion.span
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  className="inline-block"
+                >
+                  {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[0]}
+                </motion.span>
+              </span>
+              <span className="text-[var(--red)] italic relative inline-block">
+                <span className="kinetic-title">
                   <motion.span
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 1.2, delay: 1, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute -bottom-2 left-0 h-2 bg-[var(--red)]/10 rounded-full"
-                  />
+                    initial={{ y: "100%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                    className="inline-block"
+                  >
+                    {language === "fr" ? "Informatique" : "IT"}
+                  </motion.span>
                 </span>
-                <br />
-                {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[1]}
-              </h1>
-            </FadeUp>
+                <motion.span
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.2, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute -bottom-2 left-0 h-2 bg-[var(--red)]/10 rounded-full"
+                />
+              </span>
+              <br />
+              <span className="kinetic-title">
+                <motion.span
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
+                  className="inline-block"
+                >
+                  {t.hero.title_v2.split(language === "fr" ? "Informatique" : "IT")[1]}
+                </motion.span>
+              </span>
+            </h1>
 
             <div className="grid lg:grid-cols-12 gap-16 items-end">
               <div className="lg:col-span-7">
@@ -160,29 +190,31 @@ export default function Home() {
             </FadeUp>
           </div>
 
-          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-12 gap-8 auto-rows-[minmax(300px,auto)]">
             {SERVICES.map((srv, i) => (
               <StaggerItem key={srv.id} className={srv.span}>
                 <Link href="/services" className="group block h-full">
-                  <div className="h-full rounded-[3rem] border border-[var(--border)] bg-white p-10 md:p-14 transition-all duration-700 hover:shadow-spatial-xl hover:border-[var(--red)]/20 relative overflow-hidden flex flex-col justify-between">
-                    <div className="relative z-10">
-                       <div className="w-16 h-16 rounded-2xl bg-[var(--off-white)] flex items-center justify-center mb-12 group-hover:bg-[var(--red)] group-hover:text-white transition-all duration-700">
-                          <srv.icon className="w-8 h-8" />
+                  <BentoCard delay={i * 0.1} className="h-full p-0 !border-white/50">
+                    <div className="p-10 md:p-14 h-full flex flex-col justify-between relative z-10">
+                       <div>
+                          <div className="w-16 h-16 rounded-2xl bg-[var(--off-white)] flex items-center justify-center mb-12 group-hover:bg-[var(--red)] group-hover:text-white transition-all duration-700">
+                             <srv.icon className="w-8 h-8" />
+                          </div>
+                          <h3 className="display-sm mb-6 text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500">{srv.title}</h3>
+                          <p className="text-body max-w-md">{srv.desc}</p>
                        </div>
-                       <h3 className="display-sm mb-6 text-[var(--charcoal)] group-hover:text-[var(--red)] transition-colors duration-500">{srv.title}</h3>
-                       <p className="text-body max-w-md">{srv.desc}</p>
+
+                       <div className="mt-20 flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--muted)] group-hover:text-[var(--charcoal)] transition-colors">{t.services.explore}</span>
+                          <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:border-[var(--red)] group-hover:bg-[var(--red)] group-hover:text-white transition-all duration-700">
+                             <ArrowRight className="w-5 h-5" />
+                          </div>
+                       </div>
                     </div>
 
-                    <div className="mt-20 flex items-center justify-between relative z-10">
-                       <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--muted)] group-hover:text-[var(--charcoal)] transition-colors">{t.services.explore}</span>
-                       <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group-hover:border-[var(--red)] group-hover:bg-[var(--red)] group-hover:text-white transition-all duration-700">
-                          <ArrowRight className="w-5 h-5" />
-                       </div>
-                    </div>
-
-                    {/* Background Aura */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--red)]/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  </div>
+                    {/* Enhanced Background Aura */}
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-[var(--red)]/5 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none" />
+                  </BentoCard>
                 </Link>
               </StaggerItem>
             ))}
@@ -279,12 +311,24 @@ export default function Home() {
 
       {/* ── FINAL CTA ────────────────────── */}
       <section className="section-py relative overflow-hidden">
-        <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1200px] h-[1200px] opacity-[0.05]" />
+        <AuraGradient color="var(--red)" className="top-[-50%] right-[-10%] w-[1200px] h-[1200px] opacity-[0.06]" />
+        <AuraGradient color="var(--slate)" className="bottom-[-30%] left-[-10%] w-[1000px] h-[1000px] opacity-[0.03]" />
         <div className="container-xl relative z-10 text-center">
           <FadeUp>
             <div className="max-w-4xl mx-auto">
               <span className="label text-[var(--red)] mb-12 block">{t.cta.tag}</span>
-              <h2 className="display-2xl tracking-tighter mb-16 text-[var(--charcoal)]">{t.cta.title}</h2>
+              <h2 className="display-2xl tracking-tighter mb-16 text-[var(--charcoal)]">
+                <span className="kinetic-title">
+                  <motion.span
+                    initial={{ y: "100%", opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="inline-block"
+                  >
+                    {t.cta.title}
+                  </motion.span>
+                </span>
+              </h2>
 
               <div className="flex flex-col sm:flex-row justify-center gap-8">
                 <Link href="/booking">

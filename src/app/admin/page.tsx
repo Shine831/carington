@@ -445,15 +445,42 @@ export default function AdminDashboard() {
         </header>
 
         <div className="p-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-            {STATS.map(stat => (
-              <div key={stat.label} className="card-spatial p-8 relative group overflow-hidden">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-100 transition-opacity duration-700"><stat.icon className={`w-12 h-12 ${stat.color}`} /></div>
-                <p className="label text-[var(--muted)] mb-4">{stat.label}</p>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-20">
+            {STATS.map((stat, idx) => (
+              <div key={stat.label} className={`${idx % 4 === 0 ? "md:col-span-6" : "md:col-span-3"} card-spatial p-10 relative group overflow-hidden border-white/50 bg-white/60 backdrop-blur-2xl`}>
+                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-100 transition-opacity duration-700 group-hover:scale-110"><stat.icon className={`w-16 h-16 ${stat.color}`} /></div>
+                <p className="label text-[var(--muted)] mb-6">{stat.label}</p>
+
                 <div className="flex items-end justify-between">
-                   <h3 className={`text-5xl font-black italic tracking-tighter ${stat.color}`}>{stat.val}</h3>
-                   <div className="h-1 w-12 bg-slate-100 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: "60%" }} className={`h-full ${stat.color.replace('text-', 'bg-')}`} /></div>
+                   <div>
+                      <h3 className={`text-6xl font-black italic tracking-tighter ${stat.color}`}>{stat.val}</h3>
+                      <div className="flex items-center gap-2 mt-4">
+                         <div className="h-1.5 w-24 bg-slate-100 rounded-full overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${Math.min(100, (stat.val / 50) * 100)}%` }}
+                              className={`h-full ${stat.color.replace('text-', 'bg-')}`}
+                            />
+                         </div>
+                         <span className="text-[10px] font-black uppercase text-[var(--slate)] tracking-widest">Target Delta</span>
+                      </div>
+                   </div>
+
+                   {/* Data Storytelling: Micro-graphic */}
+                   <div className="flex items-end gap-1 pb-1">
+                      {[0.4, 0.7, 0.5, 0.9, 0.6].map((h, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ height: 0 }}
+                          animate={{ height: `${h * 40}px` }}
+                          transition={{ delay: i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                          className={`w-1.5 rounded-full ${stat.color.replace('text-', 'bg-')} opacity-20`}
+                        />
+                      ))}
+                   </div>
                 </div>
+
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--red)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
               </div>
             ))}
           </div>
