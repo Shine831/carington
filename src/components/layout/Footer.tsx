@@ -90,15 +90,15 @@ export default function Footer() {
                   <Phone className="w-4 h-4 text-[var(--red)]" />
                 </div>
                 <div className="flex flex-col gap-1 text-slate-400 font-medium">
-                  <span>+237 654 74 93 57</span>
-                  <span>+237 697 16 72 59</span>
+                  <a href="tel:+237654749357" className="hover:text-[var(--red)] transition-colors">+237 654 74 93 57</a>
+                  <a href="tel:+237697167259" className="hover:text-[var(--red)] transition-colors">+237 697 16 72 59</a>
                 </div>
               </li>
               <li className="flex items-center gap-4 group">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[var(--red)]/20 transition-colors">
                   <Mail className="w-4 h-4 text-[var(--red)]" />
                 </div>
-                <span className="text-slate-400 font-medium">cust_care@ejs-cm.com</span>
+                <a href="mailto:cust_care@ejs-cm.com" className="text-slate-400 font-medium hover:text-[var(--red)] transition-colors">cust_care@ejs-cm.com</a>
               </li>
             </ul>
           </div>

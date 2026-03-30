@@ -49,9 +49,9 @@ export default function ContactPage() {
 
   const CONTACT_ITEMS = [
     { icon: MapPin, label: language === "fr" ? "SIÈGE SOCIAL" : "HEADQUARTERS", val: t.contact.hq_val },
-    { icon: Phone, label: language === "fr" ? "APPEL & WHATSAPP" : "CALL & WHATSAPP", val: t.contact.phone_val, red: true },
-    { icon: Phone, label: language === "fr" ? "LIGNE TECHNIQUE" : "TECH LINE", val: t.contact.tech_val },
-    { icon: Mail, label: "EMAIL SUPPORT", val: t.contact.email_val },
+    { icon: Phone, label: language === "fr" ? "APPEL & WHATSAPP" : "CALL & WHATSAPP", val: t.contact.phone_val, red: true, href: "tel:+237654749357" },
+    { icon: Phone, label: language === "fr" ? "LIGNE TECHNIQUE" : "TECH LINE", val: t.contact.tech_val, href: "tel:+237697167259" },
+    { icon: Mail, label: "EMAIL SUPPORT", val: t.contact.email_val, href: "mailto:cust_care@ejs-cm.com" },
   ];
 
   return (
@@ -90,7 +90,7 @@ export default function ContactPage() {
             <SlideLeft>
               <h2 className="display-sm text-[var(--charcoal)] mb-12 tracking-tight uppercase font-black">{t.contact.info_title}</h2>
               <StaggerContainer className="space-y-4">
-                {CONTACT_ITEMS.map(({ icon: Icon, label, val, red }) => (
+                {CONTACT_ITEMS.map(({ icon: Icon, label, val, red, href }) => (
                   <StaggerItem key={label}>
                     <motion.div
                       whileHover={{ x: 6, borderColor: "var(--red)" }}
@@ -102,7 +102,11 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-widest mb-1.5">{label}</p>
-                        <p className={`font-bold whitespace-pre-line text-sm leading-relaxed ${red ? "text-[var(--red)]" : "text-[var(--charcoal)]"}`}>{val}</p>
+                        {href ? (
+                          <a href={href} className={`font-bold text-sm leading-relaxed hover:underline ${red ? "text-[var(--red)]" : "text-[var(--charcoal)]"}`}>{val}</a>
+                        ) : (
+                          <p className={`font-bold whitespace-pre-line text-sm leading-relaxed ${red ? "text-[var(--red)]" : "text-[var(--charcoal)]"}`}>{val}</p>
+                        )}
                       </div>
                     </motion.div>
                   </StaggerItem>

@@ -105,16 +105,11 @@ export default function Home() {
                 style={{ scale: textScale }}
                 className="display-2xl text-[var(--charcoal)] mb-8 tracking-tighter leading-[0.95]"
               >
-                {t.hero.title_v2.split("Informatique")[0]}<br/>
-                <motion.span 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  className="text-[var(--red)]"
-                >
-                  {language === "fr" ? "Informatique" : "IT"}
-                </motion.span><br/>
-                {t.hero.title_v2.split("Informatique")[1] || t.hero.title_v2.split("IT")[1]}
+                {language === "fr" ? (
+                  <>Architecture<br/><motion.span initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, delay: 0.5 }} className="text-[var(--red)]">Informatique</motion.span><br/>de Confiance.</>
+                ) : (
+                  <>Trusted<br/><motion.span initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, delay: 0.5 }} className="text-[var(--red)]">Computing</motion.span><br/>Architecture.</>
+                )}
               </motion.h1>
             </FadeUp>
 
@@ -169,9 +164,9 @@ export default function Home() {
             <FadeIn delay={0.6} className="mt-16 pt-8 border-t border-[var(--border)] max-w-sm">
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-3">
-                  {[1,2,3,4].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[8px] font-bold text-slate-400">
-                      USER
+                  {["A.K", "S.M", "D.T", "J.N"].map((initials, i) => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-[8px] font-black text-white shadow-sm">
+                      {initials}
                     </div>
                   ))}
                   <div className="w-10 h-10 rounded-full border-2 border-white bg-[var(--charcoal)] flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
