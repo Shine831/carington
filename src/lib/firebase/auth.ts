@@ -87,14 +87,23 @@ export const loginUser = async (data: LoginData) => {
     }
 
     // Email not verified — check Firestore role (ADMINs bypass verification)
+    let role: string = "CLIENT";
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const role = userDoc.exists() ? userDoc.data()?.role : "CLIENT";
-      if (role === "ADMIN") {
-        return user; // ADMIN — no email verification required
+      role = userDoc.exists() ? userDoc.data()?.role : "CLIENT";
+      // Cache the role so we can recover if Firestore goes offline next time
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`cached_role_${user.uid}`, role);
       }
     } catch {
-      // Firestore lookup failed — treat as CLIENT (safest fallback)
+      // Firestore offline — try cached role before giving up
+      if (typeof window !== "undefined") {
+        role = localStorage.getItem(`cached_role_${user.uid}`) || "CLIENT";
+      }
+    }
+
+    if (role === "ADMIN") {
+      return user; // ADMIN — no email verification required
     }
 
     // CLIENT with unverified email:

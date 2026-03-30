@@ -38,13 +38,35 @@ export function TestimonialsSection({ language }: { language: string }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Try to load cached reviews immediately for instant display
+    const cached = typeof window !== "undefined" ? localStorage.getItem("cached_reviews") : null;
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setReviews([...parsed, ...MOCK_REVIEWS]);
+        }
+      } catch { /* ignore parse errors */ }
+    }
+
     getReviews()
       .then((data) => {
-        const realReviews = data.filter((r: any) => r.rating >= 3);
-        // Combiner pour toujours avoir un affichage riche
-        setReviews([...realReviews, ...MOCK_REVIEWS]);
+        // Show ALL real client reviews (no rating filter)
+        const realReviews = data.filter((r: any) => r.comment && r.rating);
+        if (realReviews.length > 0) {
+          // Cache for offline resilience
+          if (typeof window !== "undefined") {
+            localStorage.setItem("cached_reviews", JSON.stringify(realReviews));
+          }
+          setReviews([...realReviews, ...MOCK_REVIEWS]);
+        } else {
+          setReviews(MOCK_REVIEWS);
+        }
       })
-      .catch(() => setReviews(MOCK_REVIEWS))
+      .catch(() => {
+        // Firestore offline — keep cached reviews or show mock
+        if (!cached) setReviews(MOCK_REVIEWS);
+      })
       .finally(() => setLoading(false));
   }, []);
 
