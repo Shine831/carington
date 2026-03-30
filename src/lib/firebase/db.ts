@@ -2,6 +2,7 @@ import {
   collection, 
   doc, 
   addDoc, 
+  setDoc,
   updateDoc, 
   deleteDoc,
   getDocs, 
@@ -131,10 +132,10 @@ export const getUserById = async (uid: string): Promise<any | null> => {
 };
 
 export const setUserPin = async (uid: string, pinHash: string) => {
-  await updateDoc(doc(db, "users", uid), { 
+  await setDoc(doc(db, "users", uid), { 
     pin: pinHash,
     lastPinChange: Date.now()
-  });
+  }, { merge: true });
 };
 
 export const updateUserDoc = async (uid: string, data: Partial<{ displayName: string; email: string; phone: string }>) => {

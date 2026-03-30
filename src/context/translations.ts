@@ -182,7 +182,7 @@ export const translations = {
           quota: "Limite atteinte. Veuillez patienter avant de réessayer."
         }
       },
-      hq_val: "Marché NDOPASSI, Douala",
+      hq_val: "Marché NDOGPASSI, Douala",
       phone_val: "+237 654 74 93 57",
       tech_val: "+237 697 16 72 59",
       email_val: "cust_care@ejs-cm.com"
@@ -608,7 +608,7 @@ export const translations = {
                 quota: "Limit reached. Please wait before trying again."
             }
         },
-        hq_val: "NDOPASSI Market, Douala",
+        hq_val: "NDOGPASSI Market, Douala",
         phone_val: "+237 654 74 93 57",
         tech_val: "+237 697 16 72 59",
         email_val: "cust_care@ejs-cm.com"

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, EyeOff, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert, Activity } from "lucide-react";
+import { Users, Briefcase, FileText, BarChart, Bell, Search, AlertTriangle, Clock, CheckCircle, Shield, Mail, LogOut, Eye, EyeOff, Trash2, Edit3, X, ArrowRight, Phone, Star, Lock, Key, ShieldAlert, Activity, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/Motion";
 import { AuraGradient } from "@/components/ui/AuraGradient";
@@ -273,6 +273,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     await createService(newServiceForm);
     setNewServiceModal(false);
+    setNewServiceForm({ title: "", description: "", priceCFA: 0, category: "IT" });
     fetchData();
   };
 
@@ -1370,6 +1371,111 @@ export default function AdminDashboard() {
                 <div className="pt-2">
                   <button type="submit" disabled={isChangingPassword || !passwordChangeForm.newPassword || !passwordChangeForm.oldPassword} className="w-full py-4 bg-amber-500 hover:bg-amber-400 rounded-xl text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(245,158,11,0.3)] active:scale-95 transition-all disabled:opacity-50 flex justify-center items-center gap-2 zero-jank">
                     {isChangingPassword ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><ShieldAlert className="w-4 h-4" /> Confirmer le changement</>}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* ── NEW SERVICE MODAL ──────────────────────────────────── */}
+        {newServiceModal && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setNewServiceModal(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg bg-white rounded-[2rem] shadow-[0_40px_80px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 md:p-8 border-b border-slate-100">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[var(--red-light)] flex items-center justify-center border border-red-100">
+                    <Plus className="w-6 h-6 text-[var(--red)]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-[var(--charcoal)] tracking-tight">Nouveau Service</h3>
+                    <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">Catalogues & Devis</p>
+                  </div>
+                </div>
+                <button onClick={() => setNewServiceModal(false)} className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-colors">
+                  <X className="w-5 h-5 text-[var(--slate)]" />
+                </button>
+              </div>
+
+              {/* Modal Form */}
+              <form onSubmit={handleCreateService} className="p-6 md:p-8 space-y-5">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">Titre du service *</label>
+                  <input
+                    type="text"
+                    value={newServiceForm.title}
+                    onChange={(e) => setNewServiceForm(p => ({ ...p, title: e.target.value }))}
+                    placeholder="Ex: Audit de Cybersécurité"
+                    required
+                    className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-[var(--muted)]/50"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">Description *</label>
+                  <textarea
+                    value={newServiceForm.description}
+                    onChange={(e) => setNewServiceForm(p => ({ ...p, description: e.target.value }))}
+                    placeholder="Décrivez le service proposé..."
+                    required
+                    rows={3}
+                    className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all resize-none placeholder:text-[var(--muted)]/50"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">Prix (FCFA) *</label>
+                    <input
+                      type="number"
+                      value={newServiceForm.priceCFA || ""}
+                      onChange={(e) => setNewServiceForm(p => ({ ...p, priceCFA: parseInt(e.target.value) || 0 }))}
+                      placeholder="0"
+                      required
+                      min={0}
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all placeholder:text-[var(--muted)]/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-[var(--muted)] tracking-[0.2em] pl-1">Catégorie</label>
+                    <select
+                      value={newServiceForm.category}
+                      onChange={(e) => setNewServiceForm(p => ({ ...p, category: e.target.value }))}
+                      className="w-full bg-[var(--off-white)] border border-slate-200 text-[var(--charcoal)] p-4 rounded-xl text-sm font-bold focus:border-[var(--red)] outline-none transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="IT">IT & Infogérance</option>
+                      <option value="Cybersécurité">Cybersécurité</option>
+                      <option value="Réseau">Réseau & Infrastructure</option>
+                      <option value="Cloud">Cloud & Hosting</option>
+                      <option value="VoIP">VoIP & Télécom</option>
+                      <option value="Développement">Développement</option>
+                      <option value="Formation">Formation</option>
+                      <option value="Autre">Autre</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="submit"
+                    disabled={!newServiceForm.title || !newServiceForm.description || !newServiceForm.priceCFA}
+                    className="flex-1 py-4 bg-[var(--red)] hover:bg-[var(--red-dark)] text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(230,0,0,0.2)] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" /> Créer le service
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewServiceModal(false)}
+                    className="px-6 py-4 border border-slate-200 rounded-xl text-[var(--charcoal)] font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all"
+                  >
+                    Annuler
                   </button>
                 </div>
               </form>

@@ -83,7 +83,7 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[var(--red)]/20 transition-colors">
                   <MapPin className="w-4 h-4 text-[var(--red)]" />
                 </div>
-                <span className="text-slate-400 leading-relaxed font-medium">Marché NDOPASSI, Douala</span>
+                <span className="text-slate-400 leading-relaxed font-medium">Marché NDOGPASSI, Douala</span>
               </li>
               <li className="flex items-center gap-4 group">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-[var(--red)]/20 transition-colors">
