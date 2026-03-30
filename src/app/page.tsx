@@ -307,7 +307,11 @@ export default function Home() {
             <SlideLeft>
               <span className="tag-red mb-4 inline-flex">{language === "fr" ? "Pourquoi E-Jarnauld ?" : "Why E-Jarnauld?"}</span>
               <h2 className="display-lg text-[var(--charcoal)] mb-8">
-                {t.why.title.split("d'excellence")[0]}{t.why.title.split("excellence")[0]} <span className="text-[var(--red)] italic font-serif">{language === "fr" ? "d'excellence" : "excellence"}</span>.
+                {language === "fr" ? (
+                  <>Des solutions <span className="text-[var(--red)] italic font-serif">d&apos;excellence</span>.</>
+                ) : (
+                  <>Solutions of <span className="text-[var(--red)] italic font-serif">excellence</span>.</>
+                )}
               </h2>
               <p className="text-body mb-10 text-[var(--slate)] leading-relaxed">
                 {t.why.desc}
