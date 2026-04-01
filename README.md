@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🔴 E-JARNAULD SOFT
 
@@ -324,4 +324,3 @@ Ce projet est propriétaire. © 2026 E-JARNAULD SOFT — Tous droits réservés.
 E-JARNAULD SOFT — *Votre infrastructure, notre expertise.*
 
 </div>
-]]>
