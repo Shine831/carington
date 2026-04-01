@@ -12,7 +12,7 @@
 
 **Application web professionnelle pour la gestion d'un cabinet IT spécialisé en cybersécurité, infogérance et infrastructure réseau.**
 
-[🌐 Démo Live](https://ejarnauld-soft.vercel.app) · [📧 Contact](mailto:cust_care@ejs-cm.com)
+[🌐 Démo Live](https://carington.vercel.app) · [📧 Contact](mailto:cust_care@ejs-cm.com)
 
 </div>
 
